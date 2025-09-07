@@ -1,0 +1,59 @@
+<script lang="ts">
+  import { Client } from "$lib/clients/index.client";
+  import FormControl from "$lib/components/form/controls/FormControl.svelte";
+  import EmailFormField from "$lib/components/form/fields/EmailFormField.svelte";
+  import FormField from "$lib/components/form/fields/FormField.svelte";
+  import FormMessage from "$lib/components/form/FormMessage.svelte";
+  import FormButton from "$lib/components/ui/form/form-button.svelte";
+  import SingleSelect from "$lib/components/ui/select/SingleSelect.svelte";
+  import { ORGANIZATION } from "$lib/const/organization.const";
+  import { create_invitation } from "$lib/remote/auth/organization.remote";
+  import { AuthSchema } from "$lib/schema/auth.schema";
+  import { make_super_form } from "$lib/utils/form.util";
+  import type { Invitation } from "better-auth/plugins";
+  import { type Infer, type SuperValidated } from "sveltekit-superforms";
+  import { zod4Client } from "sveltekit-superforms/adapters";
+
+  let {
+    on_success,
+    form_input,
+  }: {
+    on_success?: (data: Invitation) => void;
+    form_input: SuperValidated<Infer<typeof AuthSchema.Org.member_invite_form>>;
+  } = $props();
+
+  const form = make_super_form(form_input, {
+    timeoutMs: 16_000,
+    validators: zod4Client(AuthSchema.Org.member_invite_form),
+
+    on_success,
+    submit: (data) =>
+      Client.request(() => create_invitation(data), {
+        toast: { loading: "Inviting member...", success: "Member invited!" },
+      }),
+  });
+
+  const { form: form_data } = form;
+</script>
+
+<form class="flex flex-col gap-3" method="POST" use:form.enhance>
+  <div class="flex gap-3">
+    <EmailFormField {form} bind:value={$form_data.email} />
+
+    <FormField {form} name="role">
+      <FormControl label="Role">
+        {#snippet children({ props })}
+          <SingleSelect
+            {...props}
+            options={ORGANIZATION.ROLES.OPTIONS}
+            bind:value={$form_data.role}
+          />
+        {/snippet}
+      </FormControl>
+    </FormField>
+  </div>
+
+  <FormButton {form} icon="lucide/user-plus">Invite Member</FormButton>
+
+  <FormMessage {form} />
+</form>
