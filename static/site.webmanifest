@@ -1,8 +1,7 @@
 {
-  "short_name": "App",
-  "name": "App Starter Template",
-  "description": "A starter template for building web applications.",
-  "categories": ["utilities", "productivity"],
+  "name": "Animal Shelter",
+  "description": "A SvelteKit app for managing an animal shelter.",
+  "categories": [],
 
   "theme_color": "black",
   "background_color": "white",

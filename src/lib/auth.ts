@@ -12,19 +12,14 @@ import {
   betterAuth,
   type GenericEndpointContext,
   type Session,
-  type User,
 } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
-import { generateRandomString } from "better-auth/crypto";
 import {
   admin,
   genericOAuth,
   haveIBeenPwned,
   organization,
   type GenericOAuthConfig,
-  type Member,
-  type Organization,
-  type OrganizationInput,
 } from "better-auth/plugins";
 import { passkey } from "better-auth/plugins/passkey";
 import { sveltekitCookies } from "better-auth/svelte-kit";
@@ -44,7 +39,7 @@ import {
   SessionTable,
   UserTable,
   VerificationTable,
-} from "./server/db/schema/auth.models";
+} from "./server/db/schema/auth.model";
 import { EmailLive, EmailService, EmailTest } from "./services/email.service";
 import { Log } from "./utils/logger.util";
 
@@ -76,6 +71,25 @@ export const auth = Effect.runSync(
         enabled: false,
       },
 
+      databaseHooks: {
+        session: {
+          create: {
+            before: async (session, ctx) => {
+              // Log users back in to their org, if they had one
+              const org = await get_member_org(session, ctx);
+
+              return {
+                data: {
+                  ...session,
+                  member_id: org ? org.member_id : null,
+                  activeOrganizationId: org ? org.org_id : null,
+                },
+              };
+            },
+          },
+        },
+      },
+
       database: drizzleAdapter(db, {
         provider: "pg",
         debugLogs: false,
@@ -105,56 +119,6 @@ export const auth = Effect.runSync(
             type: "string",
             defaultValue: null,
             fieldName: "member_id",
-            references: {
-              model: "member",
-              field: "id",
-              onDelete: "set null",
-            },
-          },
-          // org_id: {
-          //   type: "string",
-          //   defaultValue: null,
-          //   fieldName: "org_id",
-          //   references: {
-          //     model: "organization",
-          //     field: "id",
-          //     onDelete: "set null",
-          //   },
-          // },
-        },
-      },
-
-      rateLimit: {
-        // NOTE: defaults to true in production, false in development
-        // enabled: true,
-        // NOTE: defaults to secondary if one is configured
-        // So no need for us to check for redis
-        // storage: redis ? "secondary-storage" : "memory",
-      },
-
-      databaseHooks: {
-        session: {
-          create: {
-            before: async (session, ctx) => {
-              if (!ctx) {
-                Log.error(
-                  { ctx: "[auth.session.create.before]" },
-                  "No ctx in hook callback",
-                );
-                return { data: session };
-              }
-
-              const data = await get_or_create_org_id(session, ctx);
-
-              return {
-                data: {
-                  ...session,
-
-                  member_id: data?.member_id,
-                  activeOrganizationId: data?.org_id,
-                },
-              };
-            },
           },
         },
       },
@@ -229,18 +193,6 @@ export const auth = Effect.runSync(
           cancelPendingInvitationsOnReInvite: true,
           requireEmailVerificationOnInvitation: true,
 
-          // schema: {
-          //   session: {
-          //     fields: {
-          //       activeOrganizationId: "org_id",
-          //     },
-          //   },
-          // },
-
-          // Doesn't seem to do anything?
-          // SOURCE: https://github.com/better-auth/better-auth/blob/eb691e213dbe44a3c177d10a2dfd2f39ace0bf98/packages/better-auth/src/plugins/organization/types.ts#L340
-          // autoCreateOrganizationOnSignUp: true,
-
           sendInvitationEmail: (data) =>
             Effect.runPromise(email.send(EMAIL.TEMPLATES["org-invite"](data))),
         }),
@@ -258,7 +210,6 @@ export const auth = Effect.runSync(
 
                     discoveryUrl:
                       POCKETID_BASE_URL + "/.well-known/openid-configuration",
-                    // ... other config options
 
                     mapProfileToUser: (profile: unknown) => {
                       Log.info(profile, providerId + " profile");
@@ -266,18 +217,8 @@ export const auth = Effect.runSync(
                       // NOTE: Typing profile directly in the callback arg gives a TS error, since better-auth expects Record<string, any>
                       const typed = profile as IAuth.GenericOAuthProfile;
 
-                      const name = (
-                        typed.name ||
-                        (typed.given_name || "") +
-                          " " +
-                          (typed.family_name || "") ||
-                        ""
-                      )
-                        .trim()
-                        .replaceAll(/\s+/g, " ");
-
                       return {
-                        name,
+                        name: typed.name,
                         email: typed.email,
                         image: typed.picture,
                         emailVerified:
@@ -297,24 +238,17 @@ export const auth = Effect.runSync(
       ],
 
       // SOURCE: https://www.better-auth.com/docs/concepts/database#secondary-storage
-      secondaryStorage: redis
-        ? {
-            get: async (key) => {
-              return redis!.get(key);
-            },
+      secondaryStorage: {
+        get: (key) => redis!.get(key),
+        set: async (key, value, ttl) => {
+          if (ttl) await redis!.set(key, value, "EX", ttl);
+          else await redis!.set(key, value);
+        },
 
-            set: async (key, value, ttl) => {
-              // if (ttl) await redis!.set(key, value, { EX: ttl });
-              // or for ioredis:
-              if (ttl) await redis!.set(key, value, "EX", ttl);
-              else await redis!.set(key, value);
-            },
-
-            delete: async (key) => {
-              await redis!.del(key);
-            },
-          }
-        : undefined,
+        delete: async (key) => {
+          await redis!.del(key);
+        },
+      },
     });
   }).pipe(Effect.provideService(EmailService, dev ? EmailTest : EmailLive)),
 );
@@ -322,87 +256,38 @@ export const auth = Effect.runSync(
 // !SECTION
 
 // SECTION: Helper functions
-const get_or_create_org_id = async (
+const get_member_org = async (
   session: Session,
-  ctx: GenericEndpointContext,
+  ctx: GenericEndpointContext | undefined,
 ): Promise<{
   org_id: string;
   member_id: string;
 } | null> => {
   // NOTE: Order is preserved when logging, so show ctx first
   const log = Log.child({
-    ctx: "[auth.session.create.before]",
+    ctx: "[session.create.before]",
     userId: session.userId,
   });
 
-  const existing_member = await ctx.context.adapter.findOne<
-    Pick<Member, "id" | "organizationId">
-  >({
-    model: "member",
-    select: ["id", "organizationId"],
-    where: [{ field: "userId", operator: "eq", value: session.userId }],
-  });
-
-  if (existing_member) {
-    log.debug(
-      { organizationId: existing_member.organizationId },
-      "Found existing organization",
-    );
-    return {
-      member_id: existing_member.id,
-      org_id: existing_member.organizationId,
-    };
-  }
-
-  log.info("Creating new organization");
-
-  const user = await ctx.context.adapter.findOne<Pick<User, "name" | "email">>({
-    model: "user",
-    select: ["name", "email"],
-    where: [{ field: "id", operator: "eq", value: session.userId }],
-  });
-
-  if (!user) {
-    log.error("User not found");
+  if (!ctx) {
+    log.warn("No context in session create hook");
     return null;
   }
 
-  log.debug({ user }, "User info");
-
-  // SOURCE: https://github.com/better-auth/better-auth/blob/744e9e34c1eb8b75c373f00a71c85e5a599abae6/packages/better-auth/src/plugins/organization/adapter.ts#L186
-  const org = await ctx.context.adapter.create<
-    OrganizationInput,
-    Pick<Organization, "id">
-  >({
-    model: "organization",
-    select: ["id"],
-    data: {
-      // NOTE: || because name is always defined, but may be empty
-      name: `${user.name || user.email}'s Org`,
-      slug: generateRandomString(8, "a-z", "0-9").toLowerCase(),
-
-      createdAt: new Date(),
-    },
+  const member = await db.query.member.findFirst({
+    columns: { id: true, organizationId: true },
+    where: (member, { eq }) => eq(member.userId, session.userId),
   });
-
-  if (!org.id) {
-    log.error("Failed to create organization");
+  if (!member) {
     return null;
   }
 
-  const new_member = await ctx.context.adapter.create<Member>({
-    model: "member",
-    data: {
-      role: "owner",
-      organizationId: org.id,
-      userId: session.userId,
-
-      createdAt: new Date(),
-    },
-  });
-
+  log.debug(
+    { organizationId: member.organizationId },
+    "Found existing organization",
+  );
   return {
-    org_id: org.id,
-    member_id: new_member.id,
+    member_id: member.id,
+    org_id: member.organizationId,
   };
 };

@@ -1,13 +1,6 @@
-# App Starter Template
+# Animal Shelter
 
 ## Features
-
-- SvelteKit, TypeScript
-- Tailwind, DaisyUI
-- ESLint, Prettier
-- Better-Auth
-- Drizzle, Redis
-- Vercel
 
 ## Usage
 
@@ -16,7 +9,7 @@
 1. Clone the repository
 
    ```bash
-   git clone https://github.com/SkepticMystic/app-starter-template.git
+   git clone https://github.com/SkepticMystic/animal-shelter.git
    ```
 
 2. Install dependencies
@@ -28,6 +21,14 @@
 3. Set up environment variables
 
    Create a `.env` file in the root directory and add the necessary environment variables. You can refer to the `.env.example` file for guidance.
+
+   Part of this step is setting up a new postgres db (I currently use neon). Create a development branch in the neon dashboard, and copy the connection string to your .env file as `DATABASE_URL`.
+
+   Then run the following command to create the necessary tables:
+
+   ```bash
+   npm run db push
+   ```
 
 4. Run the development server
 

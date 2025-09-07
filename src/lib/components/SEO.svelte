@@ -24,4 +24,4 @@
 <meta property="og:description" content={desc} />
 <meta property="twitter:description" content={desc} />
 
-<meta property="og:image" content={page.data.seo?.image_url ?? APP.LOGO_URL} />
+<meta property="og:image" content={page.data.seo?.image ?? APP.LOGO_URL} />

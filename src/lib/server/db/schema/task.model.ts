@@ -8,7 +8,7 @@ import {
   uuid,
   varchar,
 } from "drizzle-orm/pg-core";
-import { MemberTable, OrganizationTable, UserTable } from "./auth.models";
+import { MemberTable, OrganizationTable, UserTable } from "./auth.model";
 import { Schema } from "./index.schema";
 
 export const task_status_enum = pgEnum("task_status", TASKS.STATUS.IDS);

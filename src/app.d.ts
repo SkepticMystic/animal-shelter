@@ -3,8 +3,8 @@ declare global {
     interface PageData {
       seo?: {
         title: string;
-        desc?: string;
-        image_url?: string;
+        desc?: string | null;
+        image?: string | null;
       };
     }
 

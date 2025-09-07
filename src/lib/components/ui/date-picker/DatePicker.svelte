@@ -1,7 +1,7 @@
 <script lang="ts">
-  import Icon from "$lib/components/ui/icon/Icon.svelte";
   import { buttonVariants } from "$lib/components/ui/button/index.js";
   import { Calendar } from "$lib/components/ui/calendar/index.js";
+  import Icon from "$lib/components/ui/icon/Icon.svelte";
   import * as Popover from "$lib/components/ui/popover/index.js";
   import { cn } from "$lib/utils/shadcn.util";
   import {
@@ -17,8 +17,8 @@
     onchange,
     ...rest
   }: {
-    value: Date | undefined;
     class?: ClassValue;
+    value: Date | null | undefined;
     onchange?: (date: Date | undefined) => void;
   } = $props();
 

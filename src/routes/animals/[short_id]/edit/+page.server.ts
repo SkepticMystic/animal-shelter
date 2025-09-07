@@ -1,0 +1,28 @@
+import { get_session } from "$lib/auth/server";
+import { AnimalSchema } from "$lib/schema/animal.schema";
+import { db } from "$lib/server/db/drizzle.db";
+import { error } from "@sveltejs/kit";
+import { superValidate } from "sveltekit-superforms";
+import { zod4 } from "sveltekit-superforms/adapters";
+import type { PageServerLoad } from "./$types";
+
+export const load = (async ({ params }) => {
+  const [session, animal] = await Promise.all([
+    get_session(),
+    db.query.animal.findFirst({
+      where: (animal, { eq }) => eq(animal.short_id, params.short_id),
+    }),
+  ]);
+
+  if (
+    !animal ||
+    !session ||
+    animal.org_id !== session.session.activeOrganizationId
+  ) {
+    error(404, "Animal not found");
+  }
+
+  const form_input = await superValidate(animal, zod4(AnimalSchema.insert));
+
+  return { animal, form_input };
+}) satisfies PageServerLoad;

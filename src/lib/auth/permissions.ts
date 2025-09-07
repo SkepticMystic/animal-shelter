@@ -28,3 +28,5 @@ export const AccessControl = {
     }),
   } satisfies Record<IAccessControl.RoleId, ReturnType<typeof ac.newRole>>,
 };
+
+// TODO: Org-level access control (in its own file)

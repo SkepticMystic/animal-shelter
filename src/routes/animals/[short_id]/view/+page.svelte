@@ -2,4 +2,4 @@
   let { data } = $props();
 </script>
 
-<pre>{JSON.stringify(data.task, null, 2)}</pre>
+<pre>{JSON.stringify(data.animal, null, 2)}</pre>

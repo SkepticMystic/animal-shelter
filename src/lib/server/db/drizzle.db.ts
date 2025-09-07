@@ -1,6 +1,7 @@
 import { DATABASE_URL } from "$env/static/private";
 import { neon } from "@neondatabase/serverless";
 import { drizzle } from "drizzle-orm/neon-http";
+import { AnimalTable } from "./schema/animal.model";
 import {
   AccountTable,
   InvitationTable,
@@ -10,8 +11,8 @@ import {
   SessionTable,
   UserTable,
   VerificationTable,
-} from "./schema/auth.models";
-import { TaskTable } from "./schema/task.models";
+} from "./schema/auth.model";
+import { TaskTable } from "./schema/task.model";
 
 if (!DATABASE_URL) throw new Error("DATABASE_URL is not set");
 
@@ -31,5 +32,7 @@ export const db = drizzle(client, {
     passkey: PasskeyTable,
 
     task: TaskTable,
+
+    animal: AnimalTable,
   },
 });

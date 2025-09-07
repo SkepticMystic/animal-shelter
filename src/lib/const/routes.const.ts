@@ -15,4 +15,6 @@ export const ROUTES = {
 
   PROFILE: "/profile",
   ORGANIZATION: "/organization",
+
+  ANIMALS: "/animals",
 } satisfies Record<string, Pathname>;
