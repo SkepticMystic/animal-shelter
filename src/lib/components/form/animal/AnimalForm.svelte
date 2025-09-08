@@ -6,32 +6,32 @@
   import SingleSelect from "$lib/components/ui/select/SingleSelect.svelte";
   import Textarea from "$lib/components/ui/textarea/textarea.svelte";
   import { ANIMALS } from "$lib/const/animal.const";
-  import { AnimalSchema } from "$lib/schema/animal.schema";
-  import type { Animal } from "$lib/server/db/schema/animal.model";
+  import type {
+    Animal,
+    AnimalSchema,
+  } from "$lib/server/db/schema/animal.model";
   import { make_super_form, type APIResult } from "$lib/utils/form.util";
-  import { type Infer, type SuperValidated } from "sveltekit-superforms";
-  import { zod4Client } from "sveltekit-superforms/adapters";
+  import type { SuperValidated } from "sveltekit-superforms";
   import FormControl from "../controls/FormControl.svelte";
   import FormMessage from "../FormMessage.svelte";
 
-  const schema = AnimalSchema.insert;
-  type Out = Infer<typeof schema, "zod4">;
+  type In = AnimalSchema.Insert;
+  type Out = Animal;
 
   let {
     submit,
     on_success,
     form_input,
   }: {
-    form_input: SuperValidated<Out>;
+    form_input: SuperValidated<In>;
 
-    on_success?: (animal: Animal) => void;
-    submit: (data: Out) => Promise<APIResult<Animal>>;
+    on_success?: (animal: Out) => void;
+    submit: (data: In) => Promise<APIResult<Out>>;
   } = $props();
 
   const form = make_super_form(form_input, {
     submit,
     on_success,
-    validators: zod4Client(schema),
   });
 
   const { form: form_data } = form;

@@ -1,4 +1,4 @@
-import { AnimalSchema } from "$lib/schema/animal.schema";
+import { AnimalSchema } from "$lib/server/db/schema/animal.model";
 import { superValidate } from "sveltekit-superforms";
 import { zod4 } from "sveltekit-superforms/adapters";
 import type { PageServerLoad } from "./$types";

@@ -3,15 +3,15 @@
     Root as Button,
     type ButtonProps,
   } from "$lib/components/ui/button/index.js";
+  import type { FsSuperForm } from "formsnap";
   import type { Readable } from "svelte/store";
-  import type { SuperForm } from "sveltekit-superforms";
 
   let {
     form,
     ref = $bindable(null),
     ...button
   }: Omit<ButtonProps, "form"> & {
-    form: SuperForm<T, M> & { pending?: Readable<boolean> };
+    form: FsSuperForm<T, M> & { pending?: Readable<boolean> };
   } = $props();
 
   let { submitting, pending, delayed } = form;

@@ -9,5 +9,5 @@
 <AnimalForm
   form_input={data.form_input}
   on_success={() => invalidateAll()}
-  submit={(patch) => AnimalClient.patch(data.animal.id, patch)}
+  submit={(update) => AnimalClient.update(data.animal.id, update)}
 />

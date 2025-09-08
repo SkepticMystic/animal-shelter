@@ -18,24 +18,18 @@ export const get_invitations = query(
   }),
   async (input) => {
     const session = await get_session();
+    if (!session || !session.session.org_id) {
+      return err({ message: "Unauthorized", status: 401 });
+    }
 
     const invitations = await db.query.invitation.findMany({
       where: (invitation, { eq, and }) =>
         and(
-          eq(invitation.organizationId, session.session.org_id),
+          eq(invitation.organizationId, session.session.org_id!),
           input.status ? eq(invitation.status, input.status) : undefined,
         ),
 
       orderBy: (invitation, { desc }) => [desc(invitation.createdAt)],
-
-      columns: {
-        id: true,
-        status: true,
-        email: true,
-        expiresAt: true,
-        role: true,
-        createdAt: true,
-      },
     });
 
     return invitations;

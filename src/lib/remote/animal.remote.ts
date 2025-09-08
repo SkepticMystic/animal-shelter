@@ -1,8 +1,11 @@
 import { command, query } from "$app/server";
 import { safe_get_session } from "$lib/auth/server";
-import { AnimalSchema } from "$lib/schema/animal.schema";
 import { db } from "$lib/server/db/drizzle.db";
-import { AnimalTable, type Animal } from "$lib/server/db/schema/animal.model";
+import {
+  AnimalSchema,
+  AnimalTable,
+  type Animal,
+} from "$lib/server/db/schema/animal.model";
 import type { APIResult } from "$lib/utils/form.util";
 import { err, suc } from "$lib/utils/result.util";
 import { and, eq } from "drizzle-orm";
@@ -31,7 +34,7 @@ export const create_animal_remote = command(
   AnimalSchema.insert,
 
   async (input): Promise<APIResult<Animal>> => {
-    const session = await safe_get_session();
+    const [session] = await Promise.all([safe_get_session()]);
     if (!session || !session.session.org_id) {
       return err({ message: "Unauthorized", status: 401 });
     }
@@ -48,21 +51,21 @@ export const create_animal_remote = command(
   },
 );
 
-export const patch_animal_remote = command(
+export const update_animal_remote = command(
   z.object({
     id: z.uuid(),
-    patch: AnimalSchema.insert.partial(),
+    update: AnimalSchema.update,
   }),
 
   async (input): Promise<APIResult<Animal>> => {
-    const session = await safe_get_session();
+    const [session] = await Promise.all([safe_get_session()]);
     if (!session || !session.session.org_id || !session.session.member_id) {
       return err({ message: "Unauthorized", status: 401 });
     }
 
     const [animal] = await db
       .update(AnimalTable)
-      .set(input.patch)
+      .set(input.update)
       .where(
         and(
           eq(AnimalTable.id, input.id),
@@ -73,8 +76,8 @@ export const patch_animal_remote = command(
 
     if (!animal) {
       return err({ message: "Animal not found", status: 404 });
+    } else {
+      return suc(animal);
     }
-
-    return suc(animal);
   },
 );

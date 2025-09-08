@@ -1,6 +1,6 @@
 import { get_session } from "$lib/auth/server";
-import { AnimalSchema } from "$lib/schema/animal.schema";
 import { db } from "$lib/server/db/drizzle.db";
+import { AnimalSchema } from "$lib/server/db/schema/animal.model";
 import { error } from "@sveltejs/kit";
 import { superValidate } from "sveltekit-superforms";
 import { zod4 } from "sveltekit-superforms/adapters";

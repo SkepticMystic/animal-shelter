@@ -1,3 +1,5 @@
+import { TIME } from "$lib/const/time";
+import { Dates } from "$lib/utils/dates";
 import {
   index,
   pgEnum,
@@ -7,6 +9,8 @@ import {
   uuid,
   varchar,
 } from "drizzle-orm/pg-core";
+import { createInsertSchema, createUpdateSchema } from "drizzle-zod";
+import type z from "zod";
 import { ANIMALS } from "../../../const/animal.const";
 import { Schema } from "../../../server/db/schema/index.schema";
 import { OrganizationTable } from "./auth.model";
@@ -41,13 +45,26 @@ export const AnimalTable = pgTable(
 
 export type Animal = typeof AnimalTable.$inferSelect;
 
-// const insert_animal_schema = createInsertSchema(AnimalTable, {
-//   bio: (s) => s.max(1000),
+const refinements = {
+  name: (s: z.ZodString) => s.min(2).max(255),
+  bio: (s: z.ZodString) => s.max(1000),
+  date_of_birth: (s: z.ZodDate) =>
+    s //
+      .min(Dates.add_ms(-65 * TIME.YEAR)) //
+      .max(new Date()),
+};
 
-//   date_of_birth: (s) =>
-//     s //
-//       .min(Dates.add_ms(-30 * TIME.YEAR)) //
-//       .max(new Date()),
-// });
+const pick = {
+  bio: true,
+  name: true,
+  species: true,
+  date_of_birth: true,
+} satisfies Partial<Record<keyof Animal, true>>;
 
-// type InsertAnimal = z.infer<typeof insert_animal_schema>;
+export namespace AnimalSchema {
+  export const insert = createInsertSchema(AnimalTable, refinements).pick(pick);
+  export const update = createUpdateSchema(AnimalTable, refinements).pick(pick);
+
+  export type Insert = z.infer<typeof insert>;
+  export type Update = z.infer<typeof update>;
+}
