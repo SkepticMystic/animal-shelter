@@ -13,7 +13,7 @@
 
   let { data } = $props();
 
-  let members = $state(data.organization?.members);
+  let members = $state(data.organization?.members ?? []);
   const invitations = get_invitations_remote({});
 </script>
 
@@ -62,39 +62,43 @@
     {/if}
   </div>
 
-  {#if members}
+  {#if data.organization}
     <div class="space-y-3">
       <h2>Members</h2>
       <OrganizationMembersList bind:members />
     </div>
-  {/if}
 
-  <div class="space-y-3">
-    <div class="flex items-center justify-between">
-      <h2>Invites</h2>
+    <div class="space-y-3">
+      <div class="flex items-center justify-between">
+        <h2>Invites</h2>
 
-      <Dialog
-        variant="outline"
-        title="Invite Member"
-        description="Invite a new member to your organization"
-      >
-        {#snippet trigger()}
-          <Icon icon="lucide/user-plus" /> Invite Member
-        {/snippet}
+        <Dialog
+          variant="outline"
+          title="Invite Member"
+          description="Invite a new member to your organization"
+        >
+          {#snippet trigger()}
+            <Icon icon="lucide/user-plus" /> Invite Member
+          {/snippet}
 
-        {#snippet content({ close })}
-          <InviteOrganizationMemberForm
-            form_input={data.member_invite_form_input}
-            on_success={(_invitation) => close()}
+          {#snippet content({ close })}
+            <InviteOrganizationMemberForm
+              form_input={data.member_invite_form_input}
+              on_success={(_invitation) => close()}
+            />
+          {/snippet}
+        </Dialog>
+      </div>
+
+      {#if invitations.ready}
+        {#if invitations.current.ok}
+          <OrganizationInvitationsTable
+            invitations={invitations.current.data}
           />
-        {/snippet}
-      </Dialog>
+        {/if}
+      {:else}
+        <Loading loading title="Fetching invitations..." />
+      {/if}
     </div>
-
-    {#if invitations.ready && invitations.current.ok}
-      <OrganizationInvitationsTable invitations={invitations.current.data} />
-    {:else}
-      <Loading loading title="Fetching invitations..." />
-    {/if}
-  </div>
+  {/if}
 </div>

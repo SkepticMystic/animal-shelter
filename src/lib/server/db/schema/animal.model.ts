@@ -15,6 +15,7 @@ import { TIME } from "../../../const/time";
 import { Schema } from "../../../server/db/schema/index.schema";
 import { Dates } from "../../../utils/dates";
 import { OrganizationTable } from "./auth.model";
+import { ImageTable } from "./image.model";
 
 export const animal_species_enum = pgEnum(
   "animal_species",
@@ -27,7 +28,7 @@ export const animal_species_enum = pgEnum(
 export const AnimalTable = pgTable(
   "animal",
   {
-    id: uuid().primaryKey().defaultRandom(),
+    ...Schema.id(),
     ...Schema.short_id(),
 
     bio: text().default(""),
@@ -35,7 +36,7 @@ export const AnimalTable = pgTable(
     species: animal_species_enum().notNull(),
     date_of_birth: timestamp({ mode: "date" }),
 
-    org_id: varchar()
+    org_id: uuid()
       .notNull()
       .references(() => OrganizationTable.id, { onDelete: "cascade" }),
 
@@ -44,11 +45,13 @@ export const AnimalTable = pgTable(
   (table) => [index("idx_animal_org_id").on(table["org_id"])],
 );
 
-export const animal_relations = relations(AnimalTable, ({ one }) => ({
+export const animal_relations = relations(AnimalTable, ({ one, many }) => ({
   shelter: one(OrganizationTable, {
     fields: [AnimalTable.org_id],
     references: [OrganizationTable.id],
   }),
+
+  images: many(ImageTable),
 }));
 
 export type Animal = typeof AnimalTable.$inferSelect;

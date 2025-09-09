@@ -1,9 +1,13 @@
 import { randomUUID } from "crypto";
-import { timestamp, varchar } from "drizzle-orm/pg-core";
+import { timestamp, uuid, varchar } from "drizzle-orm/pg-core";
 
 const SHORT_ID_LENGTH = 8;
 
 export const Schema = {
+  id: () => ({
+    id: uuid().primaryKey().defaultRandom(),
+  }),
+
   // CURSED: Adding the .unique constraint here causes drizzle to use the same constraint name for all tables that use short_id
   // So we wrap it in a function to create a new instance each time
   short_id: () => ({

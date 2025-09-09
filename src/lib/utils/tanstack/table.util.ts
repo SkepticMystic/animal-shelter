@@ -2,7 +2,15 @@ import Checkbox from "$lib/components/ui/checkbox/checkbox.svelte";
 import { renderComponent } from "$lib/components/ui/data-table";
 import DataTableColumnHeaderDropdownMenu from "$lib/components/ui/data-table/data-table-column-header-dropdown-menu.svelte";
 import DataTableRowActions from "$lib/components/ui/data-table/data-table-row-actions.svelte";
-import type { Column, ColumnDef } from "@tanstack/table-core";
+import { getLocalTimeZone } from "@internationalized/date";
+import type {
+  Column,
+  ColumnDef,
+  FilterFn,
+  Row,
+  RowData,
+} from "@tanstack/table-core";
+import type { DateRange } from "bits-ui";
 import type { ComponentProps } from "svelte";
 import type { Item } from "../items.util";
 
@@ -75,7 +83,26 @@ const make_columns = <TData extends Item>(input: {
   return columns;
 };
 
+const filter_fns = {
+  // SOURCE: https://tanstack.com/table/latest/docs/guide/column-filtering#custom-filter-functions
+  date_range: (<TData extends RowData>(
+    row: Row<TData>,
+    column_id: string,
+    filter: DateRange | undefined,
+  ) => {
+    if (!filter || !filter.start || !filter.end) return true;
+
+    const value = row.getValue<Date | null | undefined>(column_id);
+    if (!value) return false;
+
+    const tz = getLocalTimeZone();
+
+    return value >= filter.start.toDate(tz) && value <= filter.end.toDate(tz);
+  }) satisfies FilterFn<RowData>,
+};
+
 export const TanstackTable = {
+  filter_fns,
   make_columns,
   get_column_label,
 };

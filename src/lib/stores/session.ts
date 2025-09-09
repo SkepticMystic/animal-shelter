@@ -7,3 +7,5 @@ export const user = derived(
   session,
   ($session) => $session?.data?.user ?? null,
 );
+
+export const member = BetterAuthClient.useActiveMember();

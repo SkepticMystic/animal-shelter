@@ -49,6 +49,7 @@
       <RangeCalendar
         bind:value
         numberOfMonths={2}
+        captionLayout="dropdown"
         onStartValueChange={(v) => (startValue = v)}
       />
     </Popover.Content>

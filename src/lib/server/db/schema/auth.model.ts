@@ -8,6 +8,7 @@ import {
   pgTable,
   text,
   timestamp,
+  uuid,
   varchar,
 } from "drizzle-orm/pg-core";
 import { createInsertSchema, createUpdateSchema } from "drizzle-zod";
@@ -22,7 +23,7 @@ export const user_role_enum = pgEnum("user_role", ADMIN.ROLES.IDS);
 
 // Define User table schema
 export const UserTable = pgTable("user", {
-  id: varchar().primaryKey(),
+  ...Schema.id(),
 
   // NOTE: BetterAuth defaults name to ''
   name: varchar({ length: 255 }).notNull().default(""),
@@ -60,8 +61,9 @@ export const session_member_role_enum = pgEnum(
 export const SessionTable = pgTable(
   "session",
   {
-    id: varchar().primaryKey(),
-    userId: varchar()
+    ...Schema.id(),
+
+    userId: uuid()
       .notNull()
       .references(() => UserTable.id, { onDelete: "cascade" }),
 
@@ -71,17 +73,17 @@ export const SessionTable = pgTable(
     userAgent: varchar({ length: 2048 }),
 
     // Admin
-    impersonatedBy: varchar().references(() => UserTable.id, {
+    impersonatedBy: uuid().references(() => UserTable.id, {
       onDelete: "set null",
     }),
 
     // Organization
-    member_id: varchar().references(() => MemberTable.id, {
+    member_id: uuid().references(() => MemberTable.id, {
       onDelete: "set null",
     }),
     member_role: session_member_role_enum(),
 
-    activeOrganizationId: varchar().references(() => OrganizationTable.id, {
+    activeOrganizationId: uuid().references(() => OrganizationTable.id, {
       onDelete: "set null",
     }),
 
@@ -107,8 +109,9 @@ export const provider_id_enum = pgEnum("provider_id", AUTH.PROVIDERS.IDS);
 export const AccountTable = pgTable(
   "account",
   {
-    id: varchar().primaryKey(),
-    userId: varchar()
+    ...Schema.id(),
+
+    userId: uuid()
       .notNull()
       .references(() => UserTable.id, { onDelete: "cascade" }),
 
@@ -142,7 +145,8 @@ export const account_relations = relations(AccountTable, ({ one }) => ({
 }));
 
 export const OrganizationTable = pgTable("organization", {
-  id: varchar().primaryKey(),
+  ...Schema.id(),
+
   // TODO: I guess we don't need a short_id _and_ a slug
   ...Schema.short_id(),
 
@@ -208,13 +212,13 @@ export const member_role_enum = pgEnum("member_role", ORGANIZATION.ROLES.IDS);
 export const MemberTable = pgTable(
   "member",
   {
-    id: varchar().primaryKey(),
+    ...Schema.id(),
 
-    userId: varchar()
+    userId: uuid()
       .notNull()
       .references(() => UserTable.id, { onDelete: "cascade" }),
 
-    organizationId: varchar()
+    organizationId: uuid()
       .notNull()
       .references(() => OrganizationTable.id, { onDelete: "cascade" }),
 
@@ -245,10 +249,10 @@ export const member_relations = relations(MemberTable, ({ one }) => ({
 export const PasskeyTable = pgTable(
   "passkey",
   {
-    id: varchar().primaryKey(),
+    ...Schema.id(),
 
     name: varchar({ length: 255 }),
-    userId: varchar()
+    userId: uuid()
       .notNull()
       .references(() => UserTable.id, { onDelete: "cascade" }),
 
@@ -283,13 +287,14 @@ export const invitation_status_enum = pgEnum(
 export const InvitationTable = pgTable(
   "invitation",
   {
-    id: varchar().primaryKey(),
+    ...Schema.id(),
+
     email: varchar({ length: 255 }).notNull(),
 
-    inviterId: varchar()
+    inviterId: uuid()
       .notNull()
       .references(() => UserTable.id, { onDelete: "cascade" }),
-    organizationId: varchar()
+    organizationId: uuid()
       .notNull()
       .references(() => OrganizationTable.id, { onDelete: "cascade" }),
 
@@ -320,7 +325,8 @@ export const invitation_relations = relations(InvitationTable, ({ one }) => ({
 }));
 
 export const VerificationTable = pgTable("verification", {
-  id: varchar().primaryKey(),
+  ...Schema.id(),
+
   identifier: varchar({ length: 255 }).notNull().unique(),
   value: varchar({ length: 2048 }).notNull(),
 

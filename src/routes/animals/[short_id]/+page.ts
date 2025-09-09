@@ -6,6 +6,7 @@ export const load = (async ({ data }) => {
     ...data,
     seo: {
       desc: data.animal.bio,
+      image: data.animal.images.at(0)?.url,
       title: `${ANIMALS.SPECIES.MAP[data.animal.species]?.label ?? data.animal.species}: ${data.animal.name}`,
     } satisfies App.PageData["seo"],
   };

@@ -3,6 +3,7 @@ import { neon } from "@neondatabase/serverless";
 import { drizzle } from "drizzle-orm/neon-http";
 import * as AnimalModel from "./schema/animal.model";
 import * as AuthModels from "./schema/auth.model";
+import * as ImageModel from "./schema/image.model";
 import * as TaskModel from "./schema/task.model";
 
 if (!DATABASE_URL) throw new Error("DATABASE_URL is not set");
@@ -23,6 +24,7 @@ const {
 
 const { TaskTable, ...task_rest } = TaskModel;
 const { AnimalTable, ...animal_rest } = AnimalModel;
+const { ImageTable, ...image_rest } = ImageModel;
 
 export const db = drizzle(client, {
   casing: "snake_case",
@@ -43,5 +45,8 @@ export const db = drizzle(client, {
 
     animal: AnimalTable,
     ...animal_rest,
+
+    image: ImageTable,
+    ...image_rest,
   },
 });

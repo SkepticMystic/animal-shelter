@@ -11,7 +11,7 @@
     value={$session.data.session.activeOrganizationId}
     options={$organizations.data.map((org) => ({
       value: org.id,
-      label: "Shelter: " + org.name,
+      label: org.name,
     })) ?? []}
   />
 {/if}

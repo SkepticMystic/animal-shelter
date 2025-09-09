@@ -59,6 +59,7 @@
           <SingleSelect
             {...props}
             required
+            class="w-full"
             placeholder="Select species"
             options={ANIMALS.SPECIES.OPTIONS}
             bind:value={$form_data.species}
@@ -74,7 +75,11 @@
     >
       <FormControl label="Date of birth">
         {#snippet children({ props })}
-          <DatePicker {...props} bind:value={$form_data.date_of_birth} />
+          <DatePicker
+            {...props}
+            class="w-full"
+            bind:value={$form_data.date_of_birth}
+          />
         {/snippet}
       </FormControl>
     </FormField>

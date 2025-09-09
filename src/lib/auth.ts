@@ -96,6 +96,14 @@ export const auth = Effect.runSync(
         },
       },
 
+      advanced: {
+        database: {
+          // NOTE: Let drizzle generate IDs, as BetterAuth's nanoid causes issues
+          // We want UUIDs everywhere, so that the image table can reference resource_id in a generic way
+          generateId: false,
+        },
+      },
+
       database: drizzleAdapter(db, {
         provider: "pg",
         debugLogs: false,

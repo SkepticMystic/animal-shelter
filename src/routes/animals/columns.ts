@@ -1,14 +1,15 @@
 import { resolve } from "$app/paths";
+import { AccessClient } from "$lib/clients/access_control.client";
 import { AnimalClient } from "$lib/clients/animal.client";
+import AnimalLink from "$lib/components/links/AnimalLink.svelte";
 import ShelterLink from "$lib/components/links/ShelterLink.svelte";
 import Time from "$lib/components/Time.svelte";
 import { renderComponent } from "$lib/components/ui/data-table";
 import { ANIMALS } from "$lib/const/animal.const";
 import { ROUTES } from "$lib/const/routes.const";
 import type { get_animals_remote } from "$lib/remote/animal.remote";
+import type { Organization } from "$lib/server/db/schema/auth.model";
 import { TanstackTable } from "$lib/utils/tanstack/table.util";
-import { getLocalTimeZone } from "@internationalized/date";
-import type { DateRange } from "bits-ui";
 
 type TData = Awaited<ReturnType<typeof get_animals_remote>>[number];
 
@@ -17,10 +18,13 @@ export const columns = TanstackTable.make_columns<TData>({
     {
       accessorKey: "name",
       meta: { label: "Name" },
+
+      cell: ({ row }) => renderComponent(AnimalLink, { animal: row.original }),
     },
     {
       accessorKey: "species",
       meta: { label: "Species" },
+      filterFn: "arrIncludesSome",
 
       cell: ({ row }) => ANIMALS.SPECIES.MAP[row.original.species].label,
     },
@@ -28,24 +32,10 @@ export const columns = TanstackTable.make_columns<TData>({
       accessorKey: "date_of_birth",
       meta: { label: "Birthday" },
 
-      // SOURCE: https://tanstack.com/table/latest/docs/guide/column-filtering#custom-filter-functions
-      filterFn: (row, column_id, filter: DateRange | undefined) => {
-        if (!filter || !filter.start || !filter.end) return true;
-
-        const date_of_birth = row.getValue<TData["date_of_birth"]>(column_id);
-        if (!date_of_birth) return false;
-
-        return (
-          date_of_birth >= filter.start.toDate(getLocalTimeZone()) &&
-          date_of_birth <= filter.end.toDate(getLocalTimeZone())
-        );
-      },
+      filterFn: TanstackTable.filter_fns.date_range,
 
       cell: ({ row }) =>
-        renderComponent(Time, {
-          show: "date",
-          date: row.original.date_of_birth,
-        }),
+        renderComponent(Time, { date: row.original.date_of_birth }),
     },
     {
       accessorKey: "createdAt",
@@ -56,13 +46,24 @@ export const columns = TanstackTable.make_columns<TData>({
     },
 
     {
-      accessorKey: "organization",
+      // NOTE: It is possible to just use "shelter.slug"
+      // But then we don't have the name available for the facet selector
+      accessorKey: "shelter",
       meta: { label: "Shelter" },
 
+      filterFn: (row, id, filterValue) => {
+        if (!filterValue || filterValue.length === 0) {
+          return true;
+        }
+
+        const shelter = row.getValue<Organization>(id);
+        if (!shelter) return false;
+
+        return filterValue.includes(shelter.slug);
+      },
+
       cell: ({ row }) =>
-        renderComponent(ShelterLink, {
-          shelter: row.original.shelter,
-        }),
+        renderComponent(ShelterLink, { shelter: row.original.shelter }),
     },
   ],
 
@@ -78,13 +79,16 @@ export const columns = TanstackTable.make_columns<TData>({
       kind: "item",
       icon: "lucide/pencil",
       title: "Edit animal",
-      // TODO: hide: true if no permission
+
+      hide: () => !AccessClient.member({ animal: ["update"] }),
       href: (row) => resolve(ROUTES.ANIMALS_EDIT, row.original),
     },
     {
       kind: "item",
       title: "Delete animal",
       icon: "lucide/trash-2",
+
+      hide: () => !AccessClient.member({ animal: ["delete"] }),
       onselect: (row) => AnimalClient.delete(row.original.id),
     },
   ],

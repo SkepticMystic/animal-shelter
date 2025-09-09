@@ -57,6 +57,7 @@ export declare namespace IOrganization {
 
 const statement = {
   ...defaultStatements,
+  image: ["create", "update", "delete"],
   animal: ["create", "update", "delete"],
 } as const;
 
@@ -67,16 +68,19 @@ export const OrganizationAccessControl = {
   roles: {
     member: ac.newRole({
       ...memberAc.statements,
+      image: ["create"],
       animal: ["create"],
     }),
 
     admin: ac.newRole({
       ...adminAc.statements,
+      image: ["create", "update", "delete"],
       animal: ["create", "update", "delete"],
     }),
 
     owner: ac.newRole({
       ...ownerAc.statements,
+      image: ["create", "update", "delete"],
       animal: ["create", "update", "delete"],
     }),
   } satisfies Record<IOrganization.RoleId, ReturnType<typeof ac.newRole>>,

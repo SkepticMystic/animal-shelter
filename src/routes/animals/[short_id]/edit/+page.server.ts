@@ -11,6 +11,11 @@ export const load = (async ({ params }) => {
     get_session(),
     db.query.animal.findFirst({
       where: (animal, { eq }) => eq(animal.short_id, params.short_id),
+
+      with: {
+        shelter: { columns: { id: true, name: true, slug: true } },
+        images: { columns: { id: true, url: true, provider: true } },
+      },
     }),
   ]);
 

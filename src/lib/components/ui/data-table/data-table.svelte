@@ -1,4 +1,4 @@
-<script lang="ts" generics="TData, TValue">
+<script lang="ts" generics="TData extends Item, TValue">
   import Button from "$lib/components/ui/button/button.svelte";
   import {
     createSvelteTable,
@@ -6,13 +6,16 @@
   } from "$lib/components/ui/data-table/index.js";
   import * as ShadTable from "$lib/components/ui/table/index.js";
   import { Format } from "$lib/utils/format.util";
+  import { type Item } from "$lib/utils/items.util";
   import {
-    type ColumnDef,
-    type ColumnFiltersState,
     getCoreRowModel,
+    getFacetedRowModel,
+    getFacetedUniqueValues,
     getFilteredRowModel,
     getPaginationRowModel,
     getSortedRowModel,
+    type ColumnDef,
+    type ColumnFiltersState,
     type PaginationState,
     type RowSelectionState,
     type SortingState,
@@ -25,11 +28,14 @@
   let {
     data,
     columns,
+    faceting,
     states = {},
     filters,
   }: {
     data: TData[];
     columns: ColumnDef<TData, TValue>[];
+
+    faceting?: boolean;
 
     // snippets
     filters?: Snippet<[table: Table<TData>]>;
@@ -72,10 +78,14 @@
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel:
       states.sorting === false ? undefined : getSortedRowModel(),
-    getFilteredRowModel:
-      states.column_filters === false ? undefined : getFilteredRowModel(),
     getPaginationRowModel:
       states.pagination === false ? undefined : getPaginationRowModel(),
+
+    getFilteredRowModel:
+      states.column_filters === false ? undefined : getFilteredRowModel(),
+    getFacetedRowModel: faceting === true ? getFacetedRowModel() : undefined,
+    getFacetedUniqueValues:
+      faceting === true ? getFacetedUniqueValues() : undefined,
 
     state: {
       get sorting() {

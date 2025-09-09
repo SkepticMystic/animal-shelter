@@ -1,17 +1,52 @@
 <script lang="ts">
   import { invalidateAll } from "$app/navigation";
   import { AnimalClient } from "$lib/clients/animal.client.js";
+  import { ImageClient } from "$lib/clients/image.client.js";
+  import BackButton from "$lib/components/buttons/BackButton.svelte";
   import AnimalForm from "$lib/components/form/animal/AnimalForm.svelte";
+  import Image from "$lib/components/images/Image.svelte";
+  import ImageUploader from "$lib/components/images/upload/ImageUploader.svelte";
+  import Button from "$lib/components/ui/button/button.svelte";
+  import { Items } from "$lib/utils/items.util.js";
 
   let { data } = $props();
+
+  // TODO: Can't get reactivity working... for upload or delete
+  let animal = $derived(data.animal);
 </script>
 
-<div class="space-y-3">
-  <h2>Edit {data.animal.name}</h2>
+<div class="space-y-5">
+  <div class="flex items-center gap-2">
+    <BackButton />
+    <h1>Edit {animal.name}</h1>
+  </div>
 
   <AnimalForm
     form_input={data.form_input}
     on_success={() => invalidateAll()}
-    submit={(update) => AnimalClient.update(data.animal.id, update)}
+    submit={(update) => AnimalClient.update(animal.id, update)}
   />
+
+  <ImageUploader resource_id={animal.id} resource_kind="animal" />
+
+  <div class="flex flex-wrap gap-3">
+    {#each animal.images as image}
+      <div class="flex flex-col gap-2">
+        <Image {image} height={100} width={100} />
+        <Button
+          icon="lucide/x"
+          variant="destructive"
+          title="Delete image"
+          onclick={() =>
+            ImageClient.delete(image.id).then((r) => {
+              if (r.ok) {
+                animal.images = Items.remove(animal.images, image.id);
+              }
+            })}
+        >
+          Delete
+        </Button>
+      </div>
+    {/each}
+  </div>
 </div>
