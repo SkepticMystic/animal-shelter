@@ -1,6 +1,7 @@
 <script lang="ts">
   import { page } from "$app/state";
   import { APP } from "$lib/const/app";
+  import { CldOgImage } from "svelte-cloudinary";
 
   let title = $derived(
     page.data.seo?.title ? page.data.seo.title + ` | ${APP.NAME}` : APP.NAME,
@@ -24,4 +25,6 @@
 <meta property="og:description" content={desc} />
 <meta property="twitter:description" content={desc} />
 
-<meta property="og:image" content={page.data.seo?.image ?? APP.LOGO_URL} />
+{#if page.data.seo?.image}
+  <CldOgImage src={page.data.seo.image} alt={title} />
+{/if}
