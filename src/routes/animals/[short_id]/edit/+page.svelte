@@ -7,6 +7,7 @@
   import Image from "$lib/components/images/Image.svelte";
   import ImageUploader from "$lib/components/images/upload/ImageUploader.svelte";
   import Button from "$lib/components/ui/button/button.svelte";
+  import Separator from "$lib/components/ui/separator/separator.svelte";
   import { Items } from "$lib/utils/items.util.js";
 
   let { data } = $props();
@@ -26,6 +27,8 @@
     on_success={() => invalidateAll()}
     submit={(update) => AnimalClient.update(animal.id, update)}
   />
+
+  <Separator />
 
   <ImageUploader resource_id={animal.id} resource_kind="animal" />
 

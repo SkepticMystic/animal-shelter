@@ -37,7 +37,7 @@
   />
 
   <div class="flex gap-1">
-    <Input required type="file" name="file" accept="image/*" class="w-fit" />
+    <Input required type="file" name="file" accept="image/*" class="w-52" />
 
     <Button
       type="submit"

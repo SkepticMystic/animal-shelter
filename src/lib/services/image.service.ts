@@ -1,105 +1,93 @@
-import { CLOUDINARY_API_SECRET } from "$env/static/private";
-import {
-  PUBLIC_CLOUDINARY_API_KEY,
-  PUBLIC_CLOUDINARY_CLOUD_NAME,
-  PUBLIC_CLOUDINARY_UPLOAD_PRESET,
-} from "$env/static/public";
-import type { IImage } from "$lib/const/image.const";
-import type { Result } from "$lib/interfaces";
-import type { Image } from "$lib/server/db/schema/image.model";
+import { db } from "$lib/server/db/drizzle.db";
+import { ImageTable, type Image } from "$lib/server/db/schema/image.model";
+import type { APIResult } from "$lib/utils/form.util";
 import { err, suc } from "$lib/utils/result.util";
-import { v2 as cloudinary, type UploadApiResponse } from "cloudinary";
-import { Context, Effect } from "effect";
+import { and, eq } from "drizzle-orm";
+import { Effect } from "effect";
+import { ImageHostLive } from "./image_hosting.service";
 
-export type UploadImageOptions = {
-  file: File;
+export const ImageService = {
+  upload: async (
+    file: File,
+    input: Pick<Image, "resource_id" | "resource_kind" | "org_id">,
+  ) => {
+    const resource = await db.query[input.resource_kind].findFirst({
+      columns: { id: true },
+
+      where: (res, { eq, and }) =>
+        and(
+          eq(res.org_id, input.org_id), //
+          eq(res.id, input.resource_id),
+        ),
+    });
+    if (!resource) {
+      return err({ message: "Referenced resource not found", status: 404 });
+    }
+
+    const upload = await Effect.runPromise(ImageHostLive.upload({ file }));
+    console.log("Image upload result:", upload);
+    if (!upload.ok) {
+      return upload;
+    }
+
+    try {
+      const [image] = await db
+        .insert(ImageTable)
+        .values({
+          url: upload.data.url,
+          org_id: input.org_id,
+          resource_id: input.resource_id,
+          resource_kind: input.resource_kind,
+          provider: ImageHostLive.provider,
+          external_id: upload.data.external_id,
+        })
+        .returning();
+
+      return suc(image);
+    } catch (error) {
+      console.error("Database insertion error:", error);
+      // Attempt to clean up the uploaded image if DB insertion fails
+
+      return err({ message: "Failed to save image record" });
+    }
+  },
+
+  delete: async (
+    input: Partial<Pick<Image, "id" | "resource_id" | "resource_kind">> & {
+      org_id: string;
+    },
+  ): Promise<APIResult<null>> => {
+    const where = and(
+      eq(ImageTable.org_id, input.org_id),
+
+      input.id //
+        ? eq(ImageTable.id, input.id)
+        : undefined,
+      input.resource_id
+        ? eq(ImageTable.resource_id, input.resource_id)
+        : undefined,
+      input.resource_kind
+        ? eq(ImageTable.resource_kind, input.resource_kind)
+        : undefined,
+    );
+
+    const images = await db.query.image.findMany({
+      where,
+      columns: { external_id: true, org_id: true },
+    });
+
+    if (images.length === 0) {
+      return err({ message: "Image(s) not found", status: 404 });
+    }
+
+    await Promise.all([
+      db.delete(ImageTable).where(where),
+
+      ...images.map((image) =>
+        Effect.runPromise(ImageHostLive.delete(image.external_id)),
+      ),
+    ]);
+
+    return suc(null);
+  },
 };
-
-export class ImageService extends Context.Tag("ImageService")<
-  ImageService,
-  {
-    readonly provider: IImage.ProviderId;
-
-    readonly upload: (
-      input: UploadImageOptions,
-    ) => Effect.Effect<
-      Result<Pick<Image, "url" | "external_id">, { message: string }>
-    >;
-
-    readonly delete: (
-      external_id: string,
-    ) => Effect.Effect<Result<null, { message: string }>>;
-  }
->() {}
-
-cloudinary.config({
-  api_secret: CLOUDINARY_API_SECRET,
-  api_key: PUBLIC_CLOUDINARY_API_KEY,
-  cloud_name: PUBLIC_CLOUDINARY_CLOUD_NAME,
-});
-
-const of_cloudinary: Context.Tag.Service<ImageService> = {
-  provider: "cloudinary",
-
-  upload: ({ file }) =>
-    Effect.tryPromise({
-      try: async () => {
-        const array_buffer = await file.arrayBuffer();
-        const buffer = Buffer.from(array_buffer);
-
-        const res: UploadApiResponse | undefined = await new Promise(
-          (resolve, reject) => {
-            cloudinary.uploader
-              .upload_stream(
-                {
-                  resource_type: "image",
-                  upload_preset: PUBLIC_CLOUDINARY_UPLOAD_PRESET,
-                },
-                (error, result) => (error ? reject(error) : resolve(result)),
-              )
-              .end(buffer);
-          },
-        );
-
-        console.log("Upload result:", res);
-        if (!res) {
-          return err({ message: "No response from Cloudinary" });
-        } else {
-          return suc({
-            url: res.secure_url,
-            external_id: res.public_id,
-          });
-        }
-      },
-
-      catch: (error) => {
-        console.error("Failed to upload image:", error);
-
-        return err({ message: "Failed to upload image" });
-      },
-    }) //
-      .pipe(Effect.catchAll((e) => Effect.succeed(e))),
-
-  delete: (external_id) =>
-    Effect.tryPromise({
-      try: async () => {
-        const res = await cloudinary.uploader
-          .destroy(external_id, { resource_type: "image" })
-          .then((result) => {
-            if (result?.result !== "ok" && result?.result !== "not found") {
-              return Promise.reject(result);
-            }
-          });
-
-        return suc(null);
-      },
-
-      catch: (error) => {
-        console.error("Failed to delete image:", error);
-        return err({ message: "Failed to delete image" });
-      },
-    }) //
-      .pipe(Effect.catchAll((e) => Effect.succeed(e))),
-};
-
-export const ImageLive = ImageService.of(of_cloudinary);
