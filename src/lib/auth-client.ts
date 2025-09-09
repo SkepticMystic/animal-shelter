@@ -5,16 +5,18 @@ import {
   passkeyClient,
 } from "better-auth/client/plugins";
 import { createAuthClient } from "better-auth/svelte";
-import { AccessControl } from "./auth/permissions";
+import { AdminAccessControl } from "./const/admin.const";
+import { OrganizationAccessControl } from "./const/organization.const";
 
 export const BetterAuthClient = createAuthClient({
   plugins: [
     passkeyClient(),
-    organizationClient(),
     genericOAuthClient(),
+    organizationClient({
+      ...OrganizationAccessControl,
+    }),
     adminClient({
-      ac: AccessControl.ac,
-      roles: AccessControl.roles,
+      ...AdminAccessControl,
     }),
   ],
 });

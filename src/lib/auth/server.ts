@@ -1,11 +1,11 @@
 import { getRequestEvent } from "$app/server";
 import { auth } from "$lib/auth";
 import { BetterAuthClient } from "$lib/auth-client";
-import type { IAccessControl } from "$lib/const/access_control.const";
+import type { IAdmin } from "$lib/const/admin.const";
+import type { IOrganization } from "$lib/const/organization.const";
 import { ROUTES } from "$lib/const/routes.const";
 import { App } from "$lib/utils/app";
 import { Log } from "$lib/utils/logger.util";
-import { Url } from "$lib/utils/urls";
 import { error, redirect } from "@sveltejs/kit";
 
 type Options = {
@@ -14,8 +14,12 @@ type Options = {
 
   email_verified?: boolean;
 
-  permissions?: Parameters<
+  user_permissions?: Parameters<
     typeof BetterAuthClient.admin.checkRolePermission
+  >[0]["permissions"];
+
+  member_permissions?: Parameters<
+    typeof BetterAuthClient.organization.checkRolePermission
   >[0]["permissions"];
 };
 
@@ -30,22 +34,31 @@ export const get_session = async (options?: Options) => {
     ...(options ?? {}),
   };
 
-  const redirect_uri = Url.strip_origin(new URL(event.url));
-
   const session = await auth.api.getSession({
     headers: event.request.headers,
   });
 
   if (!session) {
-    redirect(302, App.url(ROUTES.AUTH_SIGNIN, { redirect_uri }));
+    redirect(302, App.url(ROUTES.AUTH_SIGNIN));
   } else if (resolved.email_verified && !session.user.emailVerified) {
-    redirect(302, App.url(ROUTES.AUTH_VERIFY_EMAIL, { redirect_uri }));
+    redirect(302, App.url(ROUTES.AUTH_VERIFY_EMAIL));
   } else if (resolved.admin && session.user.role !== "admin") {
     error(403, "Forbidden");
-  } else if (options?.permissions) {
+  } else if (options?.user_permissions) {
     const role_check = BetterAuthClient.admin.checkRolePermission({
-      permissions: options.permissions,
-      role: (session.user.role as IAccessControl.RoleId | undefined) || "user",
+      permissions: options.user_permissions,
+      role: (session.user.role as IAdmin.RoleId | undefined) || "user",
+    });
+
+    if (!role_check) {
+      error(403, "Forbidden");
+    }
+  } else if (options?.member_permissions) {
+    const role_check = await BetterAuthClient.organization.checkRolePermission({
+      permissions: options.member_permissions,
+      role:
+        (session.session.member_role as IOrganization.RoleId | undefined) ||
+        "member",
     });
 
     if (!role_check) {

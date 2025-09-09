@@ -12,6 +12,7 @@
   import Icon from "./ui/icon/Icon.svelte";
   import Button from "./ui/button/button.svelte";
   import ThemeSelector from "./ThemeSelector.svelte";
+  import OrganizationSelector from "./auth/organizations/OrganizationSelector.svelte";
 
   interface Route {
     side: "center" | "right";
@@ -97,6 +98,8 @@
   </div>
 
   <div class="mr-3 flex gap-1">
+    <OrganizationSelector />
+
     <ThemeSelector />
 
     <DropdownMenu.Root>

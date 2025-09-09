@@ -1,11 +1,11 @@
 <script lang="ts">
   import DatePicker from "$lib/components/ui/date-picker/DatePicker.svelte";
   import FormButton from "$lib/components/ui/form/form-button.svelte";
-  import FormField from "$lib/components/ui/form/form-field.svelte";
   import Input from "$lib/components/ui/input/input.svelte";
   import SingleSelect from "$lib/components/ui/select/SingleSelect.svelte";
   import Textarea from "$lib/components/ui/textarea/textarea.svelte";
   import { ANIMALS } from "$lib/const/animal.const";
+  import type { MaybePromise } from "$lib/interfaces";
   import type {
     Animal,
     AnimalSchema,
@@ -13,6 +13,7 @@
   import { make_super_form, type APIResult } from "$lib/utils/form.util";
   import type { SuperValidated } from "sveltekit-superforms";
   import FormControl from "../controls/FormControl.svelte";
+  import FormField from "../fields/FormField.svelte";
   import FormMessage from "../FormMessage.svelte";
 
   type In = AnimalSchema.Insert;
@@ -25,8 +26,8 @@
   }: {
     form_input: SuperValidated<In>;
 
-    on_success?: (animal: Out) => void;
     submit: (data: In) => Promise<APIResult<Out>>;
+    on_success?: (animal: Out) => MaybePromise<void>;
   } = $props();
 
   const form = make_super_form(form_input, {
@@ -38,7 +39,7 @@
 </script>
 
 <form class="flex flex-col gap-2" method="POST" use:form.enhance>
-  <FormField {form} name="name">
+  <FormField {form} name="name" description="The name of the animal">
     <FormControl label="Name">
       {#snippet children({ props })}
         <Input
@@ -52,7 +53,7 @@
   </FormField>
 
   <div class="flex gap-x-2">
-    <FormField {form} name="species">
+    <FormField {form} name="species" description="The species of the animal">
       <FormControl label="Species">
         {#snippet children({ props })}
           <SingleSelect
@@ -66,8 +67,12 @@
       </FormControl>
     </FormField>
 
-    <FormField {form} name="date_of_birth">
-      <FormControl label="Due Date">
+    <FormField
+      {form}
+      name="date_of_birth"
+      description="The date of birth of the animal. Approximate is fine."
+    >
+      <FormControl label="Date of birth">
         {#snippet children({ props })}
           <DatePicker {...props} bind:value={$form_data.date_of_birth} />
         {/snippet}
@@ -75,7 +80,7 @@
     </FormField>
   </div>
 
-  <FormField {form} name="bio">
+  <FormField {form} name="bio" description="A short bio of the animal">
     <FormControl label="Bio">
       {#snippet children({ props })}
         <Textarea {...props} placeholder="Bio" bind:value={$form_data.bio} />
@@ -83,9 +88,7 @@
     </FormControl>
   </FormField>
 
-  <FormButton {form} class="w-full" icon="lucide/plus">
-    Create animal
-  </FormButton>
+  <FormButton {form} class="w-full" icon="lucide/send">Submit</FormButton>
 
   <FormMessage {form} />
 </form>

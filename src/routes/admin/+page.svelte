@@ -1,8 +1,10 @@
 <script lang="ts">
+  import type { ResolvedPathname } from "$app/types";
+
   type Route = {
-    href: string;
     label: string;
     routes?: Route[];
+    href: ResolvedPathname;
   };
 
   const routes: Route[] = [

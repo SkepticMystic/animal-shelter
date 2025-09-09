@@ -27,6 +27,7 @@
 
 ## Conventions & Patterns
 
+- **snake_case**: for DB columns and JS/TS variables
 - **TypeScript-first:** All logic and components use TS
 - **SvelteKit routing:** Use `+page.svelte` and `+page.server.ts` for UI and server logic
 - **Component organization:** UI, icons, forms, actions, etc. are grouped in `src/lib/components/`

@@ -24,10 +24,15 @@ import {
 import { passkey } from "better-auth/plugins/passkey";
 import { sveltekitCookies } from "better-auth/svelte-kit";
 import { Effect } from "effect";
-import { AccessControl } from "./auth/permissions";
+import { BetterAuthClient } from "./auth-client";
+import { AdminAccessControl, type IAdmin } from "./const/admin.const";
 import { APP } from "./const/app";
 import { AUTH, type IAuth } from "./const/auth.const";
 import { EMAIL } from "./const/email";
+import {
+  OrganizationAccessControl,
+  type IOrganization,
+} from "./const/organization.const";
 import { db } from "./server/db/drizzle.db";
 import { redis } from "./server/db/redis.db";
 import {
@@ -82,6 +87,7 @@ export const auth = Effect.runSync(
                 data: {
                   ...session,
                   member_id: org ? org.member_id : null,
+                  member_role: org ? org.member_role : null,
                   activeOrganizationId: org ? org.org_id : null,
                 },
               };
@@ -119,6 +125,11 @@ export const auth = Effect.runSync(
             type: "string",
             defaultValue: null,
             fieldName: "member_id",
+          },
+          member_role: {
+            type: "string",
+            defaultValue: null,
+            fieldName: "member_role",
           },
         },
       },
@@ -174,8 +185,7 @@ export const auth = Effect.runSync(
 
       plugins: [
         admin({
-          ac: AccessControl.ac,
-          roles: AccessControl.roles,
+          ...AdminAccessControl,
         }),
 
         passkey({
@@ -189,10 +199,17 @@ export const auth = Effect.runSync(
         }),
 
         organization({
-          allowUserToCreateOrganization: false,
+          ...OrganizationAccessControl,
+
+          organizationLimit: 5,
+          allowUserToCreateOrganization: (user) =>
+            BetterAuthClient.admin.checkRolePermission({
+              role: user.role as IAdmin.RoleId,
+              permissions: { organization: ["create"] },
+            }),
+
           cancelPendingInvitationsOnReInvite: true,
           requireEmailVerificationOnInvitation: true,
-
           sendInvitationEmail: (data) =>
             Effect.runPromise(email.send(EMAIL.TEMPLATES["org-invite"](data))),
         }),
@@ -262,6 +279,7 @@ const get_member_org = async (
 ): Promise<{
   org_id: string;
   member_id: string;
+  member_role: IOrganization.RoleId;
 } | null> => {
   // NOTE: Order is preserved when logging, so show ctx first
   const log = Log.child({
@@ -275,8 +293,12 @@ const get_member_org = async (
   }
 
   const member = await db.query.member.findFirst({
-    columns: { id: true, organizationId: true },
     where: (member, { eq }) => eq(member.userId, session.userId),
+    columns: {
+      id: true,
+      role: true,
+      organizationId: true,
+    },
   });
   if (!member) {
     return null;
@@ -288,6 +310,7 @@ const get_member_org = async (
   );
   return {
     member_id: member.id,
+    member_role: member.role,
     org_id: member.organizationId,
   };
 };

@@ -1,3 +1,11 @@
+import { createAccessControl } from "better-auth/plugins/access";
+import {
+  adminAc,
+  defaultStatements,
+  memberAc,
+  ownerAc,
+} from "better-auth/plugins/organization/access";
+
 const ROLE_IDS = ["member", "admin", "owner"] as const;
 const ROLE_ID_MAP = {
   member: { label: "Member" },
@@ -46,3 +54,30 @@ export declare namespace IOrganization {
 
   export type InvitationStatus = (typeof INVITATION_STATUS)[number];
 }
+
+const statement = {
+  ...defaultStatements,
+  animal: ["create", "update", "delete"],
+} as const;
+
+const ac = createAccessControl(statement);
+
+export const OrganizationAccessControl = {
+  ac,
+  roles: {
+    member: ac.newRole({
+      ...memberAc.statements,
+      animal: ["create"],
+    }),
+
+    admin: ac.newRole({
+      ...adminAc.statements,
+      animal: ["create", "update", "delete"],
+    }),
+
+    owner: ac.newRole({
+      ...ownerAc.statements,
+      animal: ["create", "update", "delete"],
+    }),
+  } satisfies Record<IOrganization.RoleId, ReturnType<typeof ac.newRole>>,
+};

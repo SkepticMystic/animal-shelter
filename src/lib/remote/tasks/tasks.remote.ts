@@ -3,7 +3,7 @@ import { get_session } from "$lib/auth/server";
 import { TASKS } from "$lib/const/task.const";
 import { TaskSchema } from "$lib/schema/task.schema";
 import { db } from "$lib/server/db/drizzle.db";
-import { TaskTable, type Task } from "$lib/server/db/schema/task.models";
+import { TaskTable, type Task } from "$lib/server/db/schema/task.model";
 import type { APIResult } from "$lib/utils/form.util";
 import { err, suc } from "$lib/utils/result.util";
 import { and, eq } from "drizzle-orm";
@@ -17,12 +17,15 @@ export const get_tasks = query(
   }),
   async (input) => {
     // TODO: Calling redirect in a remote function seems to break svelte
-    const session = await get_session();
+    const { session } = await get_session();
+    if (!session.org_id) {
+      return err({ message: "Forbidden", status: 403 });
+    }
 
     const tasks = await db.query.task.findMany({
       where: (task, { eq, and }) =>
         and(
-          eq(task.org_id, session.session.org_id),
+          eq(task.org_id, session.org_id!),
           input.status ? eq(task.status, input.status) : undefined,
         ),
 
@@ -40,7 +43,9 @@ export const create_task = command(
       get_session(),
       superValidate(data as any, zod4(TaskSchema.create)),
     ]);
-    console.log("create_task.form", form);
+    if (!session.org_id) {
+      return err({ message: "Forbidden", status: 403 });
+    }
 
     if (!form.valid) {
       return err();
@@ -71,12 +76,18 @@ export const delete_task = command(
   z.string().min(1),
   async (task_id): Promise<APIResult<undefined>> => {
     const { session } = await get_session();
+    if (!session.org_id) {
+      return err({ message: "Forbidden", status: 403 });
+    }
 
     try {
       const result = await db
         .delete(TaskTable)
         .where(
-          and(eq(TaskTable.id, task_id), eq(TaskTable.org_id, session.org_id)),
+          and(
+            eq(TaskTable.id, task_id), //
+            eq(TaskTable.org_id, session.org_id!),
+          ),
         )
         .execute();
 

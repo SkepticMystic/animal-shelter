@@ -1,3 +1,4 @@
+import { relations } from "drizzle-orm";
 import {
   boolean,
   index,
@@ -9,12 +10,15 @@ import {
   timestamp,
   varchar,
 } from "drizzle-orm/pg-core";
-import { ACCESS_CONTROL } from "../../../const/access_control.const";
+import { createInsertSchema, createUpdateSchema } from "drizzle-zod";
+import type z from "zod";
+import { ADMIN } from "../../../const/admin.const";
 import { AUTH } from "../../../const/auth.const";
 import { ORGANIZATION } from "../../../const/organization.const";
+import { AnimalTable } from "./animal.model";
 import { Schema } from "./index.schema";
 
-export const user_role_enum = pgEnum("user_role", ACCESS_CONTROL.ROLES.IDS);
+export const user_role_enum = pgEnum("user_role", ADMIN.ROLES.IDS);
 
 // Define User table schema
 export const UserTable = pgTable("user", {
@@ -39,6 +43,20 @@ export const UserTable = pgTable("user", {
 export type User = typeof UserTable.$inferSelect;
 export type NewUser = typeof UserTable.$inferInsert;
 
+export const user_relations = relations(UserTable, ({ many }) => ({
+  accounts: many(AccountTable),
+  sessions: many(SessionTable),
+  members: many(MemberTable),
+  passkeys: many(PasskeyTable),
+  invitations: many(InvitationTable),
+}));
+
+// NOTE: Doesn't seem to be possible to reuse the member_role_enum from MemberTable below
+export const session_member_role_enum = pgEnum(
+  "session_member_role",
+  ORGANIZATION.ROLES.IDS,
+);
+
 export const SessionTable = pgTable(
   "session",
   {
@@ -61,6 +79,7 @@ export const SessionTable = pgTable(
     member_id: varchar().references(() => MemberTable.id, {
       onDelete: "set null",
     }),
+    member_role: session_member_role_enum(),
 
     activeOrganizationId: varchar().references(() => OrganizationTable.id, {
       onDelete: "set null",
@@ -74,6 +93,13 @@ export const SessionTable = pgTable(
 
 export type Session = typeof SessionTable.$inferSelect;
 export type NewSession = typeof SessionTable.$inferInsert;
+
+export const session_relations = relations(SessionTable, ({ one }) => ({
+  user: one(UserTable, {
+    fields: [SessionTable.userId],
+    references: [UserTable.id],
+  }),
+}));
 
 // Create an enum for provider IDs
 export const provider_id_enum = pgEnum("provider_id", AUTH.PROVIDERS.IDS);
@@ -108,8 +134,17 @@ export const AccountTable = pgTable(
 export type Account = typeof AccountTable.$inferSelect;
 export type NewAccount = typeof AccountTable.$inferInsert;
 
+export const account_relations = relations(AccountTable, ({ one }) => ({
+  user: one(UserTable, {
+    fields: [AccountTable.userId],
+    references: [UserTable.id],
+  }),
+}));
+
 export const OrganizationTable = pgTable("organization", {
   id: varchar().primaryKey(),
+  // TODO: I guess we don't need a short_id _and_ a slug
+  ...Schema.short_id(),
 
   name: varchar({ length: 255 }).notNull(),
   slug: varchar({ length: 255 }).notNull().unique(),
@@ -123,11 +158,52 @@ export const OrganizationTable = pgTable("organization", {
 export type Organization = typeof OrganizationTable.$inferSelect;
 export type InsertOrganization = typeof OrganizationTable.$inferInsert;
 
-export const member_role_enum = pgEnum("member_role", [
-  "owner",
-  "admin",
-  "member",
-]);
+const organization_refinements = {
+  name: (s: z.ZodString) =>
+    s
+      .min(2, "Name must be at least 2 characters")
+      .max(255, "Name must be at most 255 characters"),
+  slug: (s: z.ZodString) =>
+    s
+      .min(2, "Slug must be at least 2 characters")
+      .max(255, "Slug must be at most 255 characters"),
+
+  logo: (s: z.ZodString) =>
+    s
+      .max(2048, "Logo URL must be at most 2048 characters")
+      .optional()
+      .nullable(),
+};
+
+const org_pick = {
+  name: true,
+  logo: true,
+} satisfies Partial<Record<keyof Organization, true>>;
+
+export namespace OrganizationSchema {
+  export const insert = createInsertSchema(
+    OrganizationTable,
+    organization_refinements,
+  ).pick(org_pick);
+  export const update = createUpdateSchema(
+    OrganizationTable,
+    organization_refinements,
+  ).pick(org_pick);
+
+  export type Insert = z.input<typeof insert>;
+  export type Update = z.input<typeof update>;
+}
+
+export const organization_relations = relations(
+  OrganizationTable,
+  ({ many }) => ({
+    animals: many(AnimalTable),
+    members: many(MemberTable),
+    invitations: many(InvitationTable),
+  }),
+);
+
+export const member_role_enum = pgEnum("member_role", ORGANIZATION.ROLES.IDS);
 
 export const MemberTable = pgTable(
   "member",
@@ -155,6 +231,17 @@ export const MemberTable = pgTable(
 export type Member = typeof MemberTable.$inferSelect;
 export type InsertMember = typeof MemberTable.$inferInsert;
 
+export const member_relations = relations(MemberTable, ({ one }) => ({
+  organization: one(OrganizationTable, {
+    fields: [MemberTable.organizationId],
+    references: [OrganizationTable.id],
+  }),
+  user: one(UserTable, {
+    fields: [MemberTable.userId],
+    references: [UserTable.id],
+  }),
+}));
+
 export const PasskeyTable = pgTable(
   "passkey",
   {
@@ -180,6 +267,13 @@ export const PasskeyTable = pgTable(
 
 export type Passkey = typeof PasskeyTable.$inferSelect;
 export type InsertPasskey = typeof PasskeyTable.$inferInsert;
+
+export const passkey_relations = relations(PasskeyTable, ({ one }) => ({
+  user: one(UserTable, {
+    fields: [PasskeyTable.userId],
+    references: [UserTable.id],
+  }),
+}));
 
 export const invitation_status_enum = pgEnum(
   "invitation_status",
@@ -213,6 +307,17 @@ export const InvitationTable = pgTable(
 
 export type Invitation = typeof InvitationTable.$inferSelect;
 export type NewInvitation = typeof InvitationTable.$inferInsert;
+
+export const invitation_relations = relations(InvitationTable, ({ one }) => ({
+  inviter: one(UserTable, {
+    fields: [InvitationTable.inviterId],
+    references: [UserTable.id],
+  }),
+  organization: one(OrganizationTable, {
+    fields: [InvitationTable.organizationId],
+    references: [OrganizationTable.id],
+  }),
+}));
 
 export const VerificationTable = pgTable("verification", {
   id: varchar().primaryKey(),

@@ -5,8 +5,8 @@ import { BetterAuth, type BetterAuthResult } from "$lib/utils/better-auth.util";
 import type { APIResult } from "$lib/utils/form.util";
 import { err } from "$lib/utils/result.util";
 import { Toast, type ToastPromiseOptions } from "$lib/utils/toast/toast.util";
+import { isHttpError } from "@sveltejs/kit";
 import { Effect, pipe, Schedule } from "effect";
-import { HTTPError } from "ky";
 import { toast } from "svelte-sonner";
 import { get } from "svelte/store";
 
@@ -36,8 +36,8 @@ const inner_request = async <D>(
   } catch (error) {
     console.log("Client.request error", error);
 
-    if (error instanceof HTTPError) {
-      const message = `HTTP Error: ${error.response.status} ${error.response.statusText}`;
+    if (isHttpError(error)) {
+      const message = error.body.message;
 
       return err({ level: "error", message });
     } else {

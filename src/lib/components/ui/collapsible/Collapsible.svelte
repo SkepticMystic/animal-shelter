@@ -5,9 +5,9 @@
   import type { Snippet } from "svelte";
 
   let {
-    open,
     trigger,
     content,
+    open = false,
     ...rest
   }: CollapsibleRootProps & {
     trigger: Snippet<[{ open: boolean | undefined }]>;
@@ -20,7 +20,7 @@
   class={cn("rounded-md border px-3 py-2", rest.class)}
   bind:open
 >
-  <Collapsible.Trigger class="w-full">
+  <Collapsible.Trigger class="w-full cursor-pointer">
     {@render trigger({ open })}
   </Collapsible.Trigger>
 

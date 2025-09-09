@@ -6,8 +6,12 @@
   let { data } = $props();
 </script>
 
-<AnimalForm
-  form_input={data.form_input}
-  on_success={() => invalidateAll()}
-  submit={(update) => AnimalClient.update(data.animal.id, update)}
-/>
+<div class="space-y-3">
+  <h2>Edit {data.animal.name}</h2>
+
+  <AnimalForm
+    form_input={data.form_input}
+    on_success={() => invalidateAll()}
+    submit={(update) => AnimalClient.update(data.animal.id, update)}
+  />
+</div>

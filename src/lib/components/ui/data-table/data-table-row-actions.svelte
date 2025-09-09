@@ -1,4 +1,5 @@
 <script lang="ts" generics="TData extends Item">
+  import type { ResolvedPathname } from "$app/types";
   import { Button } from "$lib/components/ui/button/index.js";
   import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
   import Icon from "$lib/components/ui/icon/Icon.svelte";
@@ -22,9 +23,10 @@
         title: string | ((row: Row<TData>) => string);
         icon?: ClassValue | ((row: Row<TData>) => ClassValue);
 
+        hide?: (row: Row<TData>) => boolean;
         disabled?: (row: Row<TData>) => boolean;
 
-        href?: (row: Row<TData>) => string;
+        href?: (row: Row<TData>) => ResolvedPathname;
         onselect?: (row: Row<TData>) => MaybePromise<unknown>;
       } & Omit<DropdownMenuItemPropsWithoutHTML, "onSelect" | "disabled">);
 
@@ -48,6 +50,7 @@
       icon,
       title,
       href,
+      hide,
       disabled,
       kind: _kind,
       ...rest
@@ -59,25 +62,27 @@
       {typeof title === "function" ? title(row) : title}
     {/snippet}
 
-    <DropdownMenu.Item
-      {...rest}
-      disabled={disabled?.(row)}
-      onSelect={async () => {
-        if (onselect) {
-          loading = true;
-          await onselect(row);
-          loading = false;
-        }
-      }}
-    >
-      {#if href}
-        <a href={href(row)} class="flex items-center gap-2">
+    {#if !hide || !hide(row)}
+      <DropdownMenu.Item
+        {...rest}
+        disabled={disabled?.(row)}
+        onSelect={async () => {
+          if (onselect) {
+            loading = true;
+            await onselect(row);
+            loading = false;
+          }
+        }}
+      >
+        {#if href}
+          <a href={href(row)} class="flex items-center gap-2">
+            {@render item_children()}
+          </a>
+        {:else}
           {@render item_children()}
-        </a>
-      {:else}
-        {@render item_children()}
-      {/if}
-    </DropdownMenu.Item>
+        {/if}
+      </DropdownMenu.Item>
+    {/if}
   {:else if action.kind === "group"}
     <DropdownMenu.Group>
       <DropdownMenu.Label>{action.label}</DropdownMenu.Label>
@@ -102,7 +107,7 @@
     {/snippet}
   </DropdownMenu.Trigger>
 
-  <DropdownMenu.Content>
+  <DropdownMenu.Content align="end">
     {#each actions as action}
       {@render action_snippet(action, row)}
     {/each}

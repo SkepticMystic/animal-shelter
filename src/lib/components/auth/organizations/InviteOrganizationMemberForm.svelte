@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Client } from "$lib/clients/index.client";
+  import { OrganizationsClient } from "$lib/clients/organizations.client";
   import FormControl from "$lib/components/form/controls/FormControl.svelte";
   import EmailFormField from "$lib/components/form/fields/EmailFormField.svelte";
   import FormField from "$lib/components/form/fields/FormField.svelte";
@@ -7,7 +7,6 @@
   import FormButton from "$lib/components/ui/form/form-button.svelte";
   import SingleSelect from "$lib/components/ui/select/SingleSelect.svelte";
   import { ORGANIZATION } from "$lib/const/organization.const";
-  import { create_invitation } from "$lib/remote/auth/organization.remote";
   import { AuthSchema } from "$lib/schema/auth.schema";
   import { make_super_form } from "$lib/utils/form.util";
   import type { Invitation } from "better-auth/plugins";
@@ -27,10 +26,7 @@
     validators: zod4Client(AuthSchema.Org.member_invite_form),
 
     on_success,
-    submit: (data) =>
-      Client.request(() => create_invitation(data), {
-        toast: { loading: "Inviting member...", success: "Member invited!" },
-      }),
+    submit: OrganizationsClient.create_invitation,
   });
 
   const { form: form_data } = form;

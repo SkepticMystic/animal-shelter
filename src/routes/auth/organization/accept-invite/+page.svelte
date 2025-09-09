@@ -6,11 +6,10 @@
   import { ROUTES } from "$lib/const/routes.const.js";
   import { TOAST } from "$lib/const/toast.const.js";
   import { App } from "$lib/utils/app.js";
-  import { Url } from "$lib/utils/urls.js";
 
   let { data } = $props();
 
-  const redirect_uri = Url.strip_origin(page.url);
+  const redirect_uri = page.url.pathname;
 
   const accept_invite = async () => {
     if (!data.invitation) return;

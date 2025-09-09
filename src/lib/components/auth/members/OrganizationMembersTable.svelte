@@ -1,5 +1,4 @@
 <script lang="ts">
-  import type { auth } from "$lib/auth";
   import { MembersClient } from "$lib/clients/members.client";
   import Time from "$lib/components/Time.svelte";
   import UserAvatar from "$lib/components/ui/avatar/UserAvatar.svelte";
@@ -10,13 +9,16 @@
     ORGANIZATION,
     type IOrganization,
   } from "$lib/const/organization.const";
+  import type { Member, User } from "$lib/server/db/schema/auth.model";
   import { Items } from "$lib/utils/items.util";
   import { TanstackTable } from "$lib/utils/tanstack/table.util";
 
   let {
     members = $bindable(),
   }: {
-    members: Awaited<ReturnType<typeof auth.api.listMembers>>["members"];
+    members: (Pick<Member, "id" | "role" | "createdAt"> & {
+      user: Pick<User, "name" | "email" | "image">;
+    })[];
   } = $props();
 
   const update_member_role = async (

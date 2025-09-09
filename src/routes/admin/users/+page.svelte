@@ -5,10 +5,7 @@
   import DataTable from "$lib/components/ui/data-table/data-table.svelte";
   import { renderComponent } from "$lib/components/ui/data-table/render-helpers.js";
   import SingleSelect from "$lib/components/ui/select/SingleSelect.svelte";
-  import {
-    ACCESS_CONTROL,
-    type IAccessControl,
-  } from "$lib/const/access_control.const";
+  import { ADMIN, type IAdmin } from "$lib/const/admin.const.js";
   import { ROUTES } from "$lib/const/routes.const.js";
   import { TOAST } from "$lib/const/toast.const.js";
   import { App } from "$lib/utils/app.js";
@@ -70,11 +67,11 @@
         cell: ({ row }) =>
           renderComponent(SingleSelect, {
             value: row.original.role,
-            options: ACCESS_CONTROL.ROLES.OPTIONS,
+            options: ADMIN.ROLES.OPTIONS,
             on_value_select: (value) =>
               update_user_role({
                 userId: row.original.id,
-                role: value as IAccessControl.RoleId,
+                role: value as IAdmin.RoleId,
               }),
           }),
       },
@@ -99,6 +96,7 @@
       {
         kind: "item",
         title: (row) => (row.original.banned ? "Unban user" : "Ban user"),
+
         icon: (row) =>
           row.original.banned ? "lucide/check-circle-2" : "lucide/ban",
         onselect: (row) =>

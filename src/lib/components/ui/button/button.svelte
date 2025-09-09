@@ -1,6 +1,7 @@
 <script lang="ts" module>
-  import Loading from "$lib/components/ui/loading/Loading.svelte";
+  import type { ResolvedPathname } from "$app/types";
   import Icon from "$lib/components/ui/icon/Icon.svelte";
+  import Loading from "$lib/components/ui/loading/Loading.svelte";
   import { cn, type WithElementRef } from "$lib/utils/shadcn.util.js";
   import type {
     ClassValue,
@@ -49,6 +50,7 @@
       // NOTE: Mine
       loading?: boolean;
       icon?: ClassValue;
+      href?: ResolvedPathname | ".";
     };
 </script>
 

@@ -1,8 +1,5 @@
 import { BetterAuthClient } from "$lib/auth-client";
-import {
-  ACCESS_CONTROL,
-  type IAccessControl,
-} from "$lib/const/access_control.const";
+import { ADMIN, type IAdmin } from "$lib/const/admin.const";
 import { TIME } from "$lib/const/time";
 import { BetterAuth } from "$lib/utils/better-auth.util";
 import { Format } from "$lib/utils/format.util";
@@ -10,9 +7,9 @@ import { Effect, pipe } from "effect";
 import { Client } from "./index.client";
 
 export const AdminClient = {
-  update_user_role: (input: { userId: string; role: IAccessControl.RoleId }) =>
+  update_user_role: (input: { userId: string; role: IAdmin.RoleId }) =>
     Client.better_auth(() => BetterAuthClient.admin.setRole(input), {
-      confirm: `Are you sure you want to update this user's role to ${ACCESS_CONTROL.ROLES.MAP[input.role].label}?`,
+      confirm: `Are you sure you want to update this user's role to ${ADMIN.ROLES.MAP[input.role].label}?`,
       toast: { success: "User role updated" },
     }),
 

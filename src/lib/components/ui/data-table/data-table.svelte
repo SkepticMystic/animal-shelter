@@ -193,23 +193,25 @@
       {Format.number(table.getFilteredRowModel().rows.length)} rows selected
     </div>
 
-    <div class="flex items-center justify-end space-x-2">
-      <Button
-        variant="outline"
-        size="sm"
-        disabled={!table.getCanPreviousPage()}
-        onclick={() => table.previousPage()}
-      >
-        Previous
-      </Button>
-      <Button
-        variant="outline"
-        size="sm"
-        disabled={!table.getCanNextPage()}
-        onclick={() => table.nextPage()}
-      >
-        Next
-      </Button>
-    </div>
+    {#if pagination && data.length > pagination.pageSize}
+      <div class="flex items-center justify-end space-x-2">
+        <Button
+          variant="outline"
+          size="sm"
+          disabled={!table.getCanPreviousPage()}
+          onclick={() => table.previousPage()}
+        >
+          Previous
+        </Button>
+        <Button
+          variant="outline"
+          size="sm"
+          disabled={!table.getCanNextPage()}
+          onclick={() => table.nextPage()}
+        >
+          Next
+        </Button>
+      </div>
+    {/if}
   </div>
 </div>

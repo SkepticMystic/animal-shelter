@@ -31,9 +31,9 @@
 
       {#snippet content({ close })}
         <AnimalForm
-          on_success={close}
-          submit={AnimalClient.create}
           form_input={data.form_input}
+          submit={AnimalClient.create}
+          on_success={(_data) => close()}
         />
       {/snippet}
     </Dialog>
@@ -51,7 +51,7 @@
         <div class="flex gap-1.5">
           <Input
             class="max-w-sm"
-            placeholder="Filter by name"
+            placeholder="Name"
             bind:value={
               () => table.getColumn("name")?.getFilterValue() ?? "",
               (value) => table.getColumn("name")?.setFilterValue(value)
@@ -60,7 +60,7 @@
 
           <MultiSelect
             options={ANIMALS.SPECIES.OPTIONS}
-            placeholder="Filter by species"
+            placeholder="Species"
             bind:value={
               () =>
                 (table.getColumn("species")?.getFilterValue() ??
@@ -70,7 +70,7 @@
           />
 
           <DateRangePicker
-            placeholder="Filter by date of birth"
+            placeholder="Date of birth"
             bind:value={
               () =>
                 table.getColumn("date_of_birth")?.getFilterValue() as

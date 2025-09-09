@@ -1,25 +1,73 @@
 <script lang="ts">
+  import { OrganizationsClient } from "$lib/clients/organizations.client.js";
   import OrganizationMembersList from "$lib/components/auth/members/OrganizationMembersTable.svelte";
   import InviteOrganizationMemberForm from "$lib/components/auth/organizations/InviteOrganizationMemberForm.svelte";
   import OrganizationInvitationsTable from "$lib/components/auth/organizations/OrganizationInvitationsTable.svelte";
-  import OrganizationSelector from "$lib/components/auth/organizations/OrganizationSelector.svelte";
-  import Icon from "$lib/components/ui/icon/Icon.svelte";
+  import OrganizationForm from "$lib/components/form/organization/OrganizationForm.svelte";
+  import Button from "$lib/components/ui/button/button.svelte";
+  import Collapsible from "$lib/components/ui/collapsible/Collapsible.svelte";
   import Dialog from "$lib/components/ui/dialog/dialog.svelte";
+  import Icon from "$lib/components/ui/icon/Icon.svelte";
+  import Loading from "$lib/components/ui/loading/Loading.svelte";
+  import { get_invitations_remote } from "$lib/remote/auth/invitation.remote.js";
 
   let { data } = $props();
-  let { invitations, members } = $state(data);
+
+  let members = $state(data.organization?.members);
+  const invitations = get_invitations_remote({});
 </script>
 
 <div class="flex flex-col gap-7">
   <div class="space-y-3">
-    <h1>Organization</h1>
-    <OrganizationSelector />
+    <div class="flex items-end justify-between">
+      <h1>Shelter</h1>
+
+      <Dialog title="New Shelter" description="Create a new animal shelter">
+        {#snippet trigger()}
+          <Icon icon="lucide/plus" />
+          New Shelter
+        {/snippet}
+
+        {#snippet content({ close })}
+          <OrganizationForm
+            form_input={data.create_org_form_input}
+            submit={OrganizationsClient.create}
+            on_success={(_data) => close()}
+          />
+        {/snippet}
+      </Dialog>
+    </div>
+
+    {#if data.organization}
+      <Collapsible title={data.organization.name}>
+        {#snippet trigger({ open })}
+          <div class="flex items-center justify-between">
+            <h2>{data.organization!.name}</h2>
+
+            <Button
+              variant="ghost"
+              icon={open ? "lucide/chevron-down" : "lucide/chevron-left"}
+            />
+          </div>
+        {/snippet}
+
+        {#snippet content()}
+          <OrganizationForm
+            form_input={data.update_org_form_input}
+            submit={(update) =>
+              OrganizationsClient.update(data.organization!.id, update)}
+          />
+        {/snippet}
+      </Collapsible>
+    {/if}
   </div>
 
-  <div class="space-y-3">
-    <h2>Members</h2>
-    <OrganizationMembersList bind:members />
-  </div>
+  {#if members}
+    <div class="space-y-3">
+      <h2>Members</h2>
+      <OrganizationMembersList bind:members />
+    </div>
+  {/if}
 
   <div class="space-y-3">
     <div class="flex items-center justify-between">
@@ -37,19 +85,16 @@
         {#snippet content({ close })}
           <InviteOrganizationMemberForm
             form_input={data.member_invite_form_input}
-            on_success={(invitation) =>
-              invitations.unshift(invitation) && close()}
+            on_success={(_invitation) => close()}
           />
         {/snippet}
       </Dialog>
     </div>
 
-    {#if invitations.length}
-      <OrganizationInvitationsTable
-        {invitations}
-        on_delete={(invitation) =>
-          (invitations = invitations.filter((i) => i.id !== invitation.id))}
-      />
+    {#if invitations.ready && invitations.current.ok}
+      <OrganizationInvitationsTable invitations={invitations.current.data} />
+    {:else}
+      <Loading loading title="Fetching invitations..." />
     {/if}
   </div>
 </div>

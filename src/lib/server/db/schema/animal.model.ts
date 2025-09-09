@@ -1,5 +1,4 @@
-import { TIME } from "$lib/const/time";
-import { Dates } from "$lib/utils/dates";
+import { relations } from "drizzle-orm";
 import {
   index,
   pgEnum,
@@ -12,7 +11,9 @@ import {
 import { createInsertSchema, createUpdateSchema } from "drizzle-zod";
 import type z from "zod";
 import { ANIMALS } from "../../../const/animal.const";
+import { TIME } from "../../../const/time";
 import { Schema } from "../../../server/db/schema/index.schema";
+import { Dates } from "../../../utils/dates";
 import { OrganizationTable } from "./auth.model";
 
 export const animal_species_enum = pgEnum(
@@ -27,7 +28,7 @@ export const AnimalTable = pgTable(
   "animal",
   {
     id: uuid().primaryKey().defaultRandom(),
-    ...Schema.short_id,
+    ...Schema.short_id(),
 
     bio: text().default(""),
     name: varchar({ length: 255 }).notNull(),
@@ -43,15 +44,28 @@ export const AnimalTable = pgTable(
   (table) => [index("idx_animal_org_id").on(table["org_id"])],
 );
 
+export const animal_relations = relations(AnimalTable, ({ one }) => ({
+  shelter: one(OrganizationTable, {
+    fields: [AnimalTable.org_id],
+    references: [OrganizationTable.id],
+  }),
+}));
+
 export type Animal = typeof AnimalTable.$inferSelect;
 
 const refinements = {
-  name: (s: z.ZodString) => s.min(2).max(255),
-  bio: (s: z.ZodString) => s.max(1000),
+  bio: (s: z.ZodString) => s.max(1000, "Bio must be at most 1000 characters"),
+
+  name: (s: z.ZodString) =>
+    s
+      .min(2, "Name must be atleast 2 characters")
+      .max(255, "Name must be at most 255 characters"),
+
   date_of_birth: (s: z.ZodDate) =>
     s //
       .min(Dates.add_ms(-65 * TIME.YEAR)) //
-      .max(new Date()),
+      .max(new Date())
+      .optional(),
 };
 
 const pick = {
