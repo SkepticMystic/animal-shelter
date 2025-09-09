@@ -12,8 +12,7 @@
 
   let { data } = $props();
 
-  // TODO: Can't get reactivity working... for upload or delete
-  let animal = $derived(data.animal);
+  let animal = $state(data.animal);
 </script>
 
 <div class="space-y-5">
@@ -30,12 +29,19 @@
 
   <Separator />
 
-  <ImageUploader resource_id={animal.id} resource_kind="animal" />
+  <ImageUploader
+    resource_kind="animal"
+    resource_id={animal.id}
+    on_upload={(image) => {
+      animal.images = [...animal.images, image];
+    }}
+  />
 
   <div class="flex flex-wrap gap-3">
-    {#each animal.images as image}
+    {#each animal.images as image (image.id)}
       <div class="flex flex-col gap-2">
         <Image {image} height={100} width={100} />
+
         <Button
           icon="lucide/x"
           variant="destructive"

@@ -1,16 +1,18 @@
 <script lang="ts">
   import Button from "$lib/components/ui/button/button.svelte";
   import Input from "$lib/components/ui/input/input.svelte";
+  import type { MaybePromise } from "$lib/interfaces";
   import { upload_image_remote } from "$lib/remote/image.remote";
   import type { Image } from "$lib/server/db/schema/image.model";
   import { toast } from "svelte-sonner";
 
-  // NOTE: A nice thing about using a remote _form_, is that it invalidatesAll after submit,
-  // So we don't need an on_upload cb. Any pages showing images will auto-update.
   let {
+    on_upload,
     resource_id,
     resource_kind,
-  }: Pick<Image, "resource_id" | "resource_kind"> = $props();
+  }: Pick<Image, "resource_id" | "resource_kind"> & {
+    on_upload?: (image: Image) => MaybePromise<unknown>;
+  } = $props();
 </script>
 
 <form
@@ -24,6 +26,7 @@
         `Error uploading image: ${upload_image_remote.result?.error?.message}`,
       );
     } else if (upload_image_remote.result.ok) {
+      await on_upload?.(upload_image_remote.result.data);
       toast.success("Image uploaded successfully");
     }
   })}

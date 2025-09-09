@@ -1,5 +1,6 @@
 <script lang="ts">
   import type { Image } from "$lib/server/db/schema/image.model";
+  import { cn } from "$lib/utils/shadcn.util";
   import { CldImage } from "svelte-cloudinary";
   import type { ClassValue } from "svelte/elements";
 
@@ -17,5 +18,5 @@
 </script>
 
 {#if image.provider === "cloudinary"}
-  <CldImage src={image.url} {...props} />
+  <CldImage src={image.url} class={cn("rounded-md", props.class)} {...props} />
 {/if}
