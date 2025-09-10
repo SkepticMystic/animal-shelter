@@ -65,6 +65,7 @@
       const toast_key = TOAST.IDS_REVERSED[toast_id];
       if (!toast_key) return;
 
+      toast.dismiss(); // Dismiss any existing toasts
       const input = TOAST.MAP[toast_key];
       toast[input.type](input.message);
     }

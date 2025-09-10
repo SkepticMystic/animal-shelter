@@ -33,6 +33,8 @@ export const ImageTable = pgTable(
       .notNull()
       .references(() => OrganizationTable.id, { onDelete: "cascade" }),
 
+    blurhash: varchar({ length: 50 }),
+
     ...Schema.timestamps,
   },
   (table) => [index("idx_image_org_id").on(table["org_id"])],
@@ -54,6 +56,7 @@ export type Image = typeof ImageTable.$inferSelect;
 
 const refinements = {
   url: z.url(),
+  blurhash: (s: z.ZodString) => s.nullable(),
 };
 
 const pick = {
@@ -63,6 +66,7 @@ const pick = {
   resource_id: true,
   resource_kind: true,
   org_id: true,
+  blurhash: true,
 } satisfies Partial<Record<keyof Image, true>>;
 
 export namespace ImageSchema {

@@ -11,9 +11,9 @@
     content,
     actions,
   }: {
-    title?: string;
     description?: string;
     class?: ClassValue;
+    title?: string | Snippet;
 
     content: Snippet;
     actions?: Snippet;
@@ -24,7 +24,13 @@
   {#if title || description}
     <Card.Header>
       {#if title}
-        <Card.Title>{title}</Card.Title>
+        <Card.Title>
+          {#if typeof title === "string"}
+            {title}
+          {:else}
+            {@render title()}
+          {/if}
+        </Card.Title>
       {/if}
 
       {#if description}

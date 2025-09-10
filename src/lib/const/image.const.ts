@@ -4,6 +4,10 @@ export const IMAGES = {
   PROVIDER: {
     IDS: PROVIDER_IDS,
   },
+
+  BLURHASH: {
+    COMPONENTS: { X: 4, Y: 4 },
+  },
 };
 
 export declare namespace IImage {

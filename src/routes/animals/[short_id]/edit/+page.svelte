@@ -4,7 +4,7 @@
   import { ImageClient } from "$lib/clients/image.client.js";
   import BackButton from "$lib/components/buttons/BackButton.svelte";
   import AnimalForm from "$lib/components/form/animal/AnimalForm.svelte";
-  import Image from "$lib/components/images/Image.svelte";
+  import Picture from "$lib/components/images/Picture.svelte";
   import ImageUploader from "$lib/components/images/upload/ImageUploader.svelte";
   import Button from "$lib/components/ui/button/button.svelte";
   import Separator from "$lib/components/ui/separator/separator.svelte";
@@ -40,7 +40,7 @@
   <div class="flex flex-wrap gap-3">
     {#each animal.images as image (image.id)}
       <div class="flex flex-col gap-2">
-        <Image {image} height={100} width={100} />
+        <Picture {image} height={100} width={100} />
 
         <Button
           icon="lucide/x"

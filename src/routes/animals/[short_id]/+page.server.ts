@@ -10,9 +10,8 @@ export const load = (async ({ params }) => {
       with: {
         images: {
           columns: {
-            id: true,
             url: true,
-            provider: true,
+            blurhash: true,
           },
         },
       },

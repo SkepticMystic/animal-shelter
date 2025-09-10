@@ -49,6 +49,7 @@
           {...props}
           required
           type="password"
+          placeholder="Your password"
           autocomplete="current-password"
           bind:value={$form_data.password}
         />

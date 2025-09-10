@@ -7,7 +7,15 @@ export const load = (async ({ params }) => {
     db.query.organization.findFirst({
       where: (shelter, { eq }) => eq(shelter.slug, params.slug),
 
-      with: { animals: true },
+      with: {
+        animals: {
+          with: {
+            images: {
+              columns: { url: true, blurhash: true },
+            },
+          },
+        },
+      },
     }),
   ]);
 

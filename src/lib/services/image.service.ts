@@ -9,7 +9,7 @@ import { ImageHostLive } from "./image_hosting.service";
 export const ImageService = {
   upload: async (
     file: File,
-    input: Pick<Image, "resource_id" | "resource_kind" | "org_id">,
+    input: Pick<Image, "blurhash" | "resource_id" | "resource_kind" | "org_id">,
   ) => {
     const resource = await db.query[input.resource_kind].findFirst({
       columns: { id: true },
@@ -26,9 +26,7 @@ export const ImageService = {
 
     const upload = await Effect.runPromise(ImageHostLive.upload({ file }));
     console.log("Image upload result:", upload);
-    if (!upload.ok) {
-      return upload;
-    }
+    if (!upload.ok) return upload;
 
     try {
       const [image] = await db
@@ -36,6 +34,7 @@ export const ImageService = {
         .values({
           url: upload.data.url,
           org_id: input.org_id,
+          blurhash: input.blurhash,
           resource_id: input.resource_id,
           resource_kind: input.resource_kind,
           provider: ImageHostLive.provider,
@@ -46,7 +45,6 @@ export const ImageService = {
       return suc(image);
     } catch (error) {
       console.error("Database insertion error:", error);
-      // Attempt to clean up the uploaded image if DB insertion fails
 
       return err({ message: "Failed to save image record" });
     }

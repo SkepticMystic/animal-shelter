@@ -19,19 +19,20 @@ export const upload_image_remote = form<APIResult<Image>>(async (form) => {
     return err({ message: "No file provided" });
   }
 
-  const reference = ImageSchema.insert
-    .pick({ resource_id: true, resource_kind: true })
+  const input = ImageSchema.insert
+    .pick({ resource_id: true, resource_kind: true, blurhash: true })
     .safeParse({
+      blurhash: form.get("blurhash"),
       resource_id: form.get("resource_id"),
       resource_kind: form.get("resource_kind"),
     });
 
-  if (!reference.success) {
-    return err({ message: "Invalid resource data" });
+  if (!input.success) {
+    return err({ message: "Invalid input data" });
   }
 
   return ImageService.upload(file, {
-    ...reference.data,
+    ...input.data,
     org_id: session.session.org_id,
   });
 });
