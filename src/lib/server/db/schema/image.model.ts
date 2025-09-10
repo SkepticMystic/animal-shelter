@@ -29,7 +29,6 @@ export const ImageTable = pgTable(
     resource_id: uuid().notNull(),
     resource_kind: image_resource_kind_enum().notNull(),
 
-    // TODO: On org delete, also delete images from external provider
     org_id: uuid()
       .notNull()
       .references(() => OrganizationTable.id, { onDelete: "cascade" }),

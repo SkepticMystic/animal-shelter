@@ -147,9 +147,6 @@ export const account_relations = relations(AccountTable, ({ one }) => ({
 export const OrganizationTable = pgTable("organization", {
   ...Schema.id(),
 
-  // TODO: I guess we don't need a short_id _and_ a slug
-  ...Schema.short_id(),
-
   name: varchar({ length: 255 }).notNull(),
   slug: varchar({ length: 255 }).notNull().unique(),
   logo: varchar({ length: 2048 }),

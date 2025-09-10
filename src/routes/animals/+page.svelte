@@ -11,6 +11,7 @@
   import MultiSelect from "$lib/components/ui/select/MultiSelect.svelte";
   import { ANIMALS } from "$lib/const/animal.const";
   import { get_animals_remote } from "$lib/remote/animal.remote";
+  import type { Organization } from "$lib/server/db/schema/auth.model";
   import type { DateRange } from "bits-ui";
   import { columns } from "./columns";
 
@@ -44,6 +45,7 @@
   {:then animals}
     <DataTable
       {columns}
+      faceting
       data={animals}
       states={{ sorting: [{ id: "createdAt", desc: true }] }}
     >
@@ -77,6 +79,26 @@
                   | DateRange
                   | undefined,
               (value) => table.getColumn("date_of_birth")?.setFilterValue(value)
+            }
+          />
+
+          <MultiSelect
+            placeholder="Shelters"
+            options={(
+              table
+                .getColumn("shelter")
+                ?.getFacetedUniqueValues()
+                .keys()
+                .toArray() ?? []
+            ).map((facet: Organization) => ({
+              value: facet.slug,
+              label: facet.name,
+            }))}
+            bind:value={
+              () =>
+                (table.getColumn("shelter")?.getFilterValue() ??
+                  []) as string[],
+              (value) => table.getColumn("shelter")?.setFilterValue(value)
             }
           />
 

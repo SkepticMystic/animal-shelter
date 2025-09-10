@@ -6,6 +6,7 @@ import ShelterLink from "$lib/components/links/ShelterLink.svelte";
 import Time from "$lib/components/Time.svelte";
 import { renderComponent } from "$lib/components/ui/data-table";
 import { ANIMALS } from "$lib/const/animal.const";
+import { ICONS } from "$lib/const/icon.const";
 import { ROUTES } from "$lib/const/routes.const";
 import type { get_animals_remote } from "$lib/remote/animal.remote";
 import type { Organization } from "$lib/server/db/schema/auth.model";
@@ -69,27 +70,35 @@ export const columns = TanstackTable.make_columns<TData>({
 
   actions: [
     {
-      kind: "item",
-      icon: "lucide/dog",
-      title: "View animal",
-      href: (row) => resolve(ROUTES.ANIMALS_VIEW, row.original),
-    },
+      kind: "group",
+      label: "Animal",
+      actions: [
+        {
+          kind: "item",
+          title: "View",
+          icon: "lucide/dog",
 
-    {
-      kind: "item",
-      icon: "lucide/pencil",
-      title: "Edit animal",
+          href: (row) => resolve(ROUTES.ANIMALS_VIEW, row.original),
+        },
 
-      hide: () => !AccessClient.member({ animal: ["update"] }),
-      href: (row) => resolve(ROUTES.ANIMALS_EDIT, row.original),
-    },
-    {
-      kind: "item",
-      title: "Delete animal",
-      icon: "lucide/trash-2",
+        {
+          kind: "item",
+          title: "Edit",
+          icon: ICONS.EDIT,
 
-      hide: () => !AccessClient.member({ animal: ["delete"] }),
-      onselect: (row) => AnimalClient.delete(row.original.id),
+          hide: () => !AccessClient.member({ animal: ["update"] }),
+          href: (row) => resolve(ROUTES.ANIMALS_EDIT, row.original),
+        },
+        {
+          kind: "item",
+          title: "Delete",
+          icon: ICONS.DELETE,
+          variant: "destructive",
+
+          hide: () => !AccessClient.member({ animal: ["delete"] }),
+          onselect: (row) => AnimalClient.delete(row.original.id),
+        },
+      ],
     },
   ],
 });

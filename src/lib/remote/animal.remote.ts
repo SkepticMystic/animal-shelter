@@ -69,7 +69,7 @@ export const update_animal_remote = command(
     const [session] = await Promise.all([
       safe_get_session({ member_permissions: { animal: ["update"] } }),
     ]);
-    if (!session || !session.session.org_id || !session.session.member_id) {
+    if (!session || !session.session.org_id) {
       return err({ message: "Unauthorized", status: 401 });
     }
 

@@ -16,7 +16,7 @@ export const get_tasks = query(
     status: z.enum(TASKS.STATUS.IDS).optional(),
   }),
   async (input) => {
-    // TODO: Calling redirect in a remote function seems to break svelte
+    // NOTE: Calling redirect in a remote function seems to break svelte
     const { session } = await get_session();
     if (!session.org_id) {
       return err({ message: "Forbidden", status: 403 });

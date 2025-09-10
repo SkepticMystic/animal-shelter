@@ -2,6 +2,7 @@ import { resolve } from "$app/paths";
 import ShelterLink from "$lib/components/links/ShelterLink.svelte";
 import Time from "$lib/components/Time.svelte";
 import { renderComponent } from "$lib/components/ui/data-table";
+import { ICONS } from "$lib/const/icon.const";
 import { ROUTES } from "$lib/const/routes.const";
 import type { get_shelters_remote } from "$lib/remote/shelter.remote";
 import { Format } from "$lib/utils/format.util";
@@ -37,10 +38,17 @@ export const columns = TanstackTable.make_columns<TData>({
 
   actions: [
     {
-      kind: "item",
-      icon: "lucide/eye",
-      title: "View shelter",
-      href: (row) => resolve(ROUTES.SHELTERS_VIEW, row.original),
+      kind: "group",
+      label: "Shelter",
+      actions: [
+        {
+          kind: "item",
+          title: "View",
+          icon: ICONS.VIEW,
+
+          href: (row) => resolve(ROUTES.SHELTERS_VIEW, row.original),
+        },
+      ],
     },
   ],
 });

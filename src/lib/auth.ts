@@ -24,7 +24,6 @@ import {
 import { passkey } from "better-auth/plugins/passkey";
 import { sveltekitCookies } from "better-auth/svelte-kit";
 import { Effect } from "effect";
-import { BetterAuthClient } from "./auth-client";
 import { AdminAccessControl, type IAdmin } from "./const/admin.const";
 import { APP } from "./const/app";
 import { AUTH, type IAuth } from "./const/auth.const";
@@ -132,12 +131,12 @@ export const auth = Effect.runSync(
           member_id: {
             type: "string",
             defaultValue: null,
-            fieldName: "member_id",
+            input: false,
           },
           member_role: {
             type: "string",
             defaultValue: null,
-            fieldName: "member_role",
+            input: false,
           },
         },
       },
@@ -210,11 +209,13 @@ export const auth = Effect.runSync(
           ...OrganizationAccessControl,
 
           organizationLimit: 5,
-          allowUserToCreateOrganization: (user) =>
-            BetterAuthClient.admin.checkRolePermission({
-              role: user.role as IAdmin.RoleId,
-              permissions: { organization: ["create"] },
-            }),
+          allowUserToCreateOrganization: (user) => {
+            const role = user.role as IAdmin.RoleId;
+
+            return AdminAccessControl.roles[role].authorize({
+              organization: ["create"],
+            }).success;
+          },
 
           cancelPendingInvitationsOnReInvite: true,
           requireEmailVerificationOnInvitation: true,
