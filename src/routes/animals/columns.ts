@@ -1,6 +1,7 @@
 import { resolve } from "$app/paths";
 import { AccessClient } from "$lib/clients/access_control.client";
 import { AnimalClient } from "$lib/clients/animal.client";
+import Picture from "$lib/components/images/Picture.svelte";
 import AnimalLink from "$lib/components/links/AnimalLink.svelte";
 import ShelterLink from "$lib/components/links/ShelterLink.svelte";
 import Time from "$lib/components/Time.svelte";
@@ -16,6 +17,20 @@ type TData = Awaited<ReturnType<typeof get_animals_remote>>[number];
 
 export const columns = TanstackTable.make_columns<TData>({
   columns: [
+    {
+      id: "avatar",
+      enableHiding: false,
+      enableSorting: false,
+
+      cell: ({ row }) =>
+        renderComponent(Picture, {
+          width: 40,
+          height: 40,
+          class: "h-10 w-10",
+          image: row.original.images.at(0),
+        }),
+    },
+
     {
       accessorKey: "name",
       meta: { label: "Name" },

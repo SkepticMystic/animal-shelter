@@ -17,6 +17,7 @@ import { ADMIN } from "../../../const/admin.const";
 import { AUTH } from "../../../const/auth.const";
 import { ORGANIZATION } from "../../../const/organization.const";
 import { AnimalTable } from "./animal.model";
+import { ImageTable } from "./image.model";
 import { Schema } from "./index.schema";
 
 export const user_role_enum = pgEnum("user_role", ADMIN.ROLES.IDS);
@@ -198,9 +199,11 @@ export namespace OrganizationSchema {
 export const organization_relations = relations(
   OrganizationTable,
   ({ many }) => ({
-    animals: many(AnimalTable),
     members: many(MemberTable),
     invitations: many(InvitationTable),
+
+    images: many(ImageTable),
+    animals: many(AnimalTable),
   }),
 );
 

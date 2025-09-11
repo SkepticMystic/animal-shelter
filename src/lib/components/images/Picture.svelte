@@ -1,28 +1,48 @@
 <script lang="ts">
-  import { IMAGES } from "$lib/const/image.const";
   import type { Image } from "$lib/server/db/schema/image.model";
-  import { blurhashToCssGradientString } from "@unpic/placeholder";
+  import { cn } from "$lib/utils/shadcn.util";
   import { Image as Picture, type ImageProps } from "@unpic/svelte";
+  import type { ClassValue } from "svelte/elements";
+  import { thumbHashToDataURL } from "thumbhash";
 
   // NOTE: The only reason for this component is that Image from unpic doesn't seem to show types?
   // So we force ImageProps
   let {
     image,
+    class: klass,
     ...props
   }: Omit<ImageProps, "src"> & {
     src?: string;
-    image?: Pick<Image, "url" | "blurhash">;
+    class?: ClassValue;
+    image?: Pick<Image, "url" | "thumbhash">;
   } = $props();
+
+  // SOURCE: https://github.com/evanw/thumbhash/blob/main/examples/browser/index.html
+  const thumbhash_url = image?.thumbhash
+    ? thumbHashToDataURL(
+        new Uint8Array(
+          atob(image.thumbhash)
+            .split("")
+            .map((x) => x.charCodeAt(0)),
+        ),
+      )
+    : undefined;
 </script>
 
-<Picture
-  src={image?.url}
-  {...props}
-  background={image?.blurhash
-    ? blurhashToCssGradientString(
-        image.blurhash,
-        IMAGES.BLURHASH.COMPONENTS.X,
-        IMAGES.BLURHASH.COMPONENTS.Y,
-      )
-    : undefined}
-/>
+{#if image || props.src}
+  <Picture
+    src={image?.url}
+    class={cn(
+      "rounded-md", //
+      klass,
+    )}
+    style="width: {props.width}px; height: {props.height}px;"
+    background={thumbhash_url}
+    {...props}
+  />
+
+  <!-- NOTE: This also works, but `background` is cleaner, and works with blurhash as well -->
+  <!-- style={thumbhash_url
+    ? `background: center / cover url(${thumbhash_url})`
+      : undefined} -->
+{/if}

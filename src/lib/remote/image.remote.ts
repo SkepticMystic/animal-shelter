@@ -20,14 +20,17 @@ export const upload_image_remote = form<APIResult<Image>>(async (form) => {
   }
 
   const input = ImageSchema.insert
-    .pick({ resource_id: true, resource_kind: true, blurhash: true })
+    .pick({
+      resource_id: true,
+      resource_kind: true,
+    })
     .safeParse({
-      blurhash: form.get("blurhash"),
       resource_id: form.get("resource_id"),
       resource_kind: form.get("resource_kind"),
     });
 
   if (!input.success) {
+    console.log("Image upload input validation error:", input.error);
     return err({ message: "Invalid input data" });
   }
 

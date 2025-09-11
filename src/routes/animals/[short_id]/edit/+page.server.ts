@@ -13,8 +13,12 @@ export const load = (async ({ params }) => {
       where: (animal, { eq }) => eq(animal.short_id, params.short_id),
 
       with: {
-        shelter: { columns: { id: true, name: true, slug: true } },
-        images: { columns: { id: true, url: true, blurhash: true } },
+        shelter: {
+          columns: { id: true, name: true, slug: true },
+        },
+        images: {
+          columns: { id: true, url: true, thumbhash: true },
+        },
       },
     }),
   ]);

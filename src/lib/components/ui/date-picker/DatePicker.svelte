@@ -51,6 +51,7 @@
     <Calendar
       type="single"
       value={instance}
+      captionLayout="dropdown"
       onValueChange={(date) => {
         instance = date;
         value = date?.toDate(getLocalTimeZone());

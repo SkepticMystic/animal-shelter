@@ -20,10 +20,14 @@ export class ImageHostingService extends Context.Tag("ImageHostingService")<
   {
     readonly provider: IImage.ProviderId;
 
-    readonly upload: (
-      input: UploadImageOptions,
-    ) => Effect.Effect<
-      Result<Pick<Image, "url" | "external_id">, { message: string }>
+    readonly upload: (input: UploadImageOptions) => Effect.Effect<
+      Result<
+        {
+          response: unknown;
+          image: Pick<Image, "url" | "external_id">;
+        },
+        { message: string }
+      >
     >;
 
     readonly delete: (
@@ -47,7 +51,7 @@ const of_cloudinary: Context.Tag.Service<ImageHostingService> = {
         const array_buffer = await file.arrayBuffer();
         const buffer = Buffer.from(array_buffer);
 
-        const res: UploadApiResponse | undefined = await new Promise(
+        const response: UploadApiResponse | undefined = await new Promise(
           (resolve, reject) => {
             cloudinary.uploader
               .upload_stream(
@@ -61,13 +65,16 @@ const of_cloudinary: Context.Tag.Service<ImageHostingService> = {
           },
         );
 
-        console.log("Upload result:", res);
-        if (!res) {
+        console.log("Upload result:", response);
+        if (!response) {
           return err({ message: "No response from Cloudinary" });
         } else {
           return suc({
-            url: res.secure_url,
-            external_id: res.public_id,
+            response,
+            image: {
+              url: response.secure_url,
+              external_id: response.public_id,
+            },
           });
         }
       },

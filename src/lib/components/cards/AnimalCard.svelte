@@ -1,16 +1,18 @@
 <script lang="ts">
+  import { resolve } from "$app/paths";
   import { ANIMALS } from "$lib/const/animal.const";
   import { TIME } from "$lib/const/time";
   import type { Animal } from "$lib/server/db/schema/animal.model";
   import type { Image } from "$lib/server/db/schema/image.model";
   import Picture from "../images/Picture.svelte";
   import Avatar from "../ui/avatar/avatar.svelte";
+  import Button from "../ui/button/button.svelte";
   import Card from "../ui/card/Card.svelte";
   Image;
   let {
     animal,
   }: {
-    animal: Animal & { images: Pick<Image, "url" | "blurhash">[] };
+    animal: Animal & { images: Pick<Image, "url" | "thumbhash">[] };
   } = $props();
 
   const image = animal.images[0];
@@ -19,7 +21,9 @@
 <Card>
   {#snippet title()}
     <div class="flex items-center justify-between">
-      <h3>{animal.name}</h3>
+      <Button variant="link" href={resolve("/animals/[short_id]", animal)}>
+        {animal.name}
+      </Button>
 
       {#if image}
         <Avatar>

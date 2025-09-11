@@ -52,7 +52,7 @@
     </FormControl>
   </FormField>
 
-  <div class="flex gap-x-2">
+  <div class="flex gap-x-3">
     <FormField {form} name="species" description="The species of the animal">
       <FormControl label="Species">
         {#snippet children({ props })}

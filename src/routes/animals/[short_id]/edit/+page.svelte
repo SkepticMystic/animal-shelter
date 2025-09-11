@@ -1,12 +1,11 @@
 <script lang="ts">
   import { invalidateAll } from "$app/navigation";
   import { AnimalClient } from "$lib/clients/animal.client.js";
-  import { ImageClient } from "$lib/clients/image.client.js";
   import BackButton from "$lib/components/buttons/BackButton.svelte";
+  import DeleteImageButton from "$lib/components/buttons/DeleteImageButton.svelte";
   import AnimalForm from "$lib/components/form/animal/AnimalForm.svelte";
   import Picture from "$lib/components/images/Picture.svelte";
   import ImageUploader from "$lib/components/images/upload/ImageUploader.svelte";
-  import Button from "$lib/components/ui/button/button.svelte";
   import Separator from "$lib/components/ui/separator/separator.svelte";
   import { Items } from "$lib/utils/items.util.js";
 
@@ -40,21 +39,14 @@
   <div class="flex flex-wrap gap-3">
     {#each animal.images as image (image.id)}
       <div class="flex flex-col gap-2">
-        <Picture {image} height={100} width={100} />
+        <Picture {image} height="150" width="150" />
 
-        <Button
-          icon="lucide/x"
-          variant="destructive"
-          title="Delete image"
-          onclick={() =>
-            ImageClient.delete(image.id).then((r) => {
-              if (r.ok) {
-                animal.images = Items.remove(animal.images, image.id);
-              }
-            })}
-        >
-          Delete
-        </Button>
+        <DeleteImageButton
+          image_id={image.id}
+          on_delete={() => {
+            animal.images = Items.remove(animal.images, image.id);
+          }}
+        />
       </div>
     {/each}
   </div>

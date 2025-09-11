@@ -26,6 +26,9 @@ export const get_animals_remote = query(
     const animals = await db.query.animal.findMany({
       ...input.pagination,
       with: {
+        images: {
+          columns: { url: true, thumbhash: true },
+        },
         shelter: {
           columns: { name: true, slug: true },
         },

@@ -18,6 +18,10 @@ export const load = (async () => {
         ? db.query.organization.findFirst({
             where: (org, { eq }) => eq(org.id, session.activeOrganizationId!),
             with: {
+              images: {
+                columns: { id: true, url: true, thumbhash: true },
+              },
+
               members: {
                 columns: { id: true, role: true, createdAt: true },
                 with: {

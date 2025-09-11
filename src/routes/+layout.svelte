@@ -3,10 +3,8 @@
   import { afterNavigate } from "$app/navigation";
   import { page } from "$app/state";
   import {
-      PUBLIC_CLOUDINARY_API_KEY,
-      PUBLIC_CLOUDINARY_CLOUD_NAME,
       PUBLIC_UMAMI_BASE_URL,
-      PUBLIC_UMAMI_WEBSITE_ID,
+      PUBLIC_UMAMI_WEBSITE_ID
   } from "$env/static/public";
   import Navbar from "$lib/components/Navbar.svelte";
   import SEO from "$lib/components/SEO.svelte";
@@ -17,7 +15,6 @@
   import { partytownSnippet } from "@qwik.dev/partytown/integration";
   import { mode, ModeWatcher } from "mode-watcher";
   import { onMount, type Snippet } from "svelte";
-  import { configureCloudinary } from "svelte-cloudinary";
   import { toast, Toaster } from "svelte-sonner";
   import "../app.css";
 
@@ -28,12 +25,6 @@
   let { children }: Props = $props();
 
   let loading = $state(true);
-
-  configureCloudinary({
-    analytics: false,
-    apiKey: PUBLIC_CLOUDINARY_API_KEY,
-    cloudName: PUBLIC_CLOUDINARY_CLOUD_NAME,
-  })
 
   session.subscribe(($session) => {
     if ($session.isRefetching || $session.isPending) {

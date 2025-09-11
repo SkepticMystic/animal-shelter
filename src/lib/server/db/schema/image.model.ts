@@ -1,5 +1,12 @@
 import { relations } from "drizzle-orm";
-import { index, pgEnum, pgTable, uuid, varchar } from "drizzle-orm/pg-core";
+import {
+  index,
+  jsonb,
+  pgEnum,
+  pgTable,
+  uuid,
+  varchar,
+} from "drizzle-orm/pg-core";
 import { createInsertSchema, createUpdateSchema } from "drizzle-zod";
 import z from "zod";
 import { IMAGES } from "../../../const/image.const";
@@ -12,8 +19,10 @@ export const image_provider_enum = pgEnum(
   IMAGES.PROVIDER.IDS,
 );
 
+// NOTE: Use the same names as given to the drizzle.schema setup
 export const image_resource_kind_enum = pgEnum("image_resource_kind", [
   "animal",
+  "organization",
 ]);
 
 export const ImageTable = pgTable(
@@ -24,6 +33,8 @@ export const ImageTable = pgTable(
     url: varchar({ length: 2048 }).notNull(),
     provider: image_provider_enum().notNull(),
     external_id: varchar({ length: 255 }).notNull().unique(),
+    /** Raw response from provider */
+    response: jsonb().notNull(),
 
     // NOT unique! Many images for one resource
     resource_id: uuid().notNull(),
@@ -33,16 +44,21 @@ export const ImageTable = pgTable(
       .notNull()
       .references(() => OrganizationTable.id, { onDelete: "cascade" }),
 
-    blurhash: varchar({ length: 50 }),
+    thumbhash: varchar({ length: 100 }),
 
     ...Schema.timestamps,
   },
-  (table) => [index("idx_image_org_id").on(table["org_id"])],
+  (table) => [
+    index("idx_image_org_id").on(table["org_id"]),
+    // NOTE: I could make a compound index on (resource_id, resource_kind) but
+    // the id is gonna be a unique uuid
+    index("idx_image_resource_id").on(table["resource_id"]),
+  ],
 );
 
 export const image_relations = relations(ImageTable, ({ one }) => ({
   shelter: one(OrganizationTable, {
-    fields: [ImageTable.org_id],
+    fields: [ImageTable.resource_id],
     references: [OrganizationTable.id],
   }),
 
@@ -56,7 +72,7 @@ export type Image = typeof ImageTable.$inferSelect;
 
 const refinements = {
   url: z.url(),
-  blurhash: (s: z.ZodString) => s.nullable(),
+  thumbhash: (s: z.ZodString) => s.nullable(),
 };
 
 const pick = {
@@ -66,7 +82,7 @@ const pick = {
   resource_id: true,
   resource_kind: true,
   org_id: true,
-  blurhash: true,
+  thumbhash: true,
 } satisfies Partial<Record<keyof Image, true>>;
 
 export namespace ImageSchema {
