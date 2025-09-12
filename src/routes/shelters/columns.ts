@@ -1,8 +1,10 @@
 import { resolve } from "$app/paths";
+import Picture from "$lib/components/images/Picture.svelte";
 import ShelterLink from "$lib/components/links/ShelterLink.svelte";
 import Time from "$lib/components/Time.svelte";
 import { renderComponent } from "$lib/components/ui/data-table";
 import { ICONS } from "$lib/const/icon.const";
+import { IMAGES } from "$lib/const/image.const";
 import { ROUTES } from "$lib/const/routes.const";
 import type { get_shelters_remote } from "$lib/remote/shelter.remote";
 import { Format } from "$lib/utils/format.util";
@@ -13,6 +15,18 @@ type TData = Awaited<ReturnType<typeof get_shelters_remote>>[number];
 export const columns = TanstackTable.make_columns<TData>({
   columns: [
     {
+      id: "avatar",
+      enableHiding: false,
+      enableSorting: false,
+
+      cell: ({ row }) =>
+        renderComponent(Picture, {
+          ...IMAGES.SIZES.AVATAR,
+          image: row.original.images.at(0),
+        }),
+    },
+
+    {
       accessorKey: "name",
       meta: { label: "Name" },
 
@@ -21,10 +35,10 @@ export const columns = TanstackTable.make_columns<TData>({
     },
 
     {
-      accessorKey: "animal_count",
+      id: "animal_count",
       meta: { label: "Animals" },
 
-      cell: ({ row }) => Format.number(row.original.animal_count),
+      cell: ({ row }) => Format.number(row.original.animals.length),
     },
 
     {

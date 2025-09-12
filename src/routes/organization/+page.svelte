@@ -12,6 +12,8 @@
   import Dialog from "$lib/components/ui/dialog/dialog.svelte";
   import Icon from "$lib/components/ui/icon/Icon.svelte";
   import Loading from "$lib/components/ui/loading/Loading.svelte";
+  import Separator from "$lib/components/ui/separator/separator.svelte";
+  import { IMAGES } from "$lib/const/image.const";
   import { get_invitations_remote } from "$lib/remote/auth/invitation.remote.js";
   import { Items } from "$lib/utils/items.util.js";
 
@@ -25,7 +27,13 @@
 <div class="flex flex-col gap-7">
   <div class="space-y-3">
     <div class="flex items-end justify-between">
-      <h1>Shelter</h1>
+      <div class="flex items-center gap-2">
+        {#if data.organization}
+          <Picture {...IMAGES.SIZES.AVATAR} image={images?.at(0)} />
+        {/if}
+
+        <h1>{data.organization?.name ?? "Shelter"}</h1>
+      </div>
 
       <Dialog title="New Shelter" description="Create a new animal shelter">
         {#snippet trigger()}
@@ -44,10 +52,10 @@
     </div>
 
     {#if data.organization}
-      <Collapsible title={data.organization.name}>
+      <Collapsible>
         {#snippet trigger({ open })}
           <div class="flex items-center justify-between">
-            <h2>{data.organization!.name}</h2>
+            <h2>Edit shelter</h2>
 
             <Button
               variant="ghost"
@@ -57,30 +65,33 @@
         {/snippet}
 
         {#snippet content()}
-          <OrganizationForm
-            form_input={data.update_org_form_input}
-            submit={(update) =>
-              OrganizationsClient.update(data.organization!.id, update)}
-          />
+          <div class="space-y-5">
+            <OrganizationForm
+              form_input={data.update_org_form_input}
+              submit={(update) =>
+                OrganizationsClient.update(data.organization!.id, update)}
+            />
 
-          <ImageUploader
-            resource_kind="organization"
-            resource_id={data.organization!.id}
-          />
+            <Separator />
 
-          <div class="flex flex-wrap gap-3">
-            {#each images as image (image.id)}
-              <div class="flex flex-col gap-2">
-                <Picture {image} height={150} width={150} />
+            <ImageUploader
+              resource_kind="organization"
+              resource_id={data.organization!.id}
+            />
 
-                <DeleteImageButton
-                  image_id={image.id}
-                  on_delete={() => {
-                    images = Items.remove(images, image.id);
-                  }}
-                />
-              </div>
-            {/each}
+            <div class="flex flex-wrap gap-3">
+              {#each images as image (image.id)}
+                <div class="flex flex-col gap-2">
+                  <Picture {image} height={150} width={150} />
+                  <DeleteImageButton
+                    image_id={image.id}
+                    on_delete={() => {
+                      images = Items.remove(images, image.id);
+                    }}
+                  />
+                </div>
+              {/each}
+            </div>
           </div>
         {/snippet}
       </Collapsible>

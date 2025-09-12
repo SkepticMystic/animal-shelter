@@ -4,6 +4,13 @@ const SPECIES_MAP = {
   cat: { label: "Cat" },
 } satisfies Record<(typeof SPECIES_IDS)[number], { label: string }>;
 
+const GENDER_IDS = ["m", "f", "u"] as const;
+const GENDER_MAP = {
+  m: { label: "Male" },
+  f: { label: "Female" },
+  u: { label: "Unknown" },
+} satisfies Record<(typeof GENDER_IDS)[number], { label: string }>;
+
 export const ANIMALS = {
   SPECIES: {
     IDS: SPECIES_IDS,
@@ -11,6 +18,15 @@ export const ANIMALS = {
     OPTIONS: SPECIES_IDS.map((id) => ({
       value: id,
       label: SPECIES_MAP[id].label,
+    })),
+  },
+
+  GENDER: {
+    IDS: GENDER_IDS,
+    MAP: GENDER_MAP,
+    OPTIONS: GENDER_IDS.map((id) => ({
+      value: id,
+      label: GENDER_MAP[id].label,
     })),
   },
 };

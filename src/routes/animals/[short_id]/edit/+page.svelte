@@ -7,6 +7,7 @@
   import Picture from "$lib/components/images/Picture.svelte";
   import ImageUploader from "$lib/components/images/upload/ImageUploader.svelte";
   import Separator from "$lib/components/ui/separator/separator.svelte";
+  import { IMAGES } from "$lib/const/image.const.js";
   import { Items } from "$lib/utils/items.util.js";
 
   let { data } = $props();
@@ -38,10 +39,11 @@
 
   <div class="flex flex-wrap gap-3">
     {#each animal.images as image (image.id)}
-      <div class="flex flex-col gap-2">
-        <Picture {image} height="150" width="150" />
+      <div class="group relative">
+        <Picture class="" {image} {...IMAGES.SIZES.THUMBNAIL} />
 
         <DeleteImageButton
+          class="absolute top-1 right-1 hidden group-hover:block"
           image_id={image.id}
           on_delete={() => {
             animal.images = Items.remove(animal.images, image.id);

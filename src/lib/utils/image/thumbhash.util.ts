@@ -20,11 +20,10 @@ export const Thumbhash = {
       const binary_thumbhash = rgbaToThumbHash(info.width, info.height, data);
       console.timeLog("Thumbhash.generate", "binary_thumbhash");
 
-      const base64_thumbhash = Buffer.from(binary_thumbhash).toString("base64");
-      console.log("base64_thumbhash:", base64_thumbhash);
+      const base64 = Buffer.from(binary_thumbhash).toString("base64");
 
       console.timeEnd("Thumbhash.generate");
-      return suc(base64_thumbhash);
+      return suc(base64);
     } catch (error) {
       console.error(error, "Error generating thumbhash:");
       return err({ message: "Error generating thumbhash" });

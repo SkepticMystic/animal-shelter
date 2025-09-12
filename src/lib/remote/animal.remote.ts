@@ -25,6 +25,7 @@ export const get_animals_remote = query(
   async (input) => {
     const animals = await db.query.animal.findMany({
       ...input.pagination,
+
       with: {
         images: {
           columns: { url: true, thumbhash: true },

@@ -38,28 +38,27 @@
   const { form: form_data } = form;
 </script>
 
-<form class="flex flex-col gap-2" method="POST" use:form.enhance>
-  <FormField {form} name="name" description="The name of the animal">
-    <FormControl label="Name">
-      {#snippet children({ props })}
-        <Input
-          {...props}
-          required
-          placeholder="Name"
-          bind:value={$form_data.name}
-        />
-      {/snippet}
-    </FormControl>
-  </FormField>
+<form class="flex max-w-lg flex-col gap-2" method="POST" use:form.enhance>
+  <div class="flex flex-wrap gap-x-3 gap-y-2">
+    <FormField {form} name="name" description="Can change later">
+      <FormControl label="Name">
+        {#snippet children({ props })}
+          <Input
+            {...props}
+            required
+            placeholder="Name"
+            bind:value={$form_data.name}
+          />
+        {/snippet}
+      </FormControl>
+    </FormField>
 
-  <div class="flex gap-x-3">
-    <FormField {form} name="species" description="The species of the animal">
+    <FormField {form} name="species" description="">
       <FormControl label="Species">
         {#snippet children({ props })}
           <SingleSelect
             {...props}
             required
-            class="w-full"
             placeholder="Select species"
             options={ANIMALS.SPECIES.OPTIONS}
             bind:value={$form_data.species}
@@ -68,18 +67,28 @@
       </FormControl>
     </FormField>
 
+    <FormField {form} name="gender" description="">
+      <FormControl label="Gender">
+        {#snippet children({ props })}
+          <SingleSelect
+            {...props}
+            required
+            placeholder="Select gender"
+            options={ANIMALS.GENDER.OPTIONS}
+            bind:value={$form_data.gender}
+          />
+        {/snippet}
+      </FormControl>
+    </FormField>
+
     <FormField
       {form}
       name="date_of_birth"
-      description="The date of birth of the animal. Approximate is fine."
+      description="Approximate date is fine"
     >
       <FormControl label="Date of birth">
         {#snippet children({ props })}
-          <DatePicker
-            {...props}
-            class="w-full"
-            bind:value={$form_data.date_of_birth}
-          />
+          <DatePicker {...props} bind:value={$form_data.date_of_birth} />
         {/snippet}
       </FormControl>
     </FormField>

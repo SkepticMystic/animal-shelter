@@ -8,6 +8,7 @@ import Time from "$lib/components/Time.svelte";
 import { renderComponent } from "$lib/components/ui/data-table";
 import { ANIMALS } from "$lib/const/animal.const";
 import { ICONS } from "$lib/const/icon.const";
+import { IMAGES } from "$lib/const/image.const";
 import { ROUTES } from "$lib/const/routes.const";
 import type { get_animals_remote } from "$lib/remote/animal.remote";
 import type { Organization } from "$lib/server/db/schema/auth.model";
@@ -24,9 +25,7 @@ export const columns = TanstackTable.make_columns<TData>({
 
       cell: ({ row }) =>
         renderComponent(Picture, {
-          width: 40,
-          height: 40,
-          class: "h-10 w-10",
+          ...IMAGES.SIZES.AVATAR,
           image: row.original.images.at(0),
         }),
     },
@@ -44,6 +43,15 @@ export const columns = TanstackTable.make_columns<TData>({
 
       cell: ({ row }) => ANIMALS.SPECIES.MAP[row.original.species].label,
     },
+
+    {
+      accessorKey: "gender",
+      meta: { label: "Gender" },
+      filterFn: "arrIncludesSome",
+
+      cell: ({ row }) => ANIMALS.GENDER.MAP[row.original.gender].label,
+    },
+
     {
       accessorKey: "date_of_birth",
       meta: { label: "Birthday" },

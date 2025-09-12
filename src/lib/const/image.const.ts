@@ -8,6 +8,25 @@ export const IMAGES = {
   BLURHASH: {
     COMPONENTS: { X: 4, Y: 4 },
   },
+
+  SIZES: {
+    AVATAR: {
+      width: 40,
+      height: 40,
+    },
+    THUMBNAIL: {
+      width: 150,
+      height: 150,
+    },
+    PREVIEW: {
+      width: 400,
+      height: 400,
+    },
+    FULL: {
+      width: 800,
+      height: 800,
+    },
+  } satisfies Record<string, { width: number; height: number }>,
 };
 
 export declare namespace IImage {

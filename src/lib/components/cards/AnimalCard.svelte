@@ -1,11 +1,11 @@
 <script lang="ts">
   import { resolve } from "$app/paths";
   import { ANIMALS } from "$lib/const/animal.const";
+  import { IMAGES } from "$lib/const/image.const";
   import { TIME } from "$lib/const/time";
   import type { Animal } from "$lib/server/db/schema/animal.model";
   import type { Image } from "$lib/server/db/schema/image.model";
   import Picture from "../images/Picture.svelte";
-  import Avatar from "../ui/avatar/avatar.svelte";
   import Button from "../ui/button/button.svelte";
   import Card from "../ui/card/Card.svelte";
   Image;
@@ -26,17 +26,7 @@
       </Button>
 
       {#if image}
-        <Avatar>
-          {#snippet img(props)}
-            <Picture
-              {image}
-              width={32}
-              height={32}
-              alt={animal.name}
-              {...props}
-            />
-          {/snippet}
-        </Avatar>
+        <Picture {image} {...IMAGES.SIZES.AVATAR} alt={animal.name} />
       {/if}
     </div>
   {/snippet}

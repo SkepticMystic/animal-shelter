@@ -22,6 +22,8 @@ export const animal_species_enum = pgEnum(
   ANIMALS.SPECIES.IDS,
 );
 
+export const animal_gender_enum = pgEnum("animal_gender", ANIMALS.GENDER.IDS);
+
 /** Defines the table of animals in a shelter (org)
  * Each animal is associated with an organization and a member (staff)
  */
@@ -33,8 +35,12 @@ export const AnimalTable = pgTable(
 
     bio: text().default(""),
     name: varchar({ length: 255 }).notNull(),
-    species: animal_species_enum().notNull(),
     date_of_birth: timestamp({ mode: "date" }),
+
+    species: animal_species_enum().notNull(),
+    // breed: varchar({ length: 255 }),
+    // color: varchar({ length: 255 }),
+    gender: animal_gender_enum().default("u").notNull(),
 
     org_id: uuid()
       .notNull()
@@ -74,6 +80,7 @@ const refinements = {
 const pick = {
   bio: true,
   name: true,
+  gender: true,
   species: true,
   date_of_birth: true,
 } satisfies Partial<Record<keyof Animal, true>>;

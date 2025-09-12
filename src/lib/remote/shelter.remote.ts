@@ -1,8 +1,5 @@
 import { query } from "$app/server";
 import { db } from "$lib/server/db/drizzle.db";
-import { AnimalTable } from "$lib/server/db/schema/animal.model";
-import { OrganizationTable } from "$lib/server/db/schema/auth.model";
-import { count, eq } from "drizzle-orm";
 import z from "zod";
 
 export const get_shelters_remote = query(
@@ -16,21 +13,19 @@ export const get_shelters_remote = query(
   }),
 
   async (input) => {
-    const shelters = await db
-      .select({
-        id: OrganizationTable.id,
-        name: OrganizationTable.name,
-        slug: OrganizationTable.slug,
-        logo: OrganizationTable.logo,
-        createdAt: OrganizationTable.createdAt,
+    const shelters = await db.query.organization.findMany({
+      with: {
+        images: {
+          columns: { url: true, thumbhash: true },
+        },
+        animals: {
+          columns: { id: true },
+        },
+      },
 
-        animal_count: count(AnimalTable.id).as("animal_count"),
-      })
-      .from(OrganizationTable)
-      .leftJoin(AnimalTable, eq(OrganizationTable.id, AnimalTable.org_id))
-      .groupBy(OrganizationTable.id)
-      .offset(input.pagination.offset)
-      .limit(input.pagination.limit);
+      limit: input.pagination.limit,
+      offset: input.pagination.offset,
+    });
 
     return shelters;
   },
