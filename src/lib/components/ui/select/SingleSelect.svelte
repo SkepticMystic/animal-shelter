@@ -1,11 +1,9 @@
 <script lang="ts" generics="V extends string">
   import * as Select from "$lib/components/ui/select/index.js";
-  import type { MaybePromise } from "$lib/interfaces";
+  import type { MaybePromise, SelectOption } from "$lib/interfaces";
   import { cn } from "$lib/utils/shadcn.util";
   import type { SelectRootProps } from "bits-ui";
   import type { ClassValue } from "svelte/elements";
-
-  type Option = { value: V; label: string };
 
   let {
     options,
@@ -17,10 +15,10 @@
     ...rest
   }: Omit<SelectRootProps, "type" | "value" | "onValueChange"> & {
     value?: V;
-    options: Option[];
     loading?: boolean;
     class?: ClassValue;
     placeholder?: string;
+    options: SelectOption<V>[];
     on_value_select?: (value: V) => MaybePromise<unknown>;
   } = $props();
 

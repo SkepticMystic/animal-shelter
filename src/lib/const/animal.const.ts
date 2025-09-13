@@ -1,3 +1,5 @@
+import type { SelectOption } from "$lib/interfaces";
+
 const SPECIES_IDS = ["dog", "cat"] as const;
 const SPECIES_MAP = {
   dog: { label: "Dog" },
@@ -18,7 +20,7 @@ export const ANIMALS = {
     OPTIONS: SPECIES_IDS.map((id) => ({
       value: id,
       label: SPECIES_MAP[id].label,
-    })),
+    })) satisfies SelectOption[],
   },
 
   GENDER: {
@@ -27,6 +29,6 @@ export const ANIMALS = {
     OPTIONS: GENDER_IDS.map((id) => ({
       value: id,
       label: GENDER_MAP[id].label,
-    })),
+    })) satisfies SelectOption[],
   },
 };

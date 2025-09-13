@@ -12,3 +12,17 @@ export type MaybePromise<T> = T | Promise<T>;
 export type PartiallyTypedObject<T> = {
   [K in keyof T]: T[K];
 };
+
+export type SelectOption<
+  V extends string | number = string,
+  D extends unknown | undefined = undefined,
+> = D extends undefined
+  ? {
+      value: V;
+      label: string;
+    }
+  : {
+      data: D;
+      value: V;
+      label: string;
+    };

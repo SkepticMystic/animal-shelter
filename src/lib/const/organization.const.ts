@@ -59,6 +59,7 @@ const statement = {
   ...defaultStatements,
   image: ["create", "update", "delete"],
   animal: ["create", "update", "delete"],
+  animal_event: ["create", "update", "delete"],
 } as const;
 
 const ac = createAccessControl(statement);
@@ -70,18 +71,21 @@ export const OrganizationAccessControl = {
       ...memberAc.statements,
       image: ["create"],
       animal: ["create"],
+      animal_event: ["create"],
     }),
 
     admin: ac.newRole({
       ...adminAc.statements,
       image: ["create", "update", "delete"],
       animal: ["create", "update", "delete"],
+      animal_event: ["create", "update", "delete"],
     }),
 
     owner: ac.newRole({
       ...ownerAc.statements,
       image: ["create", "update", "delete"],
       animal: ["create", "update", "delete"],
+      animal_event: ["create", "update", "delete"],
     }),
   } satisfies Record<IOrganization.RoleId, ReturnType<typeof ac.newRole>>,
 };

@@ -10,9 +10,10 @@ import {
 import { createInsertSchema, createUpdateSchema } from "drizzle-zod";
 import z from "zod";
 import { IMAGES } from "../../../const/image.const";
-import { Schema } from "../../../server/db/schema/index.schema";
 import { AnimalTable } from "./animal.model";
 import { OrganizationTable } from "./auth.model";
+import { DynamicSchema } from "./common/dynamic.schema";
+import { StaticSchema } from "./common/static.schema";
 
 export const image_provider_enum = pgEnum(
   "image_providers",
@@ -28,7 +29,8 @@ export const image_resource_kind_enum = pgEnum("image_resource_kind", [
 export const ImageTable = pgTable(
   "image",
   {
-    ...Schema.id(),
+    ...StaticSchema.id(),
+    ...DynamicSchema.org_id(),
 
     url: varchar({ length: 2048 }).notNull(),
     provider: image_provider_enum().notNull(),
@@ -40,13 +42,9 @@ export const ImageTable = pgTable(
     resource_id: uuid().notNull(),
     resource_kind: image_resource_kind_enum().notNull(),
 
-    org_id: uuid()
-      .notNull()
-      .references(() => OrganizationTable.id, { onDelete: "cascade" }),
-
     thumbhash: varchar({ length: 100 }),
 
-    ...Schema.timestamps,
+    ...StaticSchema.timestamps,
   },
   (table) => [
     index("idx_image_org_id").on(table["org_id"]),

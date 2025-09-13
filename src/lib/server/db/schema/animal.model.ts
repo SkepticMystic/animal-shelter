@@ -12,9 +12,10 @@ import { createInsertSchema, createUpdateSchema } from "drizzle-zod";
 import type z from "zod";
 import { ANIMALS } from "../../../const/animal.const";
 import { TIME } from "../../../const/time";
-import { Schema } from "../../../server/db/schema/index.schema";
 import { Dates } from "../../../utils/dates";
+import { AnimalEventTable } from "./animal_event.model";
 import { OrganizationTable } from "./auth.model";
+import { StaticSchema } from "./common/static.schema";
 import { ImageTable } from "./image.model";
 
 export const animal_species_enum = pgEnum(
@@ -30,8 +31,8 @@ export const animal_gender_enum = pgEnum("animal_gender", ANIMALS.GENDER.IDS);
 export const AnimalTable = pgTable(
   "animal",
   {
-    ...Schema.id(),
-    ...Schema.short_id(),
+    ...StaticSchema.id(),
+    ...StaticSchema.short_id(),
 
     bio: text().default(""),
     name: varchar({ length: 255 }).notNull(),
@@ -46,7 +47,7 @@ export const AnimalTable = pgTable(
       .notNull()
       .references(() => OrganizationTable.id, { onDelete: "cascade" }),
 
-    ...Schema.timestamps,
+    ...StaticSchema.timestamps,
   },
   (table) => [index("idx_animal_org_id").on(table["org_id"])],
 );
@@ -58,6 +59,7 @@ export const animal_relations = relations(AnimalTable, ({ one, many }) => ({
   }),
 
   images: many(ImageTable),
+  events: many(AnimalEventTable),
 }));
 
 export type Animal = typeof AnimalTable.$inferSelect;

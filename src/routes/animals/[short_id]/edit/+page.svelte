@@ -2,9 +2,9 @@
   import { invalidateAll } from "$app/navigation";
   import { AnimalClient } from "$lib/clients/animal.client.js";
   import BackButton from "$lib/components/buttons/BackButton.svelte";
-  import DeleteImageButton from "$lib/components/buttons/DeleteImageButton.svelte";
   import AnimalForm from "$lib/components/form/animal/AnimalForm.svelte";
   import Picture from "$lib/components/images/Picture.svelte";
+  import PictureActionsWrapper from "$lib/components/images/PictureActionsWrapper.svelte";
   import ImageUploader from "$lib/components/images/upload/ImageUploader.svelte";
   import Separator from "$lib/components/ui/separator/separator.svelte";
   import { IMAGES } from "$lib/const/image.const.js";
@@ -39,17 +39,13 @@
 
   <div class="flex flex-wrap gap-3">
     {#each animal.images as image (image.id)}
-      <div class="group relative">
-        <Picture class="" {image} {...IMAGES.SIZES.THUMBNAIL} />
-
-        <DeleteImageButton
-          class="absolute top-1 right-1 hidden group-hover:block"
-          image_id={image.id}
-          on_delete={() => {
-            animal.images = Items.remove(animal.images, image.id);
-          }}
-        />
-      </div>
+      <PictureActionsWrapper
+        {image}
+        on_delete={() =>
+          (animal.images = Items.remove(animal.images, image.id))}
+      >
+        <Picture {image} {...IMAGES.SIZES.THUMBNAIL} />
+      </PictureActionsWrapper>
     {/each}
   </div>
 </div>

@@ -17,14 +17,14 @@ import { ADMIN } from "../../../const/admin.const";
 import { AUTH } from "../../../const/auth.const";
 import { ORGANIZATION } from "../../../const/organization.const";
 import { AnimalTable } from "./animal.model";
+import { StaticSchema } from "./common/static.schema";
 import { ImageTable } from "./image.model";
-import { Schema } from "./index.schema";
 
 export const user_role_enum = pgEnum("user_role", ADMIN.ROLES.IDS);
 
 // Define User table schema
 export const UserTable = pgTable("user", {
-  ...Schema.id(),
+  ...StaticSchema.id(),
 
   // NOTE: BetterAuth defaults name to ''
   name: varchar({ length: 255 }).notNull().default(""),
@@ -38,7 +38,7 @@ export const UserTable = pgTable("user", {
   banReason: text(),
   banExpires: timestamp({ mode: "date" }),
 
-  ...Schema.timestamps,
+  ...StaticSchema.timestamps,
 });
 
 // Export type for use in application
@@ -62,7 +62,7 @@ export const session_member_role_enum = pgEnum(
 export const SessionTable = pgTable(
   "session",
   {
-    ...Schema.id(),
+    ...StaticSchema.id(),
 
     userId: uuid()
       .notNull()
@@ -89,7 +89,7 @@ export const SessionTable = pgTable(
     }),
 
     expiresAt: timestamp({ mode: "date" }).notNull(),
-    ...Schema.timestamps,
+    ...StaticSchema.timestamps,
   },
   (table) => [index("session_user_id_idx").on(table.userId)],
 );
@@ -110,7 +110,7 @@ export const provider_id_enum = pgEnum("provider_id", AUTH.PROVIDERS.IDS);
 export const AccountTable = pgTable(
   "account",
   {
-    ...Schema.id(),
+    ...StaticSchema.id(),
 
     userId: uuid()
       .notNull()
@@ -130,7 +130,7 @@ export const AccountTable = pgTable(
       mode: "date",
     }),
 
-    ...Schema.timestamps,
+    ...StaticSchema.timestamps,
   },
   (table) => [index("account_user_id_idx").on(table.userId)],
 );
@@ -146,15 +146,22 @@ export const account_relations = relations(AccountTable, ({ one }) => ({
 }));
 
 export const OrganizationTable = pgTable("organization", {
-  ...Schema.id(),
+  ...StaticSchema.id(),
 
   name: varchar({ length: 255 }).notNull(),
   slug: varchar({ length: 255 }).notNull().unique(),
   logo: varchar({ length: 2048 }),
 
+  // description: text(),
+  // website: varchar({ length: 2048 }),
+  // email: varchar({ length: 255 }),
+  // phone: varchar({ length: 50 }),
+  // address: varchar({ length: 512 }),
+  // links: jsonb().$type<Record<string, string>>(), // Using jsonb for key-value pairs
+
   metadata: text(),
 
-  ...Schema.timestamps,
+  ...StaticSchema.timestamps,
 });
 
 export type Organization = typeof OrganizationTable.$inferSelect;
@@ -212,7 +219,7 @@ export const member_role_enum = pgEnum("member_role", ORGANIZATION.ROLES.IDS);
 export const MemberTable = pgTable(
   "member",
   {
-    ...Schema.id(),
+    ...StaticSchema.id(),
 
     userId: uuid()
       .notNull()
@@ -224,7 +231,7 @@ export const MemberTable = pgTable(
 
     role: member_role_enum().default("member").notNull(),
 
-    ...Schema.timestamps,
+    ...StaticSchema.timestamps,
   },
   (table) => [
     index("member_user_id_idx").on(table.userId),
@@ -249,7 +256,7 @@ export const member_relations = relations(MemberTable, ({ one }) => ({
 export const PasskeyTable = pgTable(
   "passkey",
   {
-    ...Schema.id(),
+    ...StaticSchema.id(),
 
     name: varchar({ length: 255 }),
     userId: uuid()
@@ -264,7 +271,7 @@ export const PasskeyTable = pgTable(
     transports: jsonb().notNull().$type<string[]>(), // Using jsonb for array of strings
     aaguid: varchar({ length: 255 }).notNull(),
 
-    ...Schema.timestamps,
+    ...StaticSchema.timestamps,
   },
   (table) => [index("passkey_user_id_idx").on(table.userId)],
 );
@@ -287,7 +294,7 @@ export const invitation_status_enum = pgEnum(
 export const InvitationTable = pgTable(
   "invitation",
   {
-    ...Schema.id(),
+    ...StaticSchema.id(),
 
     email: varchar({ length: 255 }).notNull(),
 
@@ -302,7 +309,7 @@ export const InvitationTable = pgTable(
     status: invitation_status_enum().default("pending").notNull(),
 
     expiresAt: timestamp({ mode: "date" }).notNull(),
-    ...Schema.timestamps,
+    ...StaticSchema.timestamps,
   },
   (table) => [
     index("invitation_email_idx").on(table.email),
@@ -325,13 +332,13 @@ export const invitation_relations = relations(InvitationTable, ({ one }) => ({
 }));
 
 export const VerificationTable = pgTable("verification", {
-  ...Schema.id(),
+  ...StaticSchema.id(),
 
   identifier: varchar({ length: 255 }).notNull().unique(),
   value: varchar({ length: 2048 }).notNull(),
 
   expiresAt: timestamp({ mode: "date" }).notNull(),
-  ...Schema.timestamps,
+  ...StaticSchema.timestamps,
 });
 
 export type Verification = typeof VerificationTable.$inferSelect;

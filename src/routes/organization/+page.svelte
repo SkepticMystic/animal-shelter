@@ -3,9 +3,9 @@
   import OrganizationMembersList from "$lib/components/auth/members/OrganizationMembersTable.svelte";
   import InviteOrganizationMemberForm from "$lib/components/auth/organizations/InviteOrganizationMemberForm.svelte";
   import OrganizationInvitationsTable from "$lib/components/auth/organizations/OrganizationInvitationsTable.svelte";
-  import DeleteImageButton from "$lib/components/buttons/DeleteImageButton.svelte";
   import OrganizationForm from "$lib/components/form/organization/OrganizationForm.svelte";
   import Picture from "$lib/components/images/Picture.svelte";
+  import PictureActionsWrapper from "$lib/components/images/PictureActionsWrapper.svelte";
   import ImageUploader from "$lib/components/images/upload/ImageUploader.svelte";
   import Button from "$lib/components/ui/button/button.svelte";
   import Collapsible from "$lib/components/ui/collapsible/Collapsible.svelte";
@@ -81,15 +81,12 @@
 
             <div class="flex flex-wrap gap-3">
               {#each images as image (image.id)}
-                <div class="flex flex-col gap-2">
+                <PictureActionsWrapper
+                  {image}
+                  on_delete={() => (images = Items.remove(images, image.id))}
+                >
                   <Picture {image} height={150} width={150} />
-                  <DeleteImageButton
-                    image_id={image.id}
-                    on_delete={() => {
-                      images = Items.remove(images, image.id);
-                    }}
-                  />
-                </div>
+                </PictureActionsWrapper>
               {/each}
             </div>
           </div>

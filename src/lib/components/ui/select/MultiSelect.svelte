@@ -1,8 +1,7 @@
 <script lang="ts" generics="V extends string">
   import * as Select from "$lib/components/ui/select/index.js";
+  import type { SelectOption } from "$lib/interfaces";
   import type { SelectRootProps } from "bits-ui";
-
-  type Option = { value: V; label: string };
 
   let {
     options,
@@ -14,9 +13,9 @@
     ...rest_props
   }: Omit<SelectRootProps, "type" | "value" | "onValueChange" | "items"> & {
     value?: V[];
-    options: Option[];
     loading?: boolean;
     placeholder?: string;
+    options: SelectOption<V>[];
     on_value_change?: (value?: V[]) => void;
   } = $props();
 

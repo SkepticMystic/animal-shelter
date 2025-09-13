@@ -2,6 +2,7 @@
   import { AnimalClient } from "$lib/clients/animal.client";
   import AnimalForm from "$lib/components/form/animal/AnimalForm.svelte";
   import Button from "$lib/components/ui/button/button.svelte";
+  import MultiCombobox from "$lib/components/ui/combobox/MultiCombobox.svelte";
   import DataTable from "$lib/components/ui/data-table/data-table.svelte";
   import DateRangePicker from "$lib/components/ui/date-picker/DateRangePicker.svelte";
   import Dialog from "$lib/components/ui/dialog/dialog.svelte";
@@ -82,7 +83,7 @@
             }
           />
 
-          <MultiSelect
+          <MultiCombobox
             placeholder="Shelters"
             options={(
               table
@@ -100,7 +101,7 @@
                   []) as string[],
               (value) => table.getColumn("shelter")?.setFilterValue(value)
             }
-          />
+          ></MultiCombobox>
 
           {#if table.getState().columnFilters.length}
             <Button

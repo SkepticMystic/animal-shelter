@@ -4,7 +4,7 @@
   import UserAvatar from "$lib/components/ui/avatar/UserAvatar.svelte";
   import { renderComponent } from "$lib/components/ui/data-table";
   import DataTable from "$lib/components/ui/data-table/data-table.svelte";
-  import Select from "$lib/components/ui/select/SingleSelect.svelte";
+  import SingleSelect from "$lib/components/ui/select/SingleSelect.svelte";
   import {
     ORGANIZATION,
     type IOrganization,
@@ -68,7 +68,7 @@
         meta: { label: "Role" },
 
         cell: ({ row }) =>
-          renderComponent(Select, {
+          renderComponent(SingleSelect, {
             value: row.original.role,
             options: ORGANIZATION.ROLES.OPTIONS,
             on_value_select: (value) =>

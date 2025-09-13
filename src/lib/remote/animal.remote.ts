@@ -10,10 +10,22 @@ import { ImageService } from "$lib/services/image.service";
 import type { APIResult } from "$lib/utils/form.util";
 import { err, suc } from "$lib/utils/result.util";
 import { and, eq } from "drizzle-orm";
+
 import z from "zod";
+
+const SMART_FIELDS = ["name", "bio"] satisfies (keyof Animal)[];
 
 export const get_animals_remote = query(
   z.object({
+    ids: z.array(z.uuid()).optional(),
+
+    smart: z
+      .object({
+        query: z.string().max(100),
+        fields: z.array(z.enum(SMART_FIELDS)).default(SMART_FIELDS),
+      })
+      .optional(),
+
     pagination: z
       .object({
         offset: z.number().min(0).default(0),
@@ -23,20 +35,37 @@ export const get_animals_remote = query(
   }),
 
   async (input) => {
-    const animals = await db.query.animal.findMany({
-      ...input.pagination,
+    try {
+      console.log("get_animals_remote input:", input);
+      return await db.query.animal.findMany({
+        ...input.pagination,
 
-      with: {
-        images: {
-          columns: { url: true, thumbhash: true },
-        },
-        shelter: {
-          columns: { name: true, slug: true },
-        },
-      },
-    });
+        where: (table, { or, and, ilike, inArray }) =>
+          and(
+            input.ids?.length ? inArray(table.id, input.ids) : undefined,
 
-    return animals;
+            input.smart?.query && input.smart.fields.length
+              ? or(
+                  ...input.smart.fields.map((field) =>
+                    ilike(table[field], `%${input.smart!.query}%`),
+                  ),
+                )
+              : undefined,
+          ),
+
+        with: {
+          images: {
+            columns: { url: true, thumbhash: true },
+          },
+          shelter: {
+            columns: { name: true, slug: true },
+          },
+        },
+      });
+    } catch (error) {
+      console.error("Error in get_animals_remote:", error);
+      throw error;
+    }
   },
 );
 

@@ -3,7 +3,7 @@ import { timestamp, uuid, varchar } from "drizzle-orm/pg-core";
 
 const SHORT_ID_LENGTH = 8;
 
-export const Schema = {
+export const StaticSchema = {
   id: () => ({
     id: uuid().primaryKey().defaultRandom(),
   }),

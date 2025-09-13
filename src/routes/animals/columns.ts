@@ -27,6 +27,7 @@ export const columns = TanstackTable.make_columns<TData>({
         renderComponent(Picture, {
           ...IMAGES.SIZES.AVATAR,
           image: row.original.images.at(0),
+          fallback: row.original.name[0],
         }),
     },
 
@@ -109,7 +110,7 @@ export const columns = TanstackTable.make_columns<TData>({
           title: "Edit",
           icon: ICONS.EDIT,
 
-          hide: () => !AccessClient.member({ animal: ["update"] }),
+          hide: () => !AccessClient.member_can({ animal: ["update"] }),
           href: (row) => resolve(ROUTES.ANIMALS_EDIT, row.original),
         },
         {
@@ -118,7 +119,7 @@ export const columns = TanstackTable.make_columns<TData>({
           icon: ICONS.DELETE,
           variant: "destructive",
 
-          hide: () => !AccessClient.member({ animal: ["delete"] }),
+          hide: () => !AccessClient.member_can({ animal: ["delete"] }),
           onselect: (row) => AnimalClient.delete(row.original.id),
         },
       ],

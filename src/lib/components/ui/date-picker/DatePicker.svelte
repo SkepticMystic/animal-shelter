@@ -3,9 +3,9 @@
   import { Calendar } from "$lib/components/ui/calendar/index.js";
   import Icon from "$lib/components/ui/icon/Icon.svelte";
   import * as Popover from "$lib/components/ui/popover/index.js";
+  import { Format } from "$lib/utils/format.util";
   import { cn } from "$lib/utils/shadcn.util";
   import {
-    DateFormatter,
     fromDate,
     getLocalTimeZone,
     type DateValue,
@@ -13,18 +13,14 @@
   import type { ClassValue } from "svelte/elements";
 
   let {
-    value = $bindable(),
     onchange,
+    value = $bindable(),
     ...rest
   }: {
     class?: ClassValue;
     value: Date | null | undefined;
     onchange?: (date: Date | undefined) => void;
   } = $props();
-
-  const df = new DateFormatter("en-US", {
-    dateStyle: "medium",
-  });
 
   let contentRef = $state<HTMLElement | null>(null);
   let instance: DateValue | undefined = $derived(
@@ -43,7 +39,9 @@
       rest.class,
     )}
   >
-    {instance ? df.format(instance.toDate(getLocalTimeZone())) : "Pick a date"}
+    {instance
+      ? Format.date(instance.toDate(getLocalTimeZone()))
+      : "Pick a date"}
     <Icon icon="lucide/calendar" />
   </Popover.Trigger>
 

@@ -1,3 +1,4 @@
+import type { SelectOption } from "$lib/interfaces";
 import { createAccessControl } from "better-auth/plugins/access";
 import {
   adminAc,
@@ -20,7 +21,10 @@ export const ADMIN = {
   ROLES: {
     IDS: ROLE_IDS,
     MAP: ROLE_MAP,
-    OPTIONS: ROLE_IDS.map((id) => ({ value: id, label: ROLE_MAP[id].label })),
+    OPTIONS: ROLE_IDS.map((id) => ({
+      value: id,
+      label: ROLE_MAP[id].label,
+    })) satisfies SelectOption[],
   },
 };
 

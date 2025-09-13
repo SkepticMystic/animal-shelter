@@ -5,7 +5,7 @@ import { session } from "$lib/stores/session";
 import { get } from "svelte/store";
 
 export const AccessClient = {
-  user: (
+  user_can: (
     permissions: Parameters<
       typeof BetterAuthClient.admin.checkRolePermission
     >[0]["permissions"],
@@ -25,7 +25,7 @@ export const AccessClient = {
     });
   },
 
-  member: (
+  member_can: (
     permissions: Parameters<
       typeof BetterAuthClient.organization.checkRolePermission
     >[0]["permissions"],
@@ -43,5 +43,10 @@ export const AccessClient = {
       permissions,
       role: $session.data.session.member_role as IOrganization.RoleId,
     });
+  },
+
+  org_owns: (resource: { org_id: string }): boolean => {
+    const $session = get(session);
+    return $session.data?.session.activeOrganizationId === resource.org_id;
   },
 };
