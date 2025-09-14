@@ -22,4 +22,8 @@ export const ROUTES = {
   ANIMALS: "/animals",
   ANIMALS_VIEW: "/animals/[short_id]",
   ANIMALS_EDIT: "/animals/[short_id]/edit",
+
+  ANIMAL_EVENTS: "/animal_events",
+  ANIMAL_EVENTS_VIEW: "/animal_events/[id]",
+  ANIMAL_EVENTS_EDIT: "/animal_events/[id]/edit",
 } satisfies Record<string, RouteId>;

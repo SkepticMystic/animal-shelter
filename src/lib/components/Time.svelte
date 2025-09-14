@@ -16,6 +16,8 @@
     show?:
       | "date"
       | "datetime"
+      | "date_relative"
+      | "date_distance"
       | ((dt: Date | number | string | undefined | null) => string);
   } = $props();
 
@@ -25,7 +27,11 @@
 </script>
 
 {#if resolved}
-  <time {title} class={klass} datetime={resolved.toISOString()}>
+  <time
+    class={klass}
+    datetime={resolved.toISOString()}
+    title={title ?? resolved.toLocaleString(undefined, { dateStyle: "full" })}
+  >
     {format(resolved)}
   </time>
 {:else}

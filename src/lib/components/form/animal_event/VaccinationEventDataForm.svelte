@@ -5,7 +5,7 @@
   import FormControl from "../controls/FormControl.svelte";
   import FormField from "../fields/FormField.svelte";
 
-  type In = AnimalEventSchema.Insert;
+  type In = AnimalEventSchema.InsertIn;
 
   let {
     form,

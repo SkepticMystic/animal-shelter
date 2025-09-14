@@ -2,6 +2,7 @@
   import { resolve } from "$app/paths";
   import { ANIMALS } from "$lib/const/animal.const";
   import { IMAGES } from "$lib/const/image.const";
+  import { ROUTES } from "$lib/const/routes.const";
   import { TIME } from "$lib/const/time";
   import type { Animal } from "$lib/server/db/schema/animal.model";
   import type { Image } from "$lib/server/db/schema/image.model";
@@ -21,13 +22,16 @@
 <Card>
   {#snippet title()}
     <div class="flex items-center justify-between">
-      <Button variant="link" href={resolve("/animals/[short_id]", animal)}>
+      <Button variant="link" href={resolve(ROUTES.ANIMALS_VIEW, animal)}>
         {animal.name}
       </Button>
 
-      {#if image}
-        <Picture {image} {...IMAGES.SIZES.AVATAR} alt={animal.name} />
-      {/if}
+      <Picture
+        {image}
+        {...IMAGES.SIZES.AVATAR}
+        alt={animal.name}
+        fallback={animal.name[0]}
+      />
     </div>
   {/snippet}
 

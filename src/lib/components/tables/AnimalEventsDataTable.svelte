@@ -1,9 +1,11 @@
 <script lang="ts">
+  import { resolve } from "$app/paths";
   import { AccessClient } from "$lib/clients/access_control.client";
   import { AnimalEventClient } from "$lib/clients/animal_event.client";
   import DataTable from "$lib/components/ui/data-table/data-table.svelte";
   import { ANIMAL_EVENTS } from "$lib/const/animal_event.const";
   import { ICONS } from "$lib/const/icon.const";
+  import { ROUTES } from "$lib/const/routes.const";
   import type { AnimalEvent } from "$lib/server/db/schema/animal_event.model";
   import { AnimalEventUtil } from "$lib/utils/animal_event.util";
   import { Items } from "$lib/utils/items.util";
@@ -90,6 +92,22 @@
     ],
 
     actions: [
+      {
+        kind: "item",
+        icon: ICONS.VIEW,
+        title: "View event",
+
+        href: (row) => resolve(ROUTES.ANIMAL_EVENTS_VIEW, row.original),
+      },
+      {
+        kind: "item",
+        icon: ICONS.EDIT,
+        title: "Edit event",
+
+        disabled: () => !AccessClient.member_can({ animal_event: ["update"] }),
+
+        href: (row) => resolve(ROUTES.ANIMAL_EVENTS_EDIT, row.original),
+      },
       {
         kind: "item",
         icon: ICONS.DELETE,

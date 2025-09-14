@@ -12,7 +12,7 @@ import { and, eq } from "drizzle-orm";
 import z from "zod";
 
 const authorize_input = async (
-  input: AnimalEventSchema.Insert | AnimalEventSchema.Update,
+  input: AnimalEventSchema.InsertOut | AnimalEventSchema.Update,
   org_id: string,
 ): Promise<APIResult<null>> => {
   const resources = await Promise.all([

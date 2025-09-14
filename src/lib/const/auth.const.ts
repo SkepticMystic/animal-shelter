@@ -29,7 +29,7 @@ const PROVIDER_MAP: Record<
   },
   google: {
     name: "Google",
-    icon: "devicon-plain/google",
+    icon: "mdi/google",
 
     is_oidc: true,
     is_social: true,

@@ -41,7 +41,14 @@
   />
 
   <div class="flex gap-1">
-    <Input required type="file" name="file" accept="image/*" class="w-52" />
+    <Input
+      required
+      type="file"
+      name="file"
+      accept="image/*"
+      capture="environment"
+      class="w-52"
+    />
 
     <Button
       type="submit"

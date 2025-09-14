@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 @plugin "@iconify/tailwind4" {
-  prefixes: devicon-plain, lucide;
+  prefixes: mdi, lucide;
   backgroundselector: ".icon-bg";
   maskselector: ".icon";
   iconselector: ".{prefix}/{name}";

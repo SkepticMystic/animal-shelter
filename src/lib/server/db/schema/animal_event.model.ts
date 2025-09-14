@@ -7,6 +7,7 @@ import { AnimalTable } from "./animal.model";
 import { MemberTable, OrganizationTable } from "./auth.model";
 import { DynamicSchema } from "./common/dynamic.schema";
 import { StaticSchema } from "./common/static.schema";
+import { ImageTable } from "./image.model";
 
 export const AnimalEventTable = pgTable(
   "animal_events",
@@ -35,7 +36,7 @@ export const AnimalEventTable = pgTable(
 
 export const animal_event_relations = relations(
   AnimalEventTable,
-  ({ one }) => ({
+  ({ one, many }) => ({
     shelter: one(OrganizationTable, {
       fields: [AnimalEventTable.org_id],
       references: [OrganizationTable.id],
@@ -57,6 +58,8 @@ export const animal_event_relations = relations(
       fields: [AnimalEventTable.animal_id],
       references: [AnimalTable.id],
     }),
+
+    images: many(ImageTable),
   }),
 );
 
@@ -64,7 +67,6 @@ export type AnimalEvent = typeof AnimalEventTable.$inferSelect;
 
 const refinements = {
   data: animal_event_data_schema,
-  timestamp: z.coerce.date("Date is required"),
 
   notes: (s: z.ZodString) =>
     s.max(2000, "Notes must be at most 2000 characters"),
@@ -86,6 +88,7 @@ export namespace AnimalEventSchema {
     pick,
   );
 
-  export type Insert = z.infer<typeof insert>;
-  export type Update = z.infer<typeof update>;
+  export type InsertIn = z.input<typeof insert>;
+  export type InsertOut = z.output<typeof insert>;
+  export type Update = z.input<typeof update>;
 }

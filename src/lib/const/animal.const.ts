@@ -2,9 +2,21 @@ import type { SelectOption } from "$lib/interfaces";
 
 const SPECIES_IDS = ["dog", "cat"] as const;
 const SPECIES_MAP = {
-  dog: { label: "Dog" },
-  cat: { label: "Cat" },
-} satisfies Record<(typeof SPECIES_IDS)[number], { label: string }>;
+  dog: {
+    label: "Dog",
+    icon: "lucide/dog",
+  },
+  cat: {
+    label: "Cat",
+    icon: "lucide/cat",
+  },
+} satisfies Record<
+  (typeof SPECIES_IDS)[number],
+  {
+    label: string;
+    icon: string;
+  }
+>;
 
 const GENDER_IDS = ["m", "f", "u"] as const;
 const GENDER_MAP = {

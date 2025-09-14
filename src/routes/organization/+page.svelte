@@ -29,7 +29,11 @@
     <div class="flex items-end justify-between">
       <div class="flex items-center gap-2">
         {#if data.organization}
-          <Picture {...IMAGES.SIZES.AVATAR} image={images?.at(0)} />
+          <Picture
+            {...IMAGES.SIZES.AVATAR}
+            image={images?.at(0)}
+            fallback={data.organization.name}
+          />
         {/if}
 
         <h1>{data.organization?.name ?? "Shelter"}</h1>

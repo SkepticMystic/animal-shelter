@@ -6,6 +6,7 @@ import type { ClassValue } from "svelte/elements";
 const KIND_IDS = [
   "weighing", //
   "vaccination", //
+  "spay-neuter",
 ] as const;
 
 const KIND_MAP = {
@@ -16,6 +17,10 @@ const KIND_MAP = {
   vaccination: {
     label: "Vaccination",
     icon: "lucide/syringe",
+  },
+  "spay-neuter": {
+    label: "Spay/Neuter",
+    icon: "lucide/scissors",
   },
 } satisfies {
   [K in IAnimalEvents.Kind]: {
@@ -41,6 +46,9 @@ export const ANIMAL_EVENTS = {
       vaccination: {
         kind: "vaccination",
         vaccine_name: "",
+      },
+      "spay-neuter": {
+        kind: "spay-neuter",
       },
     } satisfies {
       [K in IAnimalEvents.Kind]: Extract<

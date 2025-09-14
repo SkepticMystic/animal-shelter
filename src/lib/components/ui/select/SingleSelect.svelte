@@ -22,7 +22,7 @@
     on_value_select?: (value: V) => MaybePromise<unknown>;
   } = $props();
 
-  let option = $derived(options.find((i) => i.value === value));
+  let selected = $derived(options.find((i) => i.value === value));
 </script>
 
 <Select.Root
@@ -41,7 +41,7 @@
   {...rest}
 >
   <Select.Trigger {loading} class={cn("w-fit max-w-sm", rest.class)}>
-    {option?.label ?? placeholder}
+    {selected?.label ?? placeholder}
   </Select.Trigger>
 
   <Select.Content>

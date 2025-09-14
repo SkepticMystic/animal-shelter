@@ -7,7 +7,7 @@ import type { AnimalEventSchema } from "$lib/server/db/schema/animal_event.model
 import { Client } from "./index.client";
 
 export const AnimalEventClient = {
-  create: async (insert: AnimalEventSchema.Insert) =>
+  create: async (insert: AnimalEventSchema.InsertIn) =>
     Client.request(() => create_animal_event_remote(insert), {
       toast: { success: "Event created" },
     }),

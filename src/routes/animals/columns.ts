@@ -6,12 +6,14 @@ import AnimalLink from "$lib/components/links/AnimalLink.svelte";
 import ShelterLink from "$lib/components/links/ShelterLink.svelte";
 import Time from "$lib/components/Time.svelte";
 import { renderComponent } from "$lib/components/ui/data-table";
+import Icon from "$lib/components/ui/icon/Icon.svelte";
 import { ANIMALS } from "$lib/const/animal.const";
 import { ICONS } from "$lib/const/icon.const";
 import { IMAGES } from "$lib/const/image.const";
 import { ROUTES } from "$lib/const/routes.const";
 import type { get_animals_remote } from "$lib/remote/animal.remote";
 import type { Organization } from "$lib/server/db/schema/auth.model";
+import { Format } from "$lib/utils/format.util";
 import { TanstackTable } from "$lib/utils/tanstack/table.util";
 
 type TData = Awaited<ReturnType<typeof get_animals_remote>>[number];
@@ -42,7 +44,11 @@ export const columns = TanstackTable.make_columns<TData>({
       meta: { label: "Species" },
       filterFn: "arrIncludesSome",
 
-      cell: ({ row }) => ANIMALS.SPECIES.MAP[row.original.species].label,
+      cell: ({ row }) =>
+        renderComponent(Icon, {
+          icon: ANIMALS.SPECIES.MAP[row.original.species].icon,
+          label: ANIMALS.SPECIES.MAP[row.original.species].label,
+        }),
     },
 
     {
@@ -55,19 +61,25 @@ export const columns = TanstackTable.make_columns<TData>({
 
     {
       accessorKey: "date_of_birth",
-      meta: { label: "Birthday" },
+      meta: { label: "Age" },
 
       filterFn: TanstackTable.filter_fns.date_range,
 
       cell: ({ row }) =>
-        renderComponent(Time, { date: row.original.date_of_birth }),
+        renderComponent(Time, {
+          date: row.original.date_of_birth,
+          show: (dt) => Format.date_relative(dt, { suffix: false }),
+        }),
     },
     {
       accessorKey: "createdAt",
       meta: { label: "Created" },
 
       cell: ({ row }) =>
-        renderComponent(Time, { date: row.original.createdAt }),
+        renderComponent(Time, {
+          date: row.original.createdAt,
+          show: (dt) => Format.date_distance(dt, { addSuffix: true }),
+        }),
     },
 
     {

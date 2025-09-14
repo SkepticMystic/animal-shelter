@@ -14,6 +14,7 @@ import { AnimalTable } from "./animal.model";
 import { OrganizationTable } from "./auth.model";
 import { DynamicSchema } from "./common/dynamic.schema";
 import { StaticSchema } from "./common/static.schema";
+import { AnimalEventTable } from "./animal_event.model";
 
 export const image_provider_enum = pgEnum(
   "image_providers",
@@ -24,6 +25,7 @@ export const image_provider_enum = pgEnum(
 export const image_resource_kind_enum = pgEnum("image_resource_kind", [
   "animal",
   "organization",
+  "animal_event",
 ]);
 
 export const ImageTable = pgTable(
@@ -63,6 +65,11 @@ export const image_relations = relations(ImageTable, ({ one }) => ({
   animal: one(AnimalTable, {
     fields: [ImageTable.resource_id],
     references: [AnimalTable.id],
+  }),
+
+  animal_event: one(AnimalEventTable, {
+    fields: [ImageTable.resource_id],
+    references: [AnimalEventTable.id],
   }),
 }));
 

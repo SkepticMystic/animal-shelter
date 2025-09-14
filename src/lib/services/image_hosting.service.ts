@@ -57,7 +57,9 @@ const of_cloudinary: Context.Tag.Service<ImageHostingService> = {
               .upload_stream(
                 {
                   resource_type: "image",
+                  discard_original_filename: true,
                   upload_preset: PUBLIC_CLOUDINARY_UPLOAD_PRESET,
+                  transformation: [{ quality: "auto", fetch_format: "auto" }],
                 },
                 (error, result) => (error ? reject(error) : resolve(result)),
               )

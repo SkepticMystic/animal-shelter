@@ -4,7 +4,6 @@
   import { Image as Picture, type ImageProps } from "@unpic/svelte";
   import type { ClassValue } from "svelte/elements";
   import { thumbHashToDataURL } from "thumbhash";
-  import Avatar from "../ui/avatar/avatar.svelte";
 
   // NOTE: The only reason for this component is that Image from unpic doesn't seem to show types?
   // So we force ImageProps
@@ -14,8 +13,8 @@
     class: klass,
     ...props
   }: Omit<ImageProps, "src"> & {
-    src?: string;
-    class?: ClassValue;
+    src?: string | null;
+    class?: ClassValue | null;
     image?: Pick<Image, "url" | "thumbhash">;
     fallback?: string;
   } = $props();
@@ -30,25 +29,25 @@
         ),
       )
     : undefined;
+
+  const style = `width: ${props.width}px; height: ${props.height}px;`;
 </script>
 
 {#if image || props.src}
   <Picture
+    {style}
     src={image?.url}
-    class={cn(
-      "rounded-md", //
-      klass,
-    )}
-    style="width: {props.width}px; height: {props.height}px;"
     background={thumbhash_url}
+    class={cn("rounded-md", klass)}
     {...props}
   />
-
-  <!-- NOTE: This also works, but `background` is cleaner, and works with blurhash as well -->
-  <!-- style={thumbhash_url
-    ? `background: center / cover url(${thumbhash_url})`
-      : undefined} -->
 {:else if fallback}
-  <!-- TODO: Not the best looking rn, but better than nothing -->
-  <Avatar {fallback}></Avatar>
+  <!-- NOTE: Tried to use Avatar and AvatarFallback, but could never get it right -->
+  <div
+    {...props}
+    {style}
+    class={cn("flex items-center justify-center rounded-md bg-muted", klass)}
+  >
+    {fallback}
+  </div>
 {/if}

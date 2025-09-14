@@ -5,4 +5,5 @@ export const ICONS = {
   ADD: "lucide/plus",
   BACK: "lucide/arrow-left",
   CLOSE: "lucide/x",
+  SHARE: "lucide/share-2",
 };

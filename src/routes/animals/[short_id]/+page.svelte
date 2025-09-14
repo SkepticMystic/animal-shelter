@@ -3,18 +3,25 @@
   import { AccessClient } from "$lib/clients/access_control.client.js";
   import { AnimalEventClient } from "$lib/clients/animal_event.client.js";
   import BackButton from "$lib/components/buttons/BackButton.svelte";
+  import ShareButton from "$lib/components/buttons/ShareButton.svelte";
   import AnimalEventForm from "$lib/components/form/animal_event/AnimalEventForm.svelte";
   import Picture from "$lib/components/images/Picture.svelte";
   import AnimalEventsDataTable from "$lib/components/tables/AnimalEventsDataTable.svelte";
   import Button from "$lib/components/ui/button/button.svelte";
   import Dialog from "$lib/components/ui/dialog/dialog.svelte";
   import Icon from "$lib/components/ui/icon/Icon.svelte";
+  import { APP } from "$lib/const/app.js";
   import { ICONS } from "$lib/const/icon.const.js";
   import { IMAGES } from "$lib/const/image.const";
   import { ROUTES } from "$lib/const/routes.const.js";
 
   let { data } = $props();
   let animal = $state(data.animal);
+
+  const share_data: ShareData = {
+    title: animal.name,
+    text: `Check out ${animal.name} on ${APP.NAME}`,
+  };
 </script>
 
 <div class="space-y-5">
@@ -25,6 +32,8 @@
     </div>
 
     <div class="flex items-center gap-2">
+      <ShareButton data={share_data} />
+
       {#if AccessClient.org_owns(animal)}
         <Button
           variant="outline"
@@ -58,6 +67,7 @@
 
           {#snippet content({ close })}
             <AnimalEventForm
+              mode="insert"
               form_input={data.event_form_input}
               submit={AnimalEventClient.create}
               on_success={(animal_event) => {

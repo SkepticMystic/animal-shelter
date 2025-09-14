@@ -16,4 +16,8 @@ export const animal_event_data_schema = z.discriminatedUnion("kind", [
       .min(1, "Vaccine name is required")
       .max(255, "Vaccine name must be at most 255 characters"),
   }),
+
+  z.object({
+    kind: z.literal("spay-neuter"),
+  }),
 ]);
