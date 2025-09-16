@@ -2,6 +2,7 @@ import { get_session } from "$lib/auth/server";
 import { AuthSchema } from "$lib/schema/auth.schema";
 import { db } from "$lib/server/db/drizzle.db";
 import { OrganizationSchema } from "$lib/server/db/schema/auth.model";
+import { ShelterSchema } from "$lib/server/db/schema/shelter.model";
 import { superValidate } from "sveltekit-superforms";
 import { zod4 } from "sveltekit-superforms/adapters";
 import type { PageServerLoad } from "./$types";
@@ -18,8 +19,22 @@ export const load = (async () => {
         ? db.query.organization.findFirst({
             where: (org, { eq }) => eq(org.id, session.activeOrganizationId!),
             with: {
-              images: {
-                columns: { id: true, url: true, thumbhash: true },
+              shelter: {
+                columns: {
+                  id: true,
+                  name: true,
+                  place: true,
+                  urls: true,
+                  phones: true,
+                  emails: true,
+                  description: true,
+                },
+
+                with: {
+                  images: {
+                    columns: { id: true, url: true, thumbhash: true },
+                  },
+                },
               },
 
               members: {
@@ -39,11 +54,10 @@ export const load = (async () => {
     member_invite_form_input,
 
     create_org_form_input,
-    update_org_form_input: await superValidate(
-      organization ?? {},
+    update_shelter_form_input: await superValidate(
+      organization?.shelter ?? {},
       // Insert, because we update the whole org at once,
-      // Using the same OrganizationForm as for creation
-      zod4(OrganizationSchema.insert),
+      zod4(ShelterSchema.insert),
     ),
   };
 }) satisfies PageServerLoad;

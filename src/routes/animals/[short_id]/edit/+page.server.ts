@@ -14,7 +14,7 @@ export const load = (async ({ params }) => {
 
       with: {
         shelter: {
-          columns: { id: true, name: true, slug: true },
+          columns: { id: true, name: true, short_id: true },
         },
         images: {
           columns: { id: true, url: true, thumbhash: true },

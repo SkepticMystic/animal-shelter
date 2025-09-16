@@ -1,11 +1,11 @@
 import { BetterAuthClient } from "$lib/auth-client";
-import type { AuthSchema } from "$lib/schema/auth.schema";
 import type { OrganizationSchema } from "$lib/server/db/schema/auth.model";
+import { session } from "$lib/stores/session";
 import { BetterAuth } from "$lib/utils/better-auth.util";
 import { err } from "$lib/utils/result.util";
 import { Strings } from "$lib/utils/strings.util";
 import { Effect, pipe } from "effect";
-import type z from "zod";
+import { get } from "svelte/store";
 import { Client } from "./index.client";
 
 const set_active_inner = (organizationId: string | undefined) =>
@@ -40,7 +40,7 @@ const check_slug_inner = async (slug: string) => {
   }
 };
 
-export const OrganizationsClient = {
+export const OrganizationClient = {
   set_active: (organizationId: string | undefined) =>
     Client.request(() => set_active_inner(organizationId), {
       toast: { success: "Active organization updated." },
@@ -102,47 +102,29 @@ export const OrganizationsClient = {
       { toast: { success: "Organization updated" } },
     ),
 
-  delete: (organizationId: string) =>
-    Client.better_auth(
-      () => BetterAuthClient.organization.delete({ organizationId }),
+  delete: (organizationId?: string | null) =>
+    Client.request(
+      async () => {
+        organizationId ??= get(session)?.data?.session.activeOrganizationId;
+
+        if (!organizationId) {
+          return err({ message: "No organization ID provided." });
+        }
+
+        const res = await BetterAuth.to_result(
+          BetterAuthClient.organization.delete({ organizationId }),
+        );
+
+        if (res.ok) {
+          // TODO: Improve this
+          location.reload();
+        }
+
+        return res;
+      },
       {
         confirm: "Are you sure you want to delete this organization?",
         toast: { success: "Organization deleted" },
-      },
-    ),
-
-  create_invitation: async (
-    input: z.infer<typeof AuthSchema.Org.member_invite_form>,
-  ) =>
-    Client.better_auth(
-      () => BetterAuthClient.organization.inviteMember(input),
-      { toast: { success: "Invitation sent" } },
-    ),
-
-  accept_invitation: (invitationId: string) =>
-    Client.request(
-      async () => {
-        const accept_res = await BetterAuth.to_result(
-          BetterAuthClient.organization.acceptInvitation({ invitationId }),
-        );
-        if (!accept_res.ok) return accept_res;
-
-        const set_active_res = await set_active_inner(
-          accept_res.data.invitation.organizationId,
-        );
-        if (!set_active_res.ok) return set_active_res;
-
-        return accept_res;
-      },
-      { toast: { success: "Invitation accepted" } },
-    ),
-
-  cancel_invitation: (invitationId: string) =>
-    Client.better_auth(
-      () => BetterAuthClient.organization.cancelInvitation({ invitationId }),
-      {
-        confirm: "Are you sure you want to cancel this invitation?",
-        toast: { success: "Invitation cancelled" },
       },
     ),
 };

@@ -1,7 +1,7 @@
 <script lang="ts">
   import { goto } from "$app/navigation";
   import { page } from "$app/state";
-  import { OrganizationsClient } from "$lib/clients/organizations.client.js";
+  import { InvitationClient } from "$lib/clients/invitation.client.js";
   import Button from "$lib/components/ui/button/button.svelte";
   import { ROUTES } from "$lib/const/routes.const.js";
   import { TOAST } from "$lib/const/toast.const.js";
@@ -14,7 +14,7 @@
   const accept_invite = async () => {
     if (!data.invitation) return;
 
-    const res = await OrganizationsClient.accept_invitation(data.invitation.id);
+    const res = await InvitationClient.accept(data.invitation.id);
     if (res.ok) {
       await goto(
         App.url(ROUTES.HOME, { toast: TOAST.IDS.ORG_INVITE_ACCEPTED }),

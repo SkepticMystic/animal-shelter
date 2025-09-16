@@ -36,6 +36,9 @@
   });
 
   const { form: form_data } = form;
+
+  // NOTE: Lol, if I don't read $form_data, the default values are blank...
+  $inspect($form_data);
 </script>
 
 <form class="flex max-w-lg flex-col gap-2" method="POST" use:form.enhance>
@@ -80,24 +83,24 @@
         {/snippet}
       </FormControl>
     </FormField>
-
-    <FormField
-      {form}
-      name="date_of_birth"
-      description="Approximate date is fine"
-    >
-      <FormControl label="Date of birth">
-        {#snippet children({ props })}
-          <DatePicker {...props} bind:value={$form_data.date_of_birth} />
-        {/snippet}
-      </FormControl>
-    </FormField>
   </div>
 
-  <FormField {form} name="bio" description="A short bio of the animal">
+  <FormField {form} name="date_of_birth" description="Approximate date is fine">
+    <FormControl label="Date of birth">
+      {#snippet children({ props })}
+        <DatePicker {...props} bind:value={$form_data.date_of_birth} />
+      {/snippet}
+    </FormControl>
+  </FormField>
+
+  <FormField {form} name="description" description="A short bio of the animal">
     <FormControl label="Bio">
       {#snippet children({ props })}
-        <Textarea {...props} placeholder="Bio" bind:value={$form_data.bio} />
+        <Textarea
+          {...props}
+          placeholder="Bio"
+          bind:value={$form_data.description}
+        />
       {/snippet}
     </FormControl>
   </FormField>

@@ -1,9 +1,11 @@
 <script lang="ts">
-  import { OrganizationsClient } from "$lib/clients/organizations.client.js";
+  import { OrganizationClient } from "$lib/clients/organizations.client.js";
+  import { ShelterClient } from "$lib/clients/shelter.client.js";
   import OrganizationMembersList from "$lib/components/auth/members/OrganizationMembersTable.svelte";
   import InviteOrganizationMemberForm from "$lib/components/auth/organizations/InviteOrganizationMemberForm.svelte";
   import OrganizationInvitationsTable from "$lib/components/auth/organizations/OrganizationInvitationsTable.svelte";
   import OrganizationForm from "$lib/components/form/organization/OrganizationForm.svelte";
+  import ShelterForm from "$lib/components/form/shelter/ShelterForm.svelte";
   import Picture from "$lib/components/images/Picture.svelte";
   import PictureActionsWrapper from "$lib/components/images/PictureActionsWrapper.svelte";
   import ImageUploader from "$lib/components/images/upload/ImageUploader.svelte";
@@ -13,53 +15,54 @@
   import Icon from "$lib/components/ui/icon/Icon.svelte";
   import Loading from "$lib/components/ui/loading/Loading.svelte";
   import Separator from "$lib/components/ui/separator/separator.svelte";
-  import { IMAGES } from "$lib/const/image.const";
+  import { ICONS } from "$lib/const/icon.const.js";
+  import { IMAGES } from "$lib/const/image.const.js";
   import { get_invitations_remote } from "$lib/remote/auth/invitation.remote.js";
   import { Items } from "$lib/utils/items.util.js";
 
   let { data } = $props();
 
-  let images = $state(data.organization?.images ?? []);
+  let shelter = $state(data.organization?.shelter);
+  let images = $derived(shelter?.images ?? []);
   let members = $state(data.organization?.members ?? []);
+
   const invitations = get_invitations_remote({});
 </script>
 
 <div class="flex flex-col gap-7">
   <div class="space-y-3">
     <div class="flex items-end justify-between">
-      <div class="flex items-center gap-2">
-        {#if data.organization}
-          <Picture
-            {...IMAGES.SIZES.AVATAR}
-            image={images?.at(0)}
-            fallback={data.organization.name}
-          />
-        {/if}
+      <h1>Shelter</h1>
 
-        <h1>{data.organization?.name ?? "Shelter"}</h1>
-      </div>
-
-      <Dialog title="New Shelter" description="Create a new animal shelter">
+      <Dialog title="New shelter" description="Create a new animal shelter">
         {#snippet trigger()}
-          <Icon icon="lucide/plus" />
-          New Shelter
+          <Icon icon={ICONS.ADD} />
+          New shelter
         {/snippet}
 
         {#snippet content({ close })}
           <OrganizationForm
             form_input={data.create_org_form_input}
-            submit={OrganizationsClient.create}
+            submit={OrganizationClient.create}
             on_success={(_data) => close()}
           />
         {/snippet}
       </Dialog>
     </div>
 
-    {#if data.organization}
+    {#if shelter}
       <Collapsible>
         {#snippet trigger({ open })}
           <div class="flex items-center justify-between">
-            <h2>Edit shelter</h2>
+            <div class="flex items-center gap-2">
+              <Picture
+                {...IMAGES.SIZES.AVATAR}
+                image={images.at(0)}
+                fallback={shelter!.name.at(0)}
+              />
+
+              <h2>{shelter!.name}</h2>
+            </div>
 
             <Button
               variant="ghost"
@@ -70,18 +73,15 @@
 
         {#snippet content()}
           <div class="space-y-5">
-            <OrganizationForm
-              form_input={data.update_org_form_input}
-              submit={(update) =>
-                OrganizationsClient.update(data.organization!.id, update)}
+            <ShelterForm
+              form_input={data.update_shelter_form_input}
+              submit={(update) => ShelterClient.update(shelter!.id, update)}
+              on_success={(updated) => (shelter = { ...updated, images })}
             />
 
             <Separator />
 
-            <ImageUploader
-              resource_kind="organization"
-              resource_id={data.organization!.id}
-            />
+            <ImageUploader resource_kind="shelter" resource_id={shelter!.id} />
 
             <div class="flex flex-wrap gap-3">
               {#each images as image (image.id)}
@@ -137,5 +137,20 @@
         <Loading loading title="Fetching invitations..." />
       {/if}
     </div>
+  {/if}
+
+  {#if data.organization}
+    <Separator />
+
+    <!-- NOTE: We delete the org, not the shelter
+     Cascade will handle the refs -->
+    <Button
+      class="w-fit"
+      icon={ICONS.DELETE}
+      variant="destructive"
+      onclick={() => OrganizationClient.delete()}
+    >
+      Delete shelter
+    </Button>
   {/if}
 </div>

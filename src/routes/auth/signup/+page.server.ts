@@ -15,7 +15,11 @@ import type { PageServerLoad } from "./$types.js";
 export const load = (async ({ url }) => {
   const search = Parsers.url(
     url,
-    z.object({ redirect_uri: z.string() }).partial(),
+    z
+      .object({
+        redirect_uri: z.string().brand("RouteId"),
+      })
+      .partial(),
   );
 
   const form_input = await superValidate(zod4(AuthSchema.signup_form));

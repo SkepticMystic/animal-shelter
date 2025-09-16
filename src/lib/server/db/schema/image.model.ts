@@ -10,11 +10,12 @@ import {
 import { createInsertSchema, createUpdateSchema } from "drizzle-zod";
 import z from "zod";
 import { IMAGES } from "../../../const/image.const";
+import { RESOURCES } from "../../../const/resource.const";
 import { AnimalTable } from "./animal.model";
-import { OrganizationTable } from "./auth.model";
+import { AnimalEventTable } from "./animal_event.model";
 import { DynamicSchema } from "./common/dynamic.schema";
 import { StaticSchema } from "./common/static.schema";
-import { AnimalEventTable } from "./animal_event.model";
+import { ShelterTable } from "./shelter.model";
 
 export const image_provider_enum = pgEnum(
   "image_providers",
@@ -22,11 +23,10 @@ export const image_provider_enum = pgEnum(
 );
 
 // NOTE: Use the same names as given to the drizzle.schema setup
-export const image_resource_kind_enum = pgEnum("image_resource_kind", [
-  "animal",
-  "organization",
-  "animal_event",
-]);
+export const image_resource_kind_enum = pgEnum(
+  "image_resource_kind",
+  RESOURCES.KIND.IDS,
+);
 
 export const ImageTable = pgTable(
   "image",
@@ -57,9 +57,9 @@ export const ImageTable = pgTable(
 );
 
 export const image_relations = relations(ImageTable, ({ one }) => ({
-  shelter: one(OrganizationTable, {
+  shelter: one(ShelterTable, {
     fields: [ImageTable.resource_id],
-    references: [OrganizationTable.id],
+    references: [ShelterTable.id],
   }),
 
   animal: one(AnimalTable, {

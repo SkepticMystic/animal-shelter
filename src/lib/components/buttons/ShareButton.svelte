@@ -25,7 +25,7 @@
     title="Share"
     size="icon"
     variant="outline"
-    description="Share this content"
+    description="Share {data.title || 'this page'} on"
   >
     {#snippet trigger()}
       <Icon icon={ICONS.SHARE} />

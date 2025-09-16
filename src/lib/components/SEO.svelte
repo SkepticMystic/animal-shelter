@@ -6,7 +6,7 @@
     page.data.seo?.title ? page.data.seo.title + ` | ${APP.NAME}` : APP.NAME,
   );
 
-  let desc = $derived(page.data.seo?.desc ?? APP.DESCRIPTION);
+  let description = $derived(page.data.seo?.description ?? APP.DESCRIPTION);
 </script>
 
 <title>
@@ -20,9 +20,9 @@
 <meta property="og:url" content={page.url.href} />
 <meta property="og:site_name" content={APP.NAME} />
 
-<meta property="description" content={desc} />
-<meta property="og:description" content={desc} />
-<meta property="twitter:description" content={desc} />
+<meta property="description" content={description} />
+<meta property="og:description" content={description} />
+<meta property="twitter:description" content={description} />
 
 {#if page.data.seo?.image}
   <meta property="og:image" content={page.data.seo.image} />

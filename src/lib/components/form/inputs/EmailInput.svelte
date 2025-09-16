@@ -13,6 +13,7 @@
 <Input
   required
   type="email"
+  inputmode="email"
   autocomplete="email"
   placeholder="Email address"
   {...rest}

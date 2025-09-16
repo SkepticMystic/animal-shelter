@@ -5,6 +5,7 @@
   import { AUTH, type IAuth } from "$lib/const/auth.const";
   import { ROUTES } from "$lib/const/routes.const";
   import { TOAST } from "$lib/const/toast.const";
+  import type { Branded } from "$lib/interfaces";
   import { App } from "$lib/utils/app";
   import Button from "../ui/button/button.svelte";
 
@@ -13,7 +14,7 @@
     redirect_uri,
   }: {
     provider_id: IAuth.ProviderId;
-    redirect_uri?: ResolvedPathname;
+    redirect_uri?: ResolvedPathname | Branded<"RouteId">;
   } = $props();
 
   const provider = AUTH.PROVIDERS.MAP[provider_id];

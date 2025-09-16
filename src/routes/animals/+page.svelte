@@ -12,7 +12,7 @@
   import MultiSelect from "$lib/components/ui/select/MultiSelect.svelte";
   import { ANIMALS } from "$lib/const/animal.const";
   import { get_animals_remote } from "$lib/remote/animal.remote";
-  import type { Organization } from "$lib/server/db/schema/auth.model";
+  import type { Shelter } from "$lib/server/db/schema/shelter.model";
   import type { DateRange } from "bits-ui";
   import { columns } from "./columns";
 
@@ -91,9 +91,9 @@
                 ?.getFacetedUniqueValues()
                 .keys()
                 .toArray() ?? []
-            ).map((facet: Organization) => ({
-              value: facet.slug,
+            ).map((facet: Shelter) => ({
               label: facet.name,
+              value: facet.short_id,
             }))}
             bind:value={
               () =>

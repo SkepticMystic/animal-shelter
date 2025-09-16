@@ -10,6 +10,7 @@
   let {
     open,
     title,
+    disabled,
     description,
     size = "default",
     variant = "default",
@@ -21,6 +22,7 @@
     ...rest_props
   }: DialogRootProps & {
     title?: string;
+    disabled?: boolean;
     description?: string;
     size?: ButtonProps["size"];
     variant?: ButtonProps["variant"];
@@ -36,7 +38,12 @@
 </script>
 
 <Dialog.Root {...rest_props} {open}>
-  <Dialog.Trigger {title} class={buttonVariants({ variant, size })}>
+  <Dialog.Trigger
+    {title}
+    {disabled}
+    type="button"
+    class={buttonVariants({ variant, size })}
+  >
     {@render trigger?.()}
   </Dialog.Trigger>
 

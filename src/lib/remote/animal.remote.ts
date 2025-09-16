@@ -13,7 +13,7 @@ import { and, eq } from "drizzle-orm";
 
 import z from "zod";
 
-const SMART_FIELDS = ["name", "bio"] satisfies (keyof Animal)[];
+const SMART_FIELDS = ["name", "description"] satisfies (keyof Animal)[];
 
 export const get_animals_remote = query(
   z.object({
@@ -58,7 +58,7 @@ export const get_animals_remote = query(
             columns: { url: true, thumbhash: true },
           },
           shelter: {
-            columns: { name: true, slug: true },
+            columns: { name: true, short_id: true },
           },
         },
       });

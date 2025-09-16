@@ -19,16 +19,16 @@ export const IMAGES = {
 
   SIZES: {
     AVATAR: {
-      width: 40,
-      height: 40,
+      width: 32,
+      height: 32,
     },
     THUMBNAIL: {
-      width: 150,
-      height: 150,
+      width: 120,
+      height: 120,
     },
     PREVIEW: {
-      width: 400,
-      height: 400,
+      width: 300,
+      height: 300,
     },
     FULL: {
       width: 800,

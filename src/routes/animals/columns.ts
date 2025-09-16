@@ -12,7 +12,7 @@ import { ICONS } from "$lib/const/icon.const";
 import { IMAGES } from "$lib/const/image.const";
 import { ROUTES } from "$lib/const/routes.const";
 import type { get_animals_remote } from "$lib/remote/animal.remote";
-import type { Organization } from "$lib/server/db/schema/auth.model";
+import type { Shelter } from "$lib/server/db/schema/shelter.model";
 import { Format } from "$lib/utils/format.util";
 import { TanstackTable } from "$lib/utils/tanstack/table.util";
 
@@ -56,7 +56,11 @@ export const columns = TanstackTable.make_columns<TData>({
       meta: { label: "Gender" },
       filterFn: "arrIncludesSome",
 
-      cell: ({ row }) => ANIMALS.GENDER.MAP[row.original.gender].label,
+      cell: ({ row }) =>
+        renderComponent(Icon, {
+          icon: ANIMALS.GENDER.MAP[row.original.gender].icon,
+          label: ANIMALS.GENDER.MAP[row.original.gender].label,
+        }),
     },
 
     {
@@ -83,7 +87,7 @@ export const columns = TanstackTable.make_columns<TData>({
     },
 
     {
-      // NOTE: It is possible to just use "shelter.slug"
+      // NOTE: It is possible to just use "shelter.short_id"
       // But then we don't have the name available for the facet selector
       accessorKey: "shelter",
       meta: { label: "Shelter" },
@@ -93,10 +97,10 @@ export const columns = TanstackTable.make_columns<TData>({
           return true;
         }
 
-        const shelter = row.getValue<Organization>(id);
+        const shelter = row.getValue<Shelter>(id);
         if (!shelter) return false;
 
-        return filterValue.includes(shelter.slug);
+        return filterValue.includes(shelter.short_id);
       },
 
       cell: ({ row }) =>

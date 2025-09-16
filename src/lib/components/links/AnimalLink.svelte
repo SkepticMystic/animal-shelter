@@ -3,13 +3,14 @@
   import type { RouteParams } from "$app/types";
   import { ROUTES } from "$lib/const/routes.const";
   import type { Animal } from "$lib/server/db/schema/animal.model";
-  import type { ButtonProps } from "../ui/button/button.svelte";
-  import Button from "../ui/button/button.svelte";
+  import type { ComponentProps } from "svelte";
+  import Anchor from "../ui/anchor/Anchor.svelte";
 
   let {
     animal,
+    children,
     ...rest
-  }: ButtonProps & {
+  }: ComponentProps<typeof Anchor> & {
     animal: Pick<
       Animal,
       "name" | keyof RouteParams<typeof ROUTES.ANIMALS_VIEW>
@@ -17,6 +18,10 @@
   } = $props();
 </script>
 
-<Button href={resolve(ROUTES.ANIMALS_VIEW, animal)} variant="link" {...rest}>
-  {animal.name}
-</Button>
+<Anchor href={resolve(ROUTES.ANIMALS_VIEW, animal)} {...rest}>
+  {#if children}
+    {@render children()}
+  {:else}
+    {animal.name}
+  {/if}
+</Anchor>

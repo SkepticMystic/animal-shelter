@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { OrganizationsClient } from "$lib/clients/organizations.client";
+  import { InvitationClient } from "$lib/clients/invitation.client";
   import FormControl from "$lib/components/form/controls/FormControl.svelte";
   import EmailFormField from "$lib/components/form/fields/EmailFormField.svelte";
   import FormField from "$lib/components/form/fields/FormField.svelte";
@@ -26,7 +26,7 @@
     validators: zod4Client(AuthSchema.Org.member_invite_form),
 
     on_success,
-    submit: OrganizationsClient.create_invitation,
+    submit: InvitationClient.create,
   });
 
   const { form: form_data } = form;

@@ -5,7 +5,6 @@ import {
   pgTable,
   text,
   timestamp,
-  uuid,
   varchar,
 } from "drizzle-orm/pg-core";
 import { createInsertSchema, createUpdateSchema } from "drizzle-zod";
@@ -15,8 +14,10 @@ import { TIME } from "../../../const/time";
 import { Dates } from "../../../utils/dates";
 import { AnimalEventTable } from "./animal_event.model";
 import { OrganizationTable } from "./auth.model";
+import { DynamicSchema } from "./common/dynamic.schema";
 import { StaticSchema } from "./common/static.schema";
 import { ImageTable } from "./image.model";
+import { ShelterTable } from "./shelter.model";
 
 export const animal_species_enum = pgEnum(
   "animal_species",
@@ -33,19 +34,18 @@ export const AnimalTable = pgTable(
   {
     ...StaticSchema.id(),
     ...StaticSchema.short_id(),
+    ...DynamicSchema.org_id(),
 
-    bio: text().default(""),
     name: varchar({ length: 255 }).notNull(),
+    description: text().default("").notNull(),
     date_of_birth: timestamp({ mode: "date" }),
+
+    // TODO: intake_date: timestamp({ mode: "date" }).notNull(),
 
     species: animal_species_enum().notNull(),
     // breed: varchar({ length: 255 }),
     // color: varchar({ length: 255 }),
     gender: animal_gender_enum().default("u").notNull(),
-
-    org_id: uuid()
-      .notNull()
-      .references(() => OrganizationTable.id, { onDelete: "cascade" }),
 
     ...StaticSchema.timestamps,
   },
@@ -53,9 +53,14 @@ export const AnimalTable = pgTable(
 );
 
 export const animal_relations = relations(AnimalTable, ({ one, many }) => ({
-  shelter: one(OrganizationTable, {
+  organization: one(OrganizationTable, {
     fields: [AnimalTable.org_id],
     references: [OrganizationTable.id],
+  }),
+
+  shelter: one(ShelterTable, {
+    fields: [AnimalTable.org_id],
+    references: [ShelterTable.org_id],
   }),
 
   images: many(ImageTable),
@@ -65,7 +70,8 @@ export const animal_relations = relations(AnimalTable, ({ one, many }) => ({
 export type Animal = typeof AnimalTable.$inferSelect;
 
 const refinements = {
-  bio: (s: z.ZodString) => s.max(1000, "Bio must be at most 1000 characters"),
+  description: (s: z.ZodString) =>
+    s.max(1000, "Bio must be at most 1000 characters"),
 
   name: (s: z.ZodString) =>
     s
@@ -80,10 +86,10 @@ const refinements = {
 };
 
 const pick = {
-  bio: true,
   name: true,
   gender: true,
   species: true,
+  description: true,
   date_of_birth: true,
 } satisfies Partial<Record<keyof Animal, true>>;
 

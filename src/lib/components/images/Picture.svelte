@@ -4,6 +4,7 @@
   import { Image as Picture, type ImageProps } from "@unpic/svelte";
   import type { ClassValue } from "svelte/elements";
   import { thumbHashToDataURL } from "thumbhash";
+  import PictureFallback from "./PictureFallback.svelte";
 
   // NOTE: The only reason for this component is that Image from unpic doesn't seem to show types?
   // So we force ImageProps
@@ -42,12 +43,5 @@
     {...props}
   />
 {:else if fallback}
-  <!-- NOTE: Tried to use Avatar and AvatarFallback, but could never get it right -->
-  <div
-    {...props}
-    {style}
-    class={cn("flex items-center justify-center rounded-md bg-muted", klass)}
-  >
-    {fallback}
-  </div>
+  <PictureFallback {fallback} class={klass} {...props} />
 {/if}

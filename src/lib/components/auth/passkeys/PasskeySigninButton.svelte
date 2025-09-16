@@ -6,13 +6,14 @@
   import Input from "$lib/components/ui/input/input.svelte";
   import { ROUTES } from "$lib/const/routes.const";
   import { TOAST } from "$lib/const/toast.const";
+  import type { Branded } from "$lib/interfaces";
   import { App } from "$lib/utils/app";
   import { onMount } from "svelte";
 
   let {
     redirect_uri,
   }: {
-    redirect_uri?: ResolvedPathname;
+    redirect_uri?: ResolvedPathname | Branded<"RouteId">;
   } = $props();
 
   const onSuccess = () => {

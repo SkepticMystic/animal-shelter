@@ -27,9 +27,9 @@
   const routes: Route[] = [
     {
       side: "right",
-      label: "Team",
+      label: "Shelter",
       href: ROUTES.ORGANIZATION,
-      icon: "lucide/users",
+      icon: "lucide/home",
       authed: true,
     },
     {

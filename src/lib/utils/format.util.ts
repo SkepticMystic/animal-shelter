@@ -1,4 +1,11 @@
 import { DateFormatter } from "@internationalized/date";
+import { formatDistance, type FormatDistanceOptions } from "date-fns";
+import {
+  daysInWeek,
+  minutesInHour,
+  monthsInYear,
+  secondsInMinute,
+} from "date-fns/constants";
 import { Guard } from "./guard.util";
 
 const DEFAULT_OPTIONS = {
@@ -35,6 +42,10 @@ const DEFAULT_OPTIONS = {
     dateStyle: "medium",
     timeStyle: "short",
   } satisfies Intl.DateTimeFormatOptions,
+
+  date_relative: {
+    numeric: "auto",
+  } satisfies Intl.RelativeTimeFormatOptions,
 };
 
 const DEFAULT_FORMATTERS = {
@@ -42,13 +53,28 @@ const DEFAULT_FORMATTERS = {
   percent: new Intl.NumberFormat("en", DEFAULT_OPTIONS.percent),
   currency: new Intl.NumberFormat("en", DEFAULT_OPTIONS.currency),
 
-  date: new DateFormatter("en-ZA", DEFAULT_OPTIONS.date),
-  datetime: new DateFormatter("en-ZA", DEFAULT_OPTIONS.datetime),
-  daterange: new DateFormatter("en-ZA", DEFAULT_OPTIONS.daterange),
+  date: new DateFormatter("en", DEFAULT_OPTIONS.date),
+  datetime: new DateFormatter("en", DEFAULT_OPTIONS.datetime),
+  daterange: new DateFormatter("en", DEFAULT_OPTIONS.daterange),
+
+  date_relative: new Intl.RelativeTimeFormat(
+    "en",
+    DEFAULT_OPTIONS.date_relative,
+  ),
 } satisfies Record<
   keyof typeof DEFAULT_OPTIONS,
-  Intl.NumberFormat | DateFormatter
+  Intl.NumberFormat | Intl.RelativeTimeFormat | DateFormatter
 >;
+
+const BALANCE_DURATION_DIVISIONS = [
+  { amount: secondsInMinute, unit: "seconds" as const },
+  { amount: minutesInHour, unit: "minutes" as const },
+  { amount: 24, unit: "hours" as const },
+  { amount: daysInWeek, unit: "days" as const },
+  { amount: 4.34524, unit: "weeks" as const },
+  { amount: monthsInYear, unit: "months" as const },
+  { amount: Number.POSITIVE_INFINITY, unit: "years" as const },
+];
 
 export const Format = {
   number: (
@@ -172,6 +198,67 @@ export const Format = {
       return `From ${format(range.start)}`;
     } else {
       return `Until ${format(range.end!)}`;
+    }
+  },
+
+  date_relative: (
+    date: Date | string | number | undefined | null,
+    opts?: Intl.RelativeTimeFormatOptions & {
+      suffix?: boolean;
+      base?: Date | string | number;
+    },
+  ) => {
+    if (Guard.is_nullish(date)) {
+      return "-";
+    } else {
+      const to = new Date(date);
+      const from = opts?.base ? new Date(opts.base) : new Date();
+      const milliseconds = to.getTime() - from.getTime();
+
+      let delta: { value: number; unit: Intl.RelativeTimeFormatUnit };
+      let remaining = milliseconds / 1000;
+
+      for (const division of BALANCE_DURATION_DIVISIONS) {
+        if (Math.abs(remaining) < division.amount) {
+          delta = { value: Math.round(remaining), unit: division.unit };
+
+          break;
+        }
+
+        remaining /= division.amount;
+      }
+
+      delta = { value: Math.round(remaining), unit: "years" as const };
+
+      console.log({ milliseconds, delta });
+
+      const formatted = opts
+        ? new Intl.RelativeTimeFormat("en", {
+            ...DEFAULT_OPTIONS.date_relative,
+            ...opts,
+          }).format(delta.value, delta.unit)
+        : DEFAULT_FORMATTERS.date_relative.format(delta.value, delta.unit);
+
+      if (opts?.suffix === false) {
+        return formatted.replace(/ ago| from now/, "");
+      } else {
+        return formatted;
+      }
+    }
+  },
+
+  date_distance: (
+    date: Date | string | number | undefined | null,
+    options?: FormatDistanceOptions & { base?: Date | string | number },
+  ) => {
+    if (Guard.is_nullish(date)) {
+      return "-";
+    } else {
+      return formatDistance(
+        new Date(date),
+        options?.base ? new Date(options.base) : new Date(),
+        options,
+      );
     }
   },
 };

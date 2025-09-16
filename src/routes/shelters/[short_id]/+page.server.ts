@@ -4,10 +4,14 @@ import type { PageServerLoad } from "./$types";
 
 export const load = (async ({ params }) => {
   const [shelter] = await Promise.all([
-    db.query.organization.findFirst({
-      where: (shelter, { eq }) => eq(shelter.slug, params.slug),
+    db.query.shelter.findFirst({
+      where: (shelter, { eq }) => eq(shelter.short_id, params.short_id),
 
       with: {
+        images: {
+          columns: { url: true, thumbhash: true },
+        },
+
         animals: {
           with: {
             images: {

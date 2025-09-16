@@ -1,7 +1,12 @@
+import type z from "zod";
+
 export type Suc<D> = { ok: true; data: D };
 export type Err<E> = { ok: false; error: E };
 
 export type Result<D = undefined, E = undefined> = Suc<D> | Err<E>;
+
+export type Branded<B extends string, T extends unknown = string> = T &
+  z.$brand<B>;
 
 export type Timestamps = { createdAt: Date; updatedAt: Date };
 

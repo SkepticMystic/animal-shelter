@@ -1,5 +1,6 @@
 <script lang="ts">
-  import { OrganizationsClient } from "$lib/clients/organizations.client";
+  import { InvitationClient } from "$lib/clients/invitation.client";
+  import { OrganizationClient } from "$lib/clients/organizations.client";
   import Time from "$lib/components/Time.svelte";
   import { renderComponent } from "$lib/components/ui/data-table";
   import DataTable from "$lib/components/ui/data-table/data-table.svelte";
@@ -73,9 +74,7 @@
         disabled: (row) => row.original.status !== "pending",
 
         onselect: async (row) => {
-          const res = await OrganizationsClient.cancel_invitation(
-            row.original.id,
-          );
+          const res = await InvitationClient.cancel(row.original.id);
 
           if (res.ok) {
             invitations = Items.patch(invitations, row.original.id, res.data);

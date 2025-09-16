@@ -8,11 +8,7 @@ import {
   POCKETID_CLIENT_ID,
   POCKETID_CLIENT_SECRET,
 } from "$env/static/private";
-import {
-  betterAuth,
-  type GenericEndpointContext,
-  type Session,
-} from "better-auth";
+import { betterAuth, type Session } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import {
   admin,
@@ -44,6 +40,7 @@ import {
   UserTable,
   VerificationTable,
 } from "./server/db/schema/auth.model";
+import { ShelterTable } from "./server/db/schema/shelter.model";
 import { EmailLive, EmailService, EmailTest } from "./services/email.service";
 import { Log } from "./utils/logger.util";
 
@@ -80,7 +77,7 @@ export const auth = Effect.runSync(
           create: {
             before: async (session, ctx) => {
               // Log users back in to their org, if they had one
-              const org = await get_member_org(session, ctx);
+              const org = await get_member_org(session);
 
               return {
                 data: {
@@ -91,6 +88,72 @@ export const auth = Effect.runSync(
                 },
               };
             },
+          },
+
+          update: {
+            // before: async (session, ctx) => {
+            //   console.log(ctx);
+            //   const ctx_session = ctx?.context.session;
+            //   console.log({ session, ctx_session }, "session.update.before");
+            //   // If no session (shouldn't happen, otherwise we'd be in the create hook),
+            //   // or no active org, just return the session as-is
+            //   if (!ctx_session?.session.activeOrganizationId) {
+            //     return { data: session as Session };
+            //   }
+            //   const member = await db.query.member.findFirst({
+            //     where: (member, { eq, and }) =>
+            //       and(
+            //         eq(member.userId, ctx_session.session.userId),
+            //         eq(
+            //           member.organizationId,
+            //           ctx_session.session.activeOrganizationId,
+            //         ),
+            //       ),
+            //     columns: { id: true, role: true },
+            //   });
+            //   return {
+            //     data: {
+            //       ...ctx_session?.session,
+            //       member_id: member ? member.id : null,
+            //       member_role: member ? member.role : null,
+            //       activeOrganizationId:
+            //         ctx_session?.session.activeOrganizationId,
+            //     },
+            //   };
+            // },
+            // after: async (session, ctx) => {
+            //   console.log(ctx, "session.update.after");
+            //   console.log(session, "session.update.after session");
+            //   //   console.log(ctx);
+            //   //   const ctx_session = ctx?.context.session;
+            //   //   console.log({ session, ctx_session }, "session.update.before");
+            //   // If no session (shouldn't happen, otherwise we'd be in the create hook),
+            //   // or no active org, just return the session as-is
+            //   if (typeof session.activeOrganizationId !== "string") {
+            //     return;
+            //   }
+            //   const member = await db.query.member.findFirst({
+            //     where: (member, { eq, and }) =>
+            //       and(
+            //         eq(member.userId, session.userId),
+            //         eq(
+            //           member.organizationId,
+            //           session.activeOrganizationId as string,
+            //         ),
+            //       ),
+            //     columns: { id: true, role: true },
+            //   });
+            //   ctx?.context.session;
+            //   ctx?.context.setNewSession({});
+            //   return {
+            //     data: {
+            //       ...session,
+            //       member_id: member ? member.id : null,
+            //       member_role: member ? member.role : null,
+            //       activeOrganizationId: session.activeOrganizationId,
+            //     },
+            //   };
+            // },
           },
         },
       },
@@ -221,6 +284,18 @@ export const auth = Effect.runSync(
           requireEmailVerificationOnInvitation: true,
           sendInvitationEmail: (data) =>
             Effect.runPromise(email.send(EMAIL.TEMPLATES["org-invite"](data))),
+
+          organizationHooks: {
+            afterCreateOrganization: async ({ organization }) => {
+              await db
+                .insert(ShelterTable)
+                .values({
+                  name: organization.name,
+                  org_id: organization.id,
+                })
+                .execute();
+            },
+          },
         }),
 
         genericOAuth({
@@ -284,7 +359,6 @@ export const auth = Effect.runSync(
 // SECTION: Helper functions
 const get_member_org = async (
   session: Session,
-  ctx: GenericEndpointContext | undefined,
 ): Promise<{
   org_id: string;
   member_id: string;
@@ -295,11 +369,6 @@ const get_member_org = async (
     ctx: "[session.create.before]",
     userId: session.userId,
   });
-
-  if (!ctx) {
-    log.warn("No context in session create hook");
-    return null;
-  }
 
   const member = await db.query.member.findFirst({
     where: (member, { eq }) => eq(member.userId, session.userId),

@@ -14,13 +14,13 @@ const get_image_resource = async (
   input: Pick<Image, "resource_id" | "resource_kind" | "org_id">,
 ) => {
   switch (input.resource_kind) {
-    case "organization": {
+    case "shelter": {
       return db.query[input.resource_kind].findFirst({
         columns: { id: true },
         where: (res, { eq, and }) =>
           and(
-            eq(res.id, input.org_id), //
-            // eq(res.org_id, input.org_id),
+            eq(res.org_id, input.org_id), //
+            eq(res.id, input.resource_id),
           ),
       });
     }

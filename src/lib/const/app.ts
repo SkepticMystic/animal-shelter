@@ -6,6 +6,7 @@ export const APP = {
   ID: "animal-shelter",
   NAME: "Animal Shelter",
   URL: PUBLIC_BASE_URL,
+  DOMAIN: new URL(PUBLIC_BASE_URL).hostname,
   LOGO_URL: "https://placehold.co/600x400/png",
   DESCRIPTION: "A simple app to manage an animal shelter",
 };

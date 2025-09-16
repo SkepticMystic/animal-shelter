@@ -46,7 +46,7 @@
   </FormField>
 
   <FormField {form} name="logo" description="A link to the logo of the shelter">
-    <FormControl label="Logo URL">
+    <FormControl label="Logo (optional)">
       {#snippet children({ props })}
         <Input
           {...props}

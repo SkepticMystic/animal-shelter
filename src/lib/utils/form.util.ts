@@ -46,7 +46,7 @@ export function make_super_form<
   }: FormOptions<Out, App.Superforms.Message, In> & {
     submit: (data: Out) => Promise<APIResult<Data>>;
 
-    on_success?: (data: Data) => MaybePromise<void>;
+    on_success?: (data: Data) => MaybePromise<unknown>;
 
     on_error?: (
       result: Extract<APIResult<Data>, { ok: false }>["error"],

@@ -15,11 +15,8 @@ const config = {
     },
   },
 
-  compilerOptions: {
-    experimental: {
-      async: true,
-    },
-  },
+  // NOTE: experimental.async breaks GooglePlacesAutocomplete
+  compilerOptions: {},
 };
 
 export default config;

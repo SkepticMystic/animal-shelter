@@ -15,7 +15,7 @@
   let animal = $state(data.animal);
 </script>
 
-<div class="space-y-5">
+<div class="mx-auto w-fit space-y-5">
   <div class="flex items-center gap-2">
     <BackButton />
     <h1>Edit {animal.name}</h1>

@@ -1,4 +1,5 @@
 import type { SelectOption } from "$lib/interfaces";
+import type { ClassValue } from "svelte/elements";
 
 const SPECIES_IDS = ["dog", "cat"] as const;
 const SPECIES_MAP = {
@@ -14,16 +15,28 @@ const SPECIES_MAP = {
   (typeof SPECIES_IDS)[number],
   {
     label: string;
-    icon: string;
+    icon: ClassValue;
   }
 >;
 
 const GENDER_IDS = ["m", "f", "u"] as const;
 const GENDER_MAP = {
-  m: { label: "Male" },
-  f: { label: "Female" },
-  u: { label: "Unknown" },
-} satisfies Record<(typeof GENDER_IDS)[number], { label: string }>;
+  m: {
+    label: "Male",
+    icon: "lucide/mars",
+  },
+  f: {
+    label: "Female",
+    icon: "lucide/venus",
+  },
+  u: {
+    label: "Unknown",
+    icon: "lucide/question-mark",
+  },
+} satisfies Record<
+  (typeof GENDER_IDS)[number],
+  { label: string; icon: ClassValue }
+>;
 
 export const ANIMALS = {
   SPECIES: {

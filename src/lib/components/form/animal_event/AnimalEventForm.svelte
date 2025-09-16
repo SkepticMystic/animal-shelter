@@ -51,7 +51,7 @@
   };
 </script>
 
-<form class="flex max-w-lg flex-col gap-2" method="POST" use:form.enhance>
+<form class="space-y-5" method="POST" use:form.enhance>
   {#if !form_input.data.animal_id}
     <FormField
       {form}
@@ -117,7 +117,7 @@
     {form}
     name="data.kind"
     description={mode === "update"
-      ? "Cannot change event type after creating. Rather delete and create a new event"
+      ? "Cannot update event type. Rather create a new event"
       : ""}
   >
     <FormControl label="Event type">
@@ -151,7 +151,9 @@
     </FormControl>
   </FormField>
 
-  <FormButton {form} class="w-full" icon="lucide/send">Submit</FormButton>
+  <FormButton {form} class="w-full" icon="lucide/send">
+    {mode === "insert" ? "Add event" : "Update event"}
+  </FormButton>
 
   <FormMessage {form} />
 </form>

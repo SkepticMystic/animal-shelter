@@ -36,6 +36,8 @@
 - **Schema:** Validation and types in `src/lib/schema/`
 - **Permissions:** Access control logic in `src/lib/auth/permissions.ts`
 - **Email:** Service in `src/lib/services/email.service.ts`
+- **Icons:** Use iconify-tailwind integration for CSS icons. Use the pattern `{provider}/{name}` as the class value. Prefer lucide icons.
+- **Constants**: Declared in their own file, exported in a single UPPERCASE namespace. Usually has a list of IDS as const, then a MAP defining a label, and sometimes an icon.
 
 ## Integration Points
 

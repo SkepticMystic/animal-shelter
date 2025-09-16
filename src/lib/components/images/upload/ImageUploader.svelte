@@ -23,7 +23,7 @@
     console.log("upload_image_remote.result", upload_image_remote.result);
     if (!upload_image_remote.result || !upload_image_remote.result.ok) {
       toast.error(
-        `Error uploading image: ${upload_image_remote.result?.error?.message}`,
+        upload_image_remote.result?.error?.message || "Upload failed",
       );
     } else if (upload_image_remote.result.ok) {
       await on_upload?.(upload_image_remote.result.data);
@@ -53,6 +53,7 @@
     <Button
       type="submit"
       icon="lucide/image"
+      variant="secondary"
       loading={Boolean(upload_image_remote.pending)}
     >
       Upload

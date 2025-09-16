@@ -1,14 +1,14 @@
 <script lang="ts">
-  import { resolve } from "$app/paths";
   import { ANIMALS } from "$lib/const/animal.const";
   import { IMAGES } from "$lib/const/image.const";
-  import { ROUTES } from "$lib/const/routes.const";
-  import { TIME } from "$lib/const/time";
   import type { Animal } from "$lib/server/db/schema/animal.model";
   import type { Image } from "$lib/server/db/schema/image.model";
+  import { Format } from "$lib/utils/format.util";
   import Picture from "../images/Picture.svelte";
-  import Button from "../ui/button/button.svelte";
+  import AnimalLink from "../links/AnimalLink.svelte";
+  import Time from "../Time.svelte";
   import Card from "../ui/card/Card.svelte";
+  import Icon from "../ui/icon/Icon.svelte";
   Image;
   let {
     animal,
@@ -19,42 +19,34 @@
   const image = animal.images[0];
 </script>
 
-<Card>
+<Card class="w-44" description={animal.description}>
   {#snippet title()}
-    <div class="flex items-center justify-between">
-      <Button variant="link" href={resolve(ROUTES.ANIMALS_VIEW, animal)}>
-        {animal.name}
-      </Button>
+    <div class="flex flex-col gap-3">
+      <AnimalLink {animal}>
+        <Picture
+          {image}
+          {...IMAGES.SIZES.THUMBNAIL}
+          class="mx-auto"
+          alt={animal.name}
+          fallback={animal.name[0]}
+        />
+      </AnimalLink>
 
-      <Picture
-        {image}
-        {...IMAGES.SIZES.AVATAR}
-        alt={animal.name}
-        fallback={animal.name[0]}
-      />
+      <AnimalLink {animal} class="text-left text-lg" />
     </div>
   {/snippet}
 
   {#snippet content()}
-    <ul>
-      <li>
-        <span class="font-semibold">Species</span>: {ANIMALS.SPECIES.MAP[
-          animal.species
-        ].label}
-      </li>
+    <div class="flex items-center justify-between">
+      <Time
+        date={animal.date_of_birth}
+        show={(dt) => Format.date_relative(dt, { suffix: false })}
+      />
 
-      <li>
-        <span class="font-semibold">Age</span>: {animal.date_of_birth
-          ? Math.floor(
-              (Date.now() - new Date(animal.date_of_birth).getTime()) /
-                TIME.YEAR,
-            ) + " years"
-          : "Unknown"}
-      </li>
-
-      <li>
-        <span class="font-semibold">Description</span>: {animal.bio}
-      </li>
-    </ul>
+      <div class="flex gap-1">
+        <Icon icon={ANIMALS.GENDER.MAP[animal.gender].icon} />
+        <Icon icon={ANIMALS.SPECIES.MAP[animal.species].icon} />
+      </div>
+    </div>
   {/snippet}
 </Card>

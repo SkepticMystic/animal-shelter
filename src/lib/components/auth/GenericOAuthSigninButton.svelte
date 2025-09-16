@@ -6,14 +6,16 @@
   import { ROUTES } from "$lib/const/routes.const";
   import { TOAST } from "$lib/const/toast.const";
   import { App } from "$lib/utils/app";
+  import type { z } from "zod";
   import Button from "../ui/button/button.svelte";
+  import type { Branded } from "$lib/interfaces";
 
   let {
     provider_id,
     redirect_uri,
   }: {
     provider_id: IAuth.ProviderId;
-    redirect_uri?: ResolvedPathname;
+    redirect_uri?: ResolvedPathname | Branded<"RouteId">;
   } = $props();
 
   const provider = AUTH.PROVIDERS.MAP[provider_id];

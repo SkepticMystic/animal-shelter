@@ -55,6 +55,7 @@
         cell: ({ row }) =>
           renderComponent(UserAvatar, { user: row.original.user }),
       },
+
       {
         accessorKey: "user.name",
         meta: { label: "Name" },
