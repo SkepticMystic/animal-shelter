@@ -1,5 +1,5 @@
-import { LINKS, type ILink } from "$lib/const/link.const";
-import { tel_schema } from "$lib/schema/tel.schema";
+import { LINKS, type ILink } from "../const/link.const";
+import { tel_schema } from "../schema/tel.schema";
 import z from "zod";
 
 const add_search = (url: URL, search: Record<string, unknown>) => {

@@ -20,7 +20,7 @@ export const AnimalEventTable = pgTable(
     created_by_member_id: DynamicSchema.member_id().member_id,
     administered_by_member_id: DynamicSchema.member_id().member_id,
 
-    notes: text().default(""),
+    notes: text().default("").notNull(),
     timestamp: timestamp({ mode: "date" }).notNull(),
     data: jsonb().$type<z.infer<typeof animal_event_data_schema>>().notNull(),
 
@@ -37,7 +37,7 @@ export const AnimalEventTable = pgTable(
 export const animal_event_relations = relations(
   AnimalEventTable,
   ({ one, many }) => ({
-    shelter: one(OrganizationTable, {
+    organization: one(OrganizationTable, {
       fields: [AnimalEventTable.org_id],
       references: [OrganizationTable.id],
     }),

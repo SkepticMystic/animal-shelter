@@ -38,8 +38,8 @@ export const AnimalTable = pgTable(
 
     name: varchar({ length: 255 }).notNull(),
     description: text().default("").notNull(),
-    date_of_birth: timestamp({ mode: "date" }),
 
+    date_of_birth: timestamp({ mode: "date" }),
     // TODO: intake_date: timestamp({ mode: "date" }).notNull(),
 
     species: animal_species_enum().notNull(),

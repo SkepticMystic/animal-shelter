@@ -152,13 +152,6 @@ export const OrganizationTable = pgTable("organization", {
   slug: varchar({ length: 255 }).notNull().unique(),
   logo: varchar({ length: 2048 }),
 
-  // description: text(),
-  // website: varchar({ length: 2048 }),
-  // email: varchar({ length: 255 }),
-  // phone: varchar({ length: 50 }),
-  // address: varchar({ length: 512 }),
-  // links: jsonb().$type<Record<string, string>>(), // Using jsonb for key-value pairs
-
   metadata: text(),
 
   ...StaticSchema.timestamps,

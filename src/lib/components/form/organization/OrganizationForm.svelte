@@ -45,7 +45,8 @@
     </FormControl>
   </FormField>
 
-  <FormField {form} name="logo" description="A link to the logo of the shelter">
+  <!-- NOTE: We use ImageTable instead -->
+  <!-- <FormField {form} name="logo" description="A link to the logo of the shelter">
     <FormControl label="Logo (optional)">
       {#snippet children({ props })}
         <Input
@@ -55,7 +56,7 @@
         />
       {/snippet}
     </FormControl>
-  </FormField>
+  </FormField> -->
 
   <FormButton {form} class="w-full" icon="lucide/send">Submit</FormButton>
 
