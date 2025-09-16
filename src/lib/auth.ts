@@ -235,10 +235,17 @@ export const auth = Effect.runSync(
         sendOnSignUp: true,
         autoSignInAfterVerification: true,
 
-        sendVerificationEmail: ({ user, url }) =>
-          Effect.runPromise(
+        sendVerificationEmail: async ({ user, url }) => {
+          console.log({ user, url }, "sendVerificationEmail");
+
+          const res = await Effect.runPromise(
             email.send(EMAIL.TEMPLATES["email-verification"]({ url, user })),
-          ),
+          );
+
+          console.log(res, "sendVerificationEmail result");
+
+          return res;
+        },
       },
 
       socialProviders: {
