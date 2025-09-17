@@ -10,7 +10,7 @@
     fallback,
     alt = "",
     class: klass = "",
-    size = IMAGES.SIZES.AVATAR.height,
+    size = IMAGES.SIZES.ICON.height,
   }: {
     alt?: string;
     href: string;

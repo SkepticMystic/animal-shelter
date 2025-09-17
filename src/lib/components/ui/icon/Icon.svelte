@@ -3,9 +3,9 @@
 
   let {
     icon,
-    size,
     label,
     bg = false,
+    size = "size-4",
     class: klass = "",
   }: {
     bg?: boolean;

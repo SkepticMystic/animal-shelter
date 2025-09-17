@@ -2,9 +2,7 @@
   import BackButton from "$lib/components/buttons/BackButton.svelte";
   import AnimalCard from "$lib/components/cards/AnimalCard.svelte";
   import Picture from "$lib/components/images/Picture.svelte";
-  import EmailLink from "$lib/components/links/EmailLink.svelte";
-  import ExternalLink from "$lib/components/links/ExternalLink.svelte";
-  import TelLink from "$lib/components/links/TelLink.svelte";
+  import LinkLink from "$lib/components/links/LinkLink.svelte";
   import GoogleMap from "$lib/components/map/GoogleMap.svelte";
   import CarouselContent from "$lib/components/ui/carousel/carousel-content.svelte";
   import CarouselItem from "$lib/components/ui/carousel/carousel-item.svelte";
@@ -21,21 +19,10 @@
     <h1>{data.shelter.name}</h1>
   </div>
 
-  <div class="flex items-start justify-between">
-    <div class="flex flex-wrap justify-start gap-3">
-      {#each data.shelter.urls as link}
-        <ExternalLink {link} />
-      {/each}
-    </div>
-
-    <div class="flex flex-wrap justify-end gap-3">
-      {#each data.shelter.emails as link}
-        <EmailLink {link} />
-      {/each}
-      {#each data.shelter.phones as link}
-        <TelLink {link} />
-      {/each}
-    </div>
+  <div class="flex flex-wrap gap-4">
+    {#each [...data.shelter.urls, ...data.shelter.emails, ...data.shelter.phones] as link}
+      <LinkLink {link} />
+    {/each}
   </div>
 
   {#if data.shelter.animals.length}

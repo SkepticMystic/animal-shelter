@@ -8,7 +8,7 @@
   let {
     link,
     ...rest
-  }: Omit<HTMLAnchorAttributes, "href"> & {
+  }: HTMLAnchorAttributes & {
     link: Link;
   } = $props();
 </script>

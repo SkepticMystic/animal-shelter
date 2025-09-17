@@ -18,6 +18,11 @@ export const IMAGES = {
   },
 
   SIZES: {
+    // Matches size-4 of Icon.svelte
+    ICON: {
+      width: 16,
+      height: 16,
+    },
     AVATAR: {
       width: 32,
       height: 32,
