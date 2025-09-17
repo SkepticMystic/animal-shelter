@@ -15,7 +15,7 @@ const get_kind = (link: Link): ILink.KindId => {
   }
 };
 
-const format_href = (link: Link): string => {
+const format_href = (link: Link, parts?: (keyof URL)[]): string => {
   const kind = get_kind(link);
 
   switch (kind) {
@@ -23,7 +23,11 @@ const format_href = (link: Link): string => {
       const url = Url.safe(link.href);
       if (!url) return link.href;
 
-      return (url.hostname + url.pathname)
+      parts ??= ["hostname", "pathname"];
+
+      return parts
+        .map((key) => String(url[key]))
+        .join("")
         .replace(/^www\./, "") // Remove www.
         .replace(/\/$/, ""); // Remove trailing slash
     }

@@ -37,6 +37,6 @@
   {/if}
 
   <Iconed reversed icon="lucide/external-link">
-    {link.label || LinkUtil.format_href(link)}
+    {link.label || LinkUtil.format_href(link, ["hostname"])}
   </Iconed>
 </Anchor>

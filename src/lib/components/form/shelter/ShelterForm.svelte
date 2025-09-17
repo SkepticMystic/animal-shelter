@@ -19,6 +19,7 @@
   import EmailInput from "../inputs/EmailInput.svelte";
   import TelInput from "../inputs/TelInput.svelte";
   import GooglePlaceAutocomplete from "../place/GooglePlaceAutocomplete.svelte";
+  import Textarea from "$lib/components/ui/textarea/textarea.svelte";
 
   type In = ShelterSchema.InsertIn;
   type Out = ShelterSchema.InsertOut;
@@ -90,6 +91,18 @@
       </FormControl>
     </FormField>
   </div>
+
+  <FormField {form} name="description" description="Tell us about the shelter">
+    <FormControl label="Description">
+      {#snippet children({ props })}
+        <Textarea
+          {...props}
+          placeholder="Description"
+          bind:value={$form_data.description}
+        />
+      {/snippet}
+    </FormControl>
+  </FormField>
 
   <FormFieldset
     {form}
