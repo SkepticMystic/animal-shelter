@@ -40,8 +40,8 @@
   }}
   {...rest}
 >
-  <Select.Trigger {loading} class={cn("w-fit max-w-sm", rest.class)}>
-    {selected?.label ?? placeholder}
+  <Select.Trigger {loading} class={cn("w-fit max-w-[200-px]", rest.class)}>
+    <span class="truncate"> {selected?.label ?? placeholder}</span>
   </Select.Trigger>
 
   <Select.Content>

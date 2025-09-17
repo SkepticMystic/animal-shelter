@@ -89,19 +89,20 @@ export const columns = TanstackTable.make_columns<TData>({
     {
       // NOTE: It is possible to just use "shelter.short_id"
       // But then we don't have the name available for the facet selector
-      accessorKey: "shelter",
+      accessorKey: "shelter.name",
       meta: { label: "Shelter" },
 
-      filterFn: (row, id, filterValue) => {
-        if (!filterValue || filterValue.length === 0) {
-          return true;
-        }
+      filterFn: "arrIncludesSome",
+      // filterFn: (row, id, filterValue) => {
+      //   if (!filterValue || filterValue.length === 0) {
+      //     return true;
+      //   }
 
-        const shelter = row.getValue<Shelter>(id);
-        if (!shelter) return false;
+      //   const shelter = row.getValue<Shelter>(id);
+      //   if (!shelter) return false;
 
-        return filterValue.includes(shelter.short_id);
-      },
+      //   return filterValue.includes(shelter.short_id);
+      // },
 
       cell: ({ row }) =>
         renderComponent(ShelterLink, { shelter: row.original.shelter }),

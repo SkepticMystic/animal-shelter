@@ -6,10 +6,11 @@
   import * as Command from "$lib/components/ui/command/index.js";
   import * as Popover from "$lib/components/ui/popover/index.js";
   import type { SelectOption } from "$lib/interfaces";
+  import { Arrays } from "$lib/utils/arrays";
   import { cn } from "$lib/utils/shadcn.util";
   import { tick } from "svelte";
-  import Icon from "../icon/Icon.svelte";
   import type { ClassValue } from "svelte/elements";
+  import Icon from "../icon/Icon.svelte";
 
   let {
     options,
@@ -23,7 +24,7 @@
     options: SelectOption<V, D>[];
   } = $props();
 
-  let selected = $state(options.filter((f) => value.includes(f.value)));
+  let selected = $derived(options.filter((f) => value.includes(f.value)));
 
   let trigger_ref = $state<HTMLButtonElement>(null!);
   // We want to refocus the trigger button when the user selects
@@ -41,11 +42,13 @@
       <Button
         variant="outline"
         {...props}
-        class={cn(props.class as ClassValue, "w-[200px] justify-between")}
+        class={cn(props.class as ClassValue, "max-w-[200px] justify-between")}
         role="combobox"
         aria-expanded={open}
       >
-        {selected.map((o) => o.label).join(", ") || placeholder}
+        <span class="truncate">
+          {selected.map((o) => o.label).join(", ") || placeholder}
+        </span>
 
         <Icon
           icon="lucide/chevrons-up-down"
@@ -67,11 +70,7 @@
             <Command.Item
               value={option.value}
               onSelect={() => {
-                selected = value.includes(option.value)
-                  ? selected.filter((s) => s.value !== option.value)
-                  : [...selected, option];
-
-                value = selected.map((s) => s.value);
+                value = Arrays.toggle(value, option.value);
 
                 close_and_focus_trigger();
               }}

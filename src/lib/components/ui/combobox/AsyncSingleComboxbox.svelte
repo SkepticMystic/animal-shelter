@@ -16,7 +16,6 @@
 
   let {
     search,
-    on_select,
     open = false,
     disabled = false,
     value = $bindable(),
@@ -26,14 +25,13 @@
     open?: boolean;
     disabled?: boolean;
     placeholder?: string;
-    on_select?: (option: SelectOption<V, D>) => void;
     search: (query: string) => Promise<SelectOption<V, D>[]>;
   } = $props();
 
   let query = $state("");
   let loading = $state(false);
   let options: Awaited<ReturnType<typeof search>> = $state([]);
-  let selected: SelectOption<V, D> | undefined = $state(undefined);
+  let selected = $derived(options.find((o) => o.value === value));
 
   const search_inner = async () => {
     console.log(`Searching for "${$state.snapshot(query)}"...`);
@@ -54,9 +52,7 @@
   if (value) {
     disabled = true;
     // If we have an initial value, search for it to get the label
-    search_inner().then(() => {
-      selected = options.find((o) => o.value === value);
-    });
+    search_inner();
   }
 
   let trigger_ref = $state<HTMLButtonElement>(null!);
@@ -82,7 +78,9 @@
         role="combobox"
         aria-expanded={open}
       >
-        {selected?.label || placeholder}
+        <span class="truncate">
+          {selected?.label || placeholder}
+        </span>
 
         <Loading {loading} class="ml-2 size-4 shrink-0 opacity-50">
           <Icon
@@ -132,9 +130,7 @@
             <Command.Item
               value={option.value}
               onSelect={() => {
-                selected = option;
                 value = option.value;
-                on_select?.(selected);
 
                 close_and_focus_trigger();
               }}

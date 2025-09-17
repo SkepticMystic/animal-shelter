@@ -38,9 +38,7 @@
               icon="lucide/x"
               variant="ghost"
               onclick={() => table.resetColumnFilters()}
-            >
-              Clear
-            </Button>
+            />
           {/if}
         </div>
       {/snippet}

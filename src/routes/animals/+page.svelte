@@ -87,19 +87,19 @@
             placeholder="Shelters"
             options={(
               table
-                .getColumn("shelter")
+                .getColumn("shelter_name")
                 ?.getFacetedUniqueValues()
                 .keys()
                 .toArray() ?? []
-            ).map((facet: Shelter) => ({
-              label: facet.name,
-              value: facet.short_id,
+            ).map((facet: Shelter["name"]) => ({
+              label: facet,
+              value: facet,
             }))}
             bind:value={
               () =>
-                (table.getColumn("shelter")?.getFilterValue() ??
+                (table.getColumn("shelter_name")?.getFilterValue() ??
                   []) as string[],
-              (value) => table.getColumn("shelter")?.setFilterValue(value)
+              (value) => table.getColumn("shelter_name")?.setFilterValue(value)
             }
           ></MultiCombobox>
 
@@ -108,9 +108,7 @@
               icon="lucide/x"
               variant="ghost"
               onclick={() => table.resetColumnFilters()}
-            >
-              Clear
-            </Button>
+            />
           {/if}
         </div>
       {/snippet}

@@ -90,16 +90,20 @@
     {form}
     name="date_of_birth"
     description={$form_data.date_of_birth
-      ? `Current: ${Format.date($form_data.date_of_birth)}`
+      ? `Born on ${Format.date($form_data.date_of_birth)}, making them ${Format.date_relative(
+          $form_data.date_of_birth,
+          { suffix: false, numeric: "always" },
+        )} old`
       : "Approximate date is fine"}
   >
-    <FormControl label="Age / Date of Birth">
+    <FormControl label="Date of Birth">
       {#snippet children({ props })}
         <NaturalLanguageDatePicker
           {...props}
+          placeholder="5 years ago, or 16 June 2020"
+          parsing_options={{ forwardDate: false }}
           bind:value={$form_data.date_of_birth}
         />
-        <!-- <DatePicker {...props} bind:value={$form_data.date_of_birth} /> -->
       {/snippet}
     </FormControl>
   </FormField>

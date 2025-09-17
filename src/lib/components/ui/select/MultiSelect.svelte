@@ -37,10 +37,12 @@
     on_value_change?.(value);
   }}
 >
-  <Select.Trigger {loading} class="w-fit max-w-sm">
-    {selected.length === options.length
-      ? "All selected"
-      : selected.map((option) => option.label).join(", ") || placeholder}
+  <Select.Trigger {loading} class="w-fit max-w-[200px]">
+    <span class="truncate">
+      {selected.length === options.length
+        ? "All selected"
+        : selected.map((option) => option.label).join(", ") || placeholder}
+    </span>
   </Select.Trigger>
 
   <Select.Content>

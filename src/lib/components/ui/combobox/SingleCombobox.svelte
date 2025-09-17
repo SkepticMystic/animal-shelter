@@ -13,8 +13,8 @@
 
   let {
     options,
-    on_select,
     open = false,
+    on_value_change,
     value = $bindable(),
     placeholder = "Select an option...",
   }: {
@@ -22,10 +22,10 @@
     open?: boolean;
     placeholder?: string;
     options: SelectOption<V, D>[];
-    on_select?: (option: SelectOption<V, D>) => void;
+    on_value_change?: (value: V) => void;
   } = $props();
 
-  let selected = $state(options.find((f) => f.value === value));
+  let selected = $derived(options.find((f) => f.value === value));
 
   let trigger_ref = $state<HTMLButtonElement>(null!);
   // We want to refocus the trigger button when the user selects
@@ -47,7 +47,9 @@
         role="combobox"
         aria-expanded={open}
       >
-        {selected?.label || placeholder}
+        <span class="truncate">
+          {selected?.label || placeholder}
+        </span>
 
         <Icon
           icon="lucide/chevrons-up-down"
@@ -69,10 +71,9 @@
             <Command.Item
               value={option.value}
               onSelect={() => {
-                selected = option;
                 value = option.value;
-                on_select?.(selected);
 
+                on_value_change?.(value);
                 close_and_focus_trigger();
               }}
             >
