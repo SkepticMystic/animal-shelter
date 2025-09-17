@@ -233,6 +233,7 @@ export const auth = Effect.runSync(
 
       emailVerification: {
         sendOnSignUp: true,
+        sendOnSignIn: true,
         autoSignInAfterVerification: true,
 
         sendVerificationEmail: async ({ user, url }) => {

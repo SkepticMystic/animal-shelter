@@ -40,7 +40,7 @@
 
   {#if data.shelter.animals.length}
     <div class="flex flex-wrap gap-3">
-      {#each [...data.shelter.animals, ...data.shelter.animals, ...data.shelter.animals] as animal}
+      {#each data.shelter.animals as animal}
         <AnimalCard {animal} />
       {/each}
     </div>

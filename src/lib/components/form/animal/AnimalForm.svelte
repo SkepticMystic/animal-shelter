@@ -1,5 +1,5 @@
 <script lang="ts">
-  import DatePicker from "$lib/components/ui/date-picker/DatePicker.svelte";
+  import NaturalLanguageDatePicker from "$lib/components/ui/date-picker/NaturalLanguageDatePicker.svelte";
   import FormButton from "$lib/components/ui/form/form-button.svelte";
   import Input from "$lib/components/ui/input/input.svelte";
   import SingleSelect from "$lib/components/ui/select/SingleSelect.svelte";
@@ -11,6 +11,7 @@
     AnimalSchema,
   } from "$lib/server/db/schema/animal.model";
   import { make_super_form, type APIResult } from "$lib/utils/form.util";
+  import { Format } from "$lib/utils/format.util";
   import type { SuperValidated } from "sveltekit-superforms";
   import FormControl from "../controls/FormControl.svelte";
   import FormField from "../fields/FormField.svelte";
@@ -85,10 +86,20 @@
     </FormField>
   </div>
 
-  <FormField {form} name="date_of_birth" description="Approximate date is fine">
-    <FormControl label="Date of birth">
+  <FormField
+    {form}
+    name="date_of_birth"
+    description={$form_data.date_of_birth
+      ? `Current: ${Format.date($form_data.date_of_birth)}`
+      : "Approximate date is fine"}
+  >
+    <FormControl label="Age / Date of Birth">
       {#snippet children({ props })}
-        <DatePicker {...props} bind:value={$form_data.date_of_birth} />
+        <NaturalLanguageDatePicker
+          {...props}
+          bind:value={$form_data.date_of_birth}
+        />
+        <!-- <DatePicker {...props} bind:value={$form_data.date_of_birth} /> -->
       {/snippet}
     </FormControl>
   </FormField>

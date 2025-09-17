@@ -19,7 +19,7 @@
   const image = animal.images[0];
 </script>
 
-<Card class="w-44" description={animal.description}>
+<Card class="w-56" description={animal.description}>
   {#snippet title()}
     <div class="flex flex-col gap-3">
       <AnimalLink {animal}>
@@ -40,7 +40,8 @@
     <div class="flex items-center justify-between">
       <Time
         date={animal.date_of_birth}
-        show={(dt) => Format.date_relative(dt, { suffix: false })}
+        show={(dt) =>
+          Format.date_relative(dt, { suffix: false, numeric: "always" })}
       />
 
       <div class="flex gap-1">

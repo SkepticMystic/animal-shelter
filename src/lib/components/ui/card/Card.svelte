@@ -1,5 +1,6 @@
 <script lang="ts">
   import * as Card from "$lib/components/ui/card/index.js";
+  import { Strings } from "$lib/utils/strings.util";
   import type { Snippet } from "svelte";
   import type { ClassValue } from "svelte/elements";
 
@@ -34,7 +35,9 @@
       {/if}
 
       {#if description}
-        <Card.Description>{description}</Card.Description>
+        <Card.Description>
+          {Strings.ellipsify(description, 150)}
+        </Card.Description>
       {/if}
     </Card.Header>
   {/if}

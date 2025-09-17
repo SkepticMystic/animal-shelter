@@ -8,6 +8,7 @@ import {
 import { Log } from "$lib/utils/logger.util";
 import { Context, Effect } from "effect";
 import { SMTPClient } from "emailjs";
+import { Resend } from "resend";
 import z from "zod";
 
 // NOTE: Copied from nodemailer Mail.Options
@@ -19,9 +20,9 @@ export type SendEmailOptions = {
   /** The subject of the e-mail */
   subject: string;
   /** The plaintext version of the message */
-  text?: string;
+  text: string;
   /** The HTML version of the message */
-  html?: string;
+  html: string;
 };
 
 export class EmailService extends Context.Tag("EmailService")<
@@ -77,9 +78,41 @@ const of_emailjs: Context.Tag.Service<EmailService> = {
     }),
 };
 
+const resend = new Resend(SMTP_PASSWORD);
+const of_resend: Context.Tag.Service<EmailService> = {
+  send: (input) =>
+    Effect.gen(function* () {
+      return Effect.tryPromise({
+        try: () =>
+          resend.emails
+            .send({
+              html: input.html,
+              subject: input.subject,
+              from: input.from ?? EMAIL_FROM,
+              to: Array.isArray(input.to) ? input.to : [input.to],
+            })
+            .then((r) => {
+              if (r.error) {
+                console.error("Failed to send email:", r.error);
+                return { message: "Failed to send email" };
+              } else {
+                console.log("Email sent:", r);
+              }
+
+              return;
+            }),
+
+        catch: (error) => {
+          console.error("Failed to send email:", error);
+          return { message: "Failed to send email" };
+        },
+      });
+    }),
+};
+
 const of_console_log: Context.Tag.Service<EmailService> = {
   send: (input) => Effect.sync(() => Log.info(input, "Sending email:")),
 };
 
-export const EmailLive = EmailService.of(of_emailjs);
+export const EmailLive = EmailService.of(of_resend);
 export const EmailTest = EmailService.of(of_console_log);
