@@ -3,11 +3,9 @@ import { execSync } from "child_process";
 const SUBCOMMANDS = [
   "generate",
   "migrate",
-  "reset",
   "push",
   "pull",
-  "status",
-  "create",
+  "check",
   "up",
   "studio",
 ];

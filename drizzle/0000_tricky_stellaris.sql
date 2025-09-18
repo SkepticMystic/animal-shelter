@@ -27,6 +27,7 @@ CREATE TABLE "animal" (
 	"name" varchar(255) NOT NULL,
 	"description" text DEFAULT '' NOT NULL,
 	"date_of_birth" timestamp,
+	"intake_date" timestamp,
 	"species" "animal_species" NOT NULL,
 	"gender" "animal_gender" DEFAULT 'u' NOT NULL,
 	"created_at" timestamp DEFAULT now() NOT NULL,

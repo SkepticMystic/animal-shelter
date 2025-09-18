@@ -1,5 +1,5 @@
 {
-  "id": "e04fb30b-2b77-4cd5-852b-8ea612542d92",
+  "id": "ac8f3b03-a29f-4349-9cef-7b011d8a648d",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -233,6 +233,12 @@
         },
         "date_of_birth": {
           "name": "date_of_birth",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "intake_date": {
+          "name": "intake_date",
           "type": "timestamp",
           "primaryKey": false,
           "notNull": false
