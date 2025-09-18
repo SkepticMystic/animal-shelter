@@ -13,6 +13,7 @@
     "lint": "eslint . && prettier --check .",
     "SOURCE": "https://www.sveltepatterns.dev/how-to-access-svelte-specific-api-in-a-script",
     "_db": "npx vite-node --options.transformMode.ssr='/.*/' ./scripts/drizzle/kit.script.ts",
+    "db:push": "npm run _db push",
     "db:generate": "dotenvx run --env-file=.env.production -- npm run _db generate",
     "db:check": "dotenvx run --env-file=.env.production -- npm run _db check",
     "db:migrate": "npm run _db migrate",
