@@ -89,7 +89,7 @@
 </script>
 
 <nav
-  class="bg-base-100 mx-auto flex h-16 max-w-5xl items-center justify-between"
+  class="bg-base-100 mx-auto flex h-16 max-w-4xl items-center justify-between"
 >
   <div>
     <Button href="/" size="lg" variant="link">

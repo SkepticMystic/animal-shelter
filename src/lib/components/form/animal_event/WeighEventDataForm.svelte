@@ -16,19 +16,21 @@
   } = $props();
 </script>
 
-<FormField {form} name="data.vaccine_name" description="Name of the vaccine">
-  <FormControl label="Vaccine name">
+<FormField {form} name="data.grams" description="Weight in kg">
+  <FormControl label="Weight (kg)">
     {#snippet children({ props })}
       <Input
         {...props}
+        type="number"
+        class="w-fit"
+        min="0.001"
+        step="0.001"
         bind:value={
           () =>
-            $form_data.data.kind === "vaccination"
-              ? $form_data.data.vaccine_name
-              : "",
+            $form_data.data.kind === "weigh" ? $form_data.data.grams / 1000 : 0,
           (value) =>
-            $form_data.data.kind === "vaccination" &&
-            ($form_data.data.vaccine_name = value)
+            $form_data.data.kind === "weigh" &&
+            ($form_data.data.grams = Math.round(value * 1000))
         }
       />
     {/snippet}

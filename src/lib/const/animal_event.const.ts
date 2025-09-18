@@ -4,23 +4,28 @@ import type { z } from "better-auth";
 import type { ClassValue } from "svelte/elements";
 
 const KIND_IDS = [
-  "weighing", //
-  "vaccination", //
+  "weigh", //
+  "vaccine", //
   "spay-neuter",
+  "microchip",
 ] as const;
 
 const KIND_MAP = {
-  weighing: {
+  weigh: {
     label: "Weighing",
     icon: "lucide/scale",
   },
-  vaccination: {
+  vaccine: {
     label: "Vaccination",
     icon: "lucide/syringe",
   },
   "spay-neuter": {
     label: "Spay/Neuter",
     icon: "lucide/scissors",
+  },
+  microchip: {
+    label: "Microchip",
+    icon: "lucide/microchip",
   },
 } satisfies {
   [K in IAnimalEvents.Kind]: {
@@ -39,16 +44,20 @@ export const ANIMAL_EVENTS = {
     })) satisfies SelectOption[],
 
     DEFAULT_DATA: {
-      weighing: {
-        kind: "weighing",
+      weigh: {
+        kind: "weigh",
         grams: 1000,
       },
-      vaccination: {
-        kind: "vaccination",
+      vaccine: {
+        kind: "vaccine",
         vaccine_name: "",
       },
       "spay-neuter": {
         kind: "spay-neuter",
+      },
+      microchip: {
+        kind: "microchip",
+        microchip_id: "",
       },
     } satisfies {
       [K in IAnimalEvents.Kind]: Extract<

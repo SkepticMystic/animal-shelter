@@ -48,7 +48,7 @@
       {columns}
       faceting
       data={animals}
-      states={{ sorting: [{ id: "createdAt", desc: true }] }}
+      states={{ sorting: [{ id: "intake_date", desc: true }] }}
     >
       {#snippet filters(table)}
         <div class="flex gap-1.5">

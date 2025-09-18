@@ -23,8 +23,9 @@
   import FormControl from "../controls/FormControl.svelte";
   import FormField from "../fields/FormField.svelte";
   import FormMessage from "../FormMessage.svelte";
-  import VaccinationEventDataForm from "./VaccinationEventDataForm.svelte";
-  import WeighingEventDataForm from "./WeighingEventDataForm.svelte";
+  import MicrochipEventForm from "./MicrochipEventDataForm.svelte";
+  import VaccinationEventDataForm from "./VaccineEventDataForm.svelte";
+  import WeighingEventDataForm from "./WeighEventDataForm.svelte";
 
   type In = AnimalEventSchema.InsertIn;
   type Out = AnimalEventSchema.InsertOut;
@@ -135,12 +136,14 @@
     </FormControl>
   </FormField>
 
-  {#if $form_data.data.kind === "weighing"}
+  {#if $form_data.data.kind === "weigh"}
     <WeighingEventDataForm {form} {form_data} />
-  {:else if $form_data.data.kind === "vaccination"}
+  {:else if $form_data.data.kind === "vaccine"}
     <VaccinationEventDataForm {form} {form_data} />
   {:else if $form_data.data.kind === "spay-neuter"}
     <!--  -->
+  {:else if $form_data.data.kind === "microchip"}
+    <MicrochipEventForm {form} {form_data} />
   {/if}
 
   <FormField {form} name="notes" description="Any notes about the event">

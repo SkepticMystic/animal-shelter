@@ -4,22 +4,26 @@ import { Format } from "./format.util";
 export const AnimalEventUtil = {
   summarise_data: (event: Pick<AnimalEvent, "data">) => {
     switch (event.data.kind) {
-      case "weighing": {
+      case "weigh": {
         return `Weighed ${Format.number(event.data.grams / 1_000, {
           style: "unit",
           unit: "kilogram",
         })}`;
       }
-      case "vaccination": {
-        return `Received '${event.data.vaccine_name}'`;
+      case "vaccine": {
+        return `Received "${event.data.vaccine_name}"`;
       }
 
       case "spay-neuter": {
         return "-";
       }
 
+      case "microchip": {
+        return `Microchip ID: ${event.data.microchip_id}`;
+      }
+
       default: {
-        return "-";
+        return "UNHANDLED";
       }
     }
   },

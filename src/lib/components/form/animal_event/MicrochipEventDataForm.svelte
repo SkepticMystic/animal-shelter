@@ -9,32 +9,34 @@
 
   let {
     form,
-    form_data,
   }: {
     form: FsSuperForm<In>;
-    form_data: FsSuperForm<In>["form"];
   } = $props();
+
+  const { form: form_data } = form;
 </script>
 
-<FormField {form} name="data.grams" description="Weight in kg">
-  <FormControl label="Weight (kg)">
+<FormField
+  {form}
+  name="data.microchip_id"
+  description="The microchip ID/number"
+>
+  <FormControl label="Microchip ID / Number">
     {#snippet children({ props })}
       <Input
         {...props}
-        type="number"
-        class="w-fit"
-        min="0.001"
-        step="0.001"
         bind:value={
           () =>
-            $form_data.data.kind === "weighing"
-              ? $form_data.data.grams / 1000
-              : 0,
+            $form_data.data.kind === "microchip"
+              ? $form_data.data.microchip_id
+              : "",
           (value) =>
-            $form_data.data.kind === "weighing" &&
-            ($form_data.data.grams = Math.round(value * 1000))
+            $form_data.data.kind === "microchip" &&
+            ($form_data.data.microchip_id = value)
         }
       />
     {/snippet}
   </FormControl>
 </FormField>
+
+<!-- TODO: Possible search API integration with: https://findmychip.co.za -->

@@ -40,7 +40,7 @@ export const AnimalTable = pgTable(
     description: text().default("").notNull(),
 
     date_of_birth: timestamp({ mode: "date" }),
-    // TODO: intake_date: timestamp({ mode: "date" }).notNull(),
+    intake_date: timestamp({ mode: "date" }),
 
     species: animal_species_enum().notNull(),
     // breed: varchar({ length: 255 }),
@@ -83,6 +83,12 @@ const refinements = {
       .min(Dates.add_ms(-65 * TIME.YEAR)) //
       .max(new Date())
       .optional(),
+
+  intake_date: (s: z.ZodDate) =>
+    s //
+      .min(Dates.add_ms(-65 * TIME.YEAR)) //
+      .max(new Date())
+      .optional(),
 };
 
 const pick = {
@@ -90,6 +96,7 @@ const pick = {
   gender: true,
   species: true,
   description: true,
+  intake_date: true,
   date_of_birth: true,
 } satisfies Partial<Record<keyof Animal, true>>;
 

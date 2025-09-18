@@ -12,7 +12,6 @@ import { ICONS } from "$lib/const/icon.const";
 import { IMAGES } from "$lib/const/image.const";
 import { ROUTES } from "$lib/const/routes.const";
 import type { get_animals_remote } from "$lib/remote/animal.remote";
-import type { Shelter } from "$lib/server/db/schema/shelter.model";
 import { Format } from "$lib/utils/format.util";
 import { TanstackTable } from "$lib/utils/tanstack/table.util";
 
@@ -76,12 +75,12 @@ export const columns = TanstackTable.make_columns<TData>({
         }),
     },
     {
-      accessorKey: "createdAt",
-      meta: { label: "Created" },
+      accessorKey: "intake_date",
+      meta: { label: "Intake" },
 
       cell: ({ row }) =>
         renderComponent(Time, {
-          date: row.original.createdAt,
+          date: row.original.intake_date,
           show: (dt) => Format.date_distance(dt, { addSuffix: true }),
         }),
     },

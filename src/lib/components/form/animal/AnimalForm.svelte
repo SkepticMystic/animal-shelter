@@ -88,6 +88,27 @@
 
   <FormField
     {form}
+    name="intake_date"
+    description={$form_data.intake_date
+      ? `${Format.date($form_data.intake_date)}, or ${Format.date_relative(
+          $form_data.intake_date,
+        )}`
+      : "Approximate date is fine"}
+  >
+    <FormControl label="Date of Birth">
+      {#snippet children({ props })}
+        <NaturalLanguageDatePicker
+          {...props}
+          placeholder="Today, or 2 weeks ago"
+          parsing_options={{ forwardDate: false }}
+          bind:value={$form_data.intake_date}
+        />
+      {/snippet}
+    </FormControl>
+  </FormField>
+
+  <FormField
+    {form}
     name="date_of_birth"
     description={$form_data.date_of_birth
       ? `Born on ${Format.date($form_data.date_of_birth)}, making them ${Format.date_relative(

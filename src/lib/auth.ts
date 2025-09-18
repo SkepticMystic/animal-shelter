@@ -101,6 +101,7 @@ export const auth = Effect.runSync(
             //     return { data: session as Session };
             //   }
             //   const member = await db.query.member.findFirst({
+            //     columns: { id: true, role: true },
             //     where: (member, { eq, and }) =>
             //       and(
             //         eq(member.userId, ctx_session.session.userId),
@@ -109,7 +110,6 @@ export const auth = Effect.runSync(
             //           ctx_session.session.activeOrganizationId,
             //         ),
             //       ),
-            //     columns: { id: true, role: true },
             //   });
             //   return {
             //     data: {
@@ -193,13 +193,15 @@ export const auth = Effect.runSync(
           // NOTE: These are set in the session create hook below
           member_id: {
             type: "string",
-            defaultValue: null,
             input: false,
+            returned: true,
+            defaultValue: null,
           },
           member_role: {
             type: "string",
-            defaultValue: null,
             input: false,
+            returned: true,
+            defaultValue: null,
           },
         },
       },
