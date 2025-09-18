@@ -1,0 +1,1 @@
+ALTER TABLE "animal" ADD COLUMN "intake_date" timestamp;
