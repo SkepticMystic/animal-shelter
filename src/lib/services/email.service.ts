@@ -53,60 +53,53 @@ const client = new SMTPClient({
 
 const of_emailjs: Context.Tag.Service<EmailService> = {
   send: (input) =>
-    Effect.gen(function* () {
-      // Doesn't seem to work... docs say it loads from env by default, but this get never works
-      //   const EMAIL_FROM = yield* Config.string("EMAIL_FROM").pipe(Effect.orDie);
+    Effect.tryPromise({
+      try: () =>
+        client.sendAsync({
+          to: input.to,
+          subject: input.subject,
+          from: input.from ?? EMAIL_FROM,
 
-      return Effect.tryPromise({
-        try: () =>
-          client.sendAsync({
-            to: input.to,
-            subject: input.subject,
-            from: input.from ?? EMAIL_FROM,
+          text: input.text ?? null,
+          attachment: input.html
+            ? [{ data: input.html, alternative: true }]
+            : undefined,
+        }),
 
-            text: input.text ?? null,
-            attachment: input.html
-              ? [{ data: input.html, alternative: true }]
-              : undefined,
-          }),
-
-        catch: (error) => {
-          console.error("Failed to send email:", error);
-          return { message: "Failed to send email" };
-        },
-      });
+      catch: (error) => {
+        console.error("Failed to send email:", error);
+        return { message: "Failed to send email" };
+      },
     }),
 };
 
 const resend = new Resend(SMTP_PASSWORD);
 const of_resend: Context.Tag.Service<EmailService> = {
   send: (input) =>
-    Effect.gen(function* () {
-      return Effect.tryPromise({
-        try: () =>
-          resend.emails
-            .send({
-              html: input.html,
-              subject: input.subject,
-              from: input.from ?? EMAIL_FROM,
-              to: Array.isArray(input.to) ? input.to : [input.to],
-            })
-            .then((r) => {
-              if (r.error) {
-                console.error("Failed to send email:", r.error);
-                return { message: "Failed to send email" };
-              } else {
-                console.log("Email sent:", r);
-              }
+    Effect.tryPromise({
+      try: () =>
+        resend.emails
+          .send({
+            html: input.html,
+            subject: input.subject,
+            from: input.from ?? EMAIL_FROM,
+            to: Array.isArray(input.to) ? input.to : [input.to],
+          })
+          .then((r) => {
+            if (r.error) {
+              console.error("Failed to send email:", r.error);
+              return { message: "Failed to send email" };
+            } else {
+              console.log("Email sent:", r);
+            }
 
-              return;
-            }),
+            return;
+          }),
 
-        catch: (error) => {
-          console.error("Failed to send email:", error);
-          return { message: "Failed to send email" };
-        },
-      });
+      catch: (error) => {
+        console.error("Failed to send email:", error);
+        return { message: "Failed to send email" };
+      },
     }),
 };
 

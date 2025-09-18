@@ -1,5 +1,5 @@
 import { DateFormatter } from "@internationalized/date";
-import { formatDistance, type FormatDistanceOptions } from "date-fns";
+import { formatRelative, type FormatRelativeOptions } from "date-fns";
 import {
   daysInWeek,
   minutesInHour,
@@ -43,7 +43,7 @@ const DEFAULT_OPTIONS = {
     timeStyle: "short",
   } satisfies Intl.DateTimeFormatOptions,
 
-  date_relative: {
+  date_distance: {
     numeric: "auto",
   } satisfies Intl.RelativeTimeFormatOptions,
 };
@@ -57,9 +57,9 @@ const DEFAULT_FORMATTERS = {
   datetime: new DateFormatter("en", DEFAULT_OPTIONS.datetime),
   daterange: new DateFormatter("en", DEFAULT_OPTIONS.daterange),
 
-  date_relative: new Intl.RelativeTimeFormat(
+  date_distance: new Intl.RelativeTimeFormat(
     "en",
-    DEFAULT_OPTIONS.date_relative,
+    DEFAULT_OPTIONS.date_distance,
   ),
 } satisfies Record<
   keyof typeof DEFAULT_OPTIONS,
@@ -203,6 +203,36 @@ export const Format = {
 
   date_relative: (
     date: Date | string | number | undefined | null,
+    options?: FormatRelativeOptions & { base?: Date | string | number },
+  ) => {
+    if (Guard.is_nullish(date)) {
+      return "-";
+    } else {
+      return formatRelative(
+        new Date(date),
+        options?.base ? new Date(options.base) : new Date(),
+        options,
+      );
+    }
+  },
+
+  // date_distance: (
+  //   date: Date | string | number | undefined | null,
+  //   options?: FormatDistanceOptions & { base?: Date | string | number },
+  // ) => {
+  //   if (Guard.is_nullish(date)) {
+  //     return "-";
+  //   } else {
+  //     return formatDistance(
+  //       new Date(date),
+  //       options?.base ? new Date(options.base) : new Date(),
+  //       options,
+  //     );
+  //   }
+  // },
+
+  date_distance: (
+    date: Date | string | number | undefined | null,
     opts?: Intl.RelativeTimeFormatOptions & {
       suffix?: boolean;
       base?: Date | string | number;
@@ -213,52 +243,38 @@ export const Format = {
     } else {
       const to = new Date(date);
       const from = opts?.base ? new Date(opts.base) : new Date();
-      const milliseconds = to.getTime() - from.getTime();
+      const diff_ms = to.getTime() - from.getTime();
 
-      let delta: { value: number; unit: Intl.RelativeTimeFormatUnit };
-      let remaining = milliseconds / 1000;
+      let remaining = diff_ms / 1000;
+      let delta: { value: number; unit: Intl.RelativeTimeFormatUnit } | null =
+        null;
 
       for (const division of BALANCE_DURATION_DIVISIONS) {
         if (Math.abs(remaining) < division.amount) {
           delta = { value: Math.round(remaining), unit: division.unit };
-
           break;
         }
 
         remaining /= division.amount;
       }
 
-      delta = { value: Math.round(remaining), unit: "years" as const };
-
-      console.log({ milliseconds, delta });
+      // Fallback to years if something goes wrong
+      if (!delta) {
+        delta = { value: Math.round(remaining), unit: "years" };
+      }
 
       const formatted = opts
         ? new Intl.RelativeTimeFormat("en", {
-            ...DEFAULT_OPTIONS.date_relative,
+            ...DEFAULT_OPTIONS.date_distance,
             ...opts,
           }).format(delta.value, delta.unit)
-        : DEFAULT_FORMATTERS.date_relative.format(delta.value, delta.unit);
+        : DEFAULT_FORMATTERS.date_distance.format(delta.value, delta.unit);
 
       if (opts?.suffix === false) {
         return formatted.replace(/ ago| from now/, "");
       } else {
         return formatted;
       }
-    }
-  },
-
-  date_distance: (
-    date: Date | string | number | undefined | null,
-    options?: FormatDistanceOptions & { base?: Date | string | number },
-  ) => {
-    if (Guard.is_nullish(date)) {
-      return "-";
-    } else {
-      return formatDistance(
-        new Date(date),
-        options?.base ? new Date(options.base) : new Date(),
-        options,
-      );
     }
   },
 };

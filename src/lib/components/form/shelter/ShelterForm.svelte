@@ -149,17 +149,16 @@
           />
         </div>
       {/each}
-    </div>
 
-    <Button
-      type="button"
-      variant="outline"
-      class="w-full"
-      icon={ICONS.ADD}
-      onclick={() => actions.links.add("phones")}
-    >
-      Add phone number
-    </Button>
+      <Button
+        type="button"
+        variant="outline"
+        icon={ICONS.ADD}
+        onclick={() => actions.links.add("phones")}
+      >
+        Add phone number
+      </Button>
+    </div>
   </FormFieldset>
 
   <!--  -->
@@ -209,17 +208,16 @@
           />
         </div>
       {/each}
-    </div>
 
-    <Button
-      type="button"
-      variant="outline"
-      class="w-full"
-      icon={ICONS.ADD}
-      onclick={() => actions.links.add("emails")}
-    >
-      Add email address
-    </Button>
+      <Button
+        type="button"
+        variant="outline"
+        icon={ICONS.ADD}
+        onclick={() => actions.links.add("emails")}
+      >
+        Add email address
+      </Button>
+    </div>
   </FormFieldset>
 
   <!--  -->
@@ -271,17 +269,16 @@
           />
         </div>
       {/each}
-    </div>
 
-    <Button
-      type="button"
-      variant="outline"
-      class="w-full"
-      icon={ICONS.ADD}
-      onclick={() => actions.links.add("urls")}
-    >
-      Add link
-    </Button>
+      <Button
+        type="button"
+        variant="outline"
+        icon={ICONS.ADD}
+        onclick={() => actions.links.add("urls")}
+      >
+        Add link
+      </Button>
+    </div>
   </FormFieldset>
 
   <FormButton {form} class="w-full" icon={ICONS.EDIT}>

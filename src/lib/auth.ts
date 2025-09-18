@@ -238,17 +238,10 @@ export const auth = Effect.runSync(
         sendOnSignIn: true,
         autoSignInAfterVerification: true,
 
-        sendVerificationEmail: async ({ user, url }) => {
-          console.log({ user, url }, "sendVerificationEmail");
-
-          const res = await Effect.runPromise(
+        sendVerificationEmail: ({ user, url }) =>
+          Effect.runPromise(
             email.send(EMAIL.TEMPLATES["email-verification"]({ url, user })),
-          );
-
-          console.log(res, "sendVerificationEmail result");
-
-          return res;
-        },
+          ),
       },
 
       socialProviders: {
@@ -361,7 +354,14 @@ export const auth = Effect.runSync(
         },
       },
     });
-  }).pipe(Effect.provideService(EmailService, dev ? EmailTest : EmailLive)),
+  }).pipe(
+    Effect.provideService(
+      EmailService,
+      dev //
+        ? EmailTest
+        : EmailLive,
+    ),
+  ),
 );
 
 // !SECTION

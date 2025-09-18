@@ -90,12 +90,13 @@
     {form}
     name="intake_date"
     description={$form_data.intake_date
-      ? `${Format.date($form_data.intake_date)}, or ${Format.date_relative(
+      ? `${Format.date($form_data.intake_date)} (${Format.date_distance(
           $form_data.intake_date,
-        )}`
-      : "Approximate date is fine"}
+          {},
+        )})`
+      : "When did they get to the shelter? Approximate date is fine"}
   >
-    <FormControl label="Date of Birth">
+    <FormControl label="Intake Date">
       {#snippet children({ props })}
         <NaturalLanguageDatePicker
           {...props}
@@ -111,11 +112,11 @@
     {form}
     name="date_of_birth"
     description={$form_data.date_of_birth
-      ? `Born on ${Format.date($form_data.date_of_birth)}, making them ${Format.date_relative(
+      ? `Born on ${Format.date($form_data.date_of_birth)} (about ${Format.date_distance(
           $form_data.date_of_birth,
-          { suffix: false, numeric: "always" },
-        )} old`
-      : "Approximate date is fine"}
+          { suffix: false },
+        )} old)`
+      : "Roughly when was the animal born?"}
   >
     <FormControl label="Date of Birth">
       {#snippet children({ props })}

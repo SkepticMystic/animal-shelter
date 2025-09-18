@@ -41,7 +41,7 @@
       <Time
         date={animal.date_of_birth}
         show={(dt) =>
-          Format.date_relative(dt, { suffix: false, numeric: "always" })}
+          Format.date_distance(dt, { suffix: false, numeric: "always" })}
       />
 
       <div class="flex gap-1">
