@@ -15,6 +15,13 @@
       "when": 1758346821594,
       "tag": "0001_tiny_major_mapleleaf",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1758380312149,
+      "tag": "0002_blue_surge",
+      "breakpoints": true
     }
   ]
 }
