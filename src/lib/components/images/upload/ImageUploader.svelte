@@ -10,7 +10,10 @@
     on_upload,
     resource_id,
     resource_kind,
+    images = $bindable([]),
   }: Pick<Image, "resource_id" | "resource_kind"> & {
+    images?: Partial<Image>[];
+    /** Don't use this to push the new image onto an array, rather bind to `images` */
     on_upload?: (image: Image) => MaybePromise<unknown>;
   } = $props();
 </script>
@@ -26,8 +29,10 @@
         upload_image_remote.result?.error?.message || "Upload failed",
       );
     } else if (upload_image_remote.result.ok) {
-      await on_upload?.(upload_image_remote.result.data);
       toast.success("Image uploaded successfully");
+
+      images = [...images, upload_image_remote.result.data];
+      await on_upload?.(upload_image_remote.result.data);
     }
   })}
 >

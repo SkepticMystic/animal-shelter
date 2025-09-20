@@ -33,9 +33,7 @@
   <ImageUploader
     resource_kind="animal_event"
     resource_id={animal_event.id}
-    on_upload={(image) => {
-      animal_event.images = [...animal_event.images, image];
-    }}
+    bind:images={animal_event.images}
   />
 
   <div class="flex flex-wrap gap-3">

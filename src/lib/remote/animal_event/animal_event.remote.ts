@@ -62,14 +62,9 @@ export const create_animal_event_remote = command(
     const [event] = await db
       .insert(AnimalEventTable)
       .values({
-        animal_id: input.animal_id,
+        ...input,
         org_id: session.session.org_id,
         created_by_member_id: session.session.member_id,
-        administered_by_member_id: input.administered_by_member_id,
-
-        data: input.data,
-        notes: input.notes,
-        timestamp: input.timestamp,
       })
       .returning();
 

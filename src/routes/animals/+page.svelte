@@ -1,22 +1,17 @@
 <script lang="ts">
-  import { AnimalClient } from "$lib/clients/animal.client";
-  import AnimalForm from "$lib/components/form/animal/AnimalForm.svelte";
   import Button from "$lib/components/ui/button/button.svelte";
   import MultiCombobox from "$lib/components/ui/combobox/MultiCombobox.svelte";
   import DataTable from "$lib/components/ui/data-table/data-table.svelte";
   import DateRangePicker from "$lib/components/ui/date-picker/DateRangePicker.svelte";
-  import Dialog from "$lib/components/ui/dialog/dialog.svelte";
-  import Icon from "$lib/components/ui/icon/Icon.svelte";
   import Input from "$lib/components/ui/input/input.svelte";
   import Loading from "$lib/components/ui/loading/Loading.svelte";
   import MultiSelect from "$lib/components/ui/select/MultiSelect.svelte";
   import { ANIMALS } from "$lib/const/animal.const";
+  import { ROUTES } from "$lib/const/routes.const";
   import { get_animals_remote } from "$lib/remote/animal.remote";
   import type { Shelter } from "$lib/server/db/schema/shelter.model";
   import type { DateRange } from "bits-ui";
   import { columns } from "./columns";
-
-  let { data } = $props();
 
   const get_animals = get_animals_remote({});
 </script>
@@ -25,20 +20,7 @@
   <div class="flex items-center justify-between">
     <h1>Animals</h1>
 
-    <Dialog title="New Animal" description="Create a new animal">
-      {#snippet trigger()}
-        <Icon icon="lucide/plus" />
-        New animal
-      {/snippet}
-
-      {#snippet content({ close })}
-        <AnimalForm
-          form_input={data.form_input}
-          submit={AnimalClient.create}
-          on_success={(_data) => close()}
-        />
-      {/snippet}
-    </Dialog>
+    <Button icon="lucide/plus" href={ROUTES.ANIMALS_CREATE}>New animal</Button>
   </div>
 
   {#await get_animals}

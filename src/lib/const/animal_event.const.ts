@@ -1,12 +1,13 @@
 import type { SelectOption } from "$lib/interfaces";
 import type { animal_event_data_schema } from "$lib/schema/animal_event.schema";
+import type { MicrochipNumber } from "$lib/schema/microchip_lookup.schema";
 import type { z } from "better-auth";
 import type { ClassValue } from "svelte/elements";
 
 const KIND_IDS = [
   "weigh", //
   "vaccine", //
-  "spay-neuter",
+  "sterilise",
   "microchip",
 ] as const;
 
@@ -19,8 +20,8 @@ const KIND_MAP = {
     label: "Vaccination",
     icon: "lucide/syringe",
   },
-  "spay-neuter": {
-    label: "Spay/Neuter",
+  sterilise: {
+    label: "Sterilisation",
     icon: "lucide/scissors",
   },
   microchip: {
@@ -52,16 +53,16 @@ export const ANIMAL_EVENTS = {
         kind: "vaccine",
         vaccine_name: "",
       },
-      "spay-neuter": {
-        kind: "spay-neuter",
+      sterilise: {
+        kind: "sterilise",
       },
       microchip: {
         kind: "microchip",
-        microchip_id: "",
+        microchip_number: "" as MicrochipNumber,
       },
     } satisfies {
       [K in IAnimalEvents.Kind]: Extract<
-        z.infer<typeof animal_event_data_schema>,
+        z.input<typeof animal_event_data_schema>,
         { kind: K }
       >;
     },

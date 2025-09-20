@@ -46,6 +46,7 @@ export const ImageTable = pgTable(
 
     thumbhash: varchar({ length: 100 }),
 
+    // TODO: Lol, I don't think drizzle/pg is updating timestamps for me like mongoose does...
     ...StaticSchema.timestamps,
   },
   (table) => [

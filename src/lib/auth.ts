@@ -4,25 +4,16 @@ import {
   BETTER_AUTH_SECRET,
   GOOGLE_CLIENT_ID,
   GOOGLE_CLIENT_SECRET,
-  POCKETID_BASE_URL,
-  POCKETID_CLIENT_ID,
-  POCKETID_CLIENT_SECRET,
 } from "$env/static/private";
 import { betterAuth, type Session } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
-import {
-  admin,
-  genericOAuth,
-  haveIBeenPwned,
-  organization,
-  type GenericOAuthConfig,
-} from "better-auth/plugins";
+import { admin, haveIBeenPwned, organization } from "better-auth/plugins";
 import { passkey } from "better-auth/plugins/passkey";
 import { sveltekitCookies } from "better-auth/svelte-kit";
 import { Effect } from "effect";
 import { AdminAccessControl, type IAdmin } from "./const/admin.const";
 import { APP } from "./const/app";
-import { AUTH, type IAuth } from "./const/auth.const";
+import { AUTH } from "./const/auth.const";
 import { EMAIL } from "./const/email";
 import {
   OrganizationAccessControl,
@@ -122,8 +113,8 @@ export const auth = Effect.runSync(
             //   };
             // },
             // after: async (session, ctx) => {
-            //   console.log(ctx, "session.update.after");
-            //   console.log(session, "session.update.after session");
+            //   console.log("session.update.after ctx", ctx);
+            //   console.log("session.update.after session", session);
             //   //   console.log(ctx);
             //   //   const ctx_session = ctx?.context.session;
             //   //   console.log({ session, ctx_session }, "session.update.before");
@@ -144,15 +135,15 @@ export const auth = Effect.runSync(
             //     columns: { id: true, role: true },
             //   });
             //   ctx?.context.session;
-            //   ctx?.context.setNewSession({});
-            //   return {
-            //     data: {
-            //       ...session,
-            //       member_id: member ? member.id : null,
-            //       member_role: member ? member.role : null,
-            //       activeOrganizationId: session.activeOrganizationId,
-            //     },
-            //   };
+            //   // ctx?.context.setNewSession({});
+            //   // return {
+            //   //   data: {
+            //   //     ...session,
+            //   //     member_id: member ? member.id : null,
+            //   //     member_role: member ? member.role : null,
+            //   //     activeOrganizationId: session.activeOrganizationId,
+            //   //   },
+            //   // };
             // },
           },
         },
@@ -169,6 +160,8 @@ export const auth = Effect.runSync(
       database: drizzleAdapter(db, {
         provider: "pg",
         debugLogs: false,
+        // NOTE: Neon doesn't support transactions
+        transaction: false,
 
         schema: {
           user: UserTable,
@@ -299,41 +292,6 @@ export const auth = Effect.runSync(
                 .execute();
             },
           },
-        }),
-
-        genericOAuth({
-          config: [
-            POCKETID_CLIENT_ID && POCKETID_CLIENT_SECRET && POCKETID_BASE_URL
-              ? ((): GenericOAuthConfig => {
-                  const providerId = "pocket-id" satisfies IAuth.ProviderId;
-
-                  return {
-                    providerId,
-                    clientId: POCKETID_CLIENT_ID,
-                    clientSecret: POCKETID_CLIENT_SECRET,
-
-                    discoveryUrl:
-                      POCKETID_BASE_URL + "/.well-known/openid-configuration",
-
-                    mapProfileToUser: (profile: unknown) => {
-                      Log.info(profile, providerId + " profile");
-
-                      // NOTE: Typing profile directly in the callback arg gives a TS error, since better-auth expects Record<string, any>
-                      const typed = profile as IAuth.GenericOAuthProfile;
-
-                      return {
-                        name: typed.name,
-                        email: typed.email,
-                        image: typed.picture,
-                        emailVerified:
-                          AUTH.PROVIDERS.MAP[providerId].force_email_verified ||
-                          typed.email_verified,
-                      };
-                    },
-                  };
-                })()
-              : null,
-          ].flatMap((cfg) => (cfg ? [cfg] : [])),
         }),
 
         // NOTE: Must be last, as it needs the request event

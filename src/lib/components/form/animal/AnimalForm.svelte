@@ -12,10 +12,12 @@
   } from "$lib/server/db/schema/animal.model";
   import { make_super_form, type APIResult } from "$lib/utils/form.util";
   import { Format } from "$lib/utils/format.util";
+  import { toast } from "svelte-sonner";
   import type { SuperValidated } from "sveltekit-superforms";
   import FormControl from "../controls/FormControl.svelte";
   import FormField from "../fields/FormField.svelte";
   import FormMessage from "../FormMessage.svelte";
+  import MicrochipLookupInput from "../microchip_lookup/MicrochipLookupInput.svelte";
 
   type In = AnimalSchema.Insert;
   type Out = Animal;
@@ -42,16 +44,57 @@
   $inspect($form_data);
 </script>
 
-<form class="flex max-w-lg flex-col gap-2" method="POST" use:form.enhance>
-  <div class="flex flex-wrap gap-x-3 gap-y-2">
-    <FormField {form} name="name" description="Can change later">
-      <FormControl label="Name">
+<form class="flex flex-col gap-2" method="POST" use:form.enhance>
+  <FormField
+    {form}
+    name="microchip_number"
+    description="Their microchip number, if known. Can be used to look up more info"
+  >
+    <FormControl label="Microchip Number">
+      {#snippet children({ props })}
+        <!-- 
+            TODO: Cache these lookups
+            NOTE: We don't check `species`, because it has a default value, and will always be truthy
+                  We could check form.isTainted on those paths, but modifying an existing animal doesn't count as tainted on load 
+        -->
+        <MicrochipLookupInput
+          {...props}
+          warn
+          on_success={({ merged }) => {
+            if (!merged.found) return;
+
+            $form_data = { ...$form_data, ...merged.animal };
+            toast.success("Microchip data found and filled in");
+          }}
+          bind:microchip_number={$form_data.microchip_number}
+        />
+      {/snippet}
+    </FormControl>
+  </FormField>
+
+  <FormField {form} name="name" description="Can change later">
+    <FormControl label="Name">
+      {#snippet children({ props })}
+        <Input
+          {...props}
+          required
+          placeholder="Name"
+          bind:value={$form_data.name}
+        />
+      {/snippet}
+    </FormControl>
+  </FormField>
+
+  <div class="flex flex-wrap gap-3">
+    <FormField {form} name="gender" description="">
+      <FormControl label="Gender">
         {#snippet children({ props })}
-          <Input
+          <SingleSelect
             {...props}
             required
-            placeholder="Name"
-            bind:value={$form_data.name}
+            placeholder="Select gender"
+            options={ANIMALS.GENDER.OPTIONS}
+            bind:value={$form_data.gender}
           />
         {/snippet}
       </FormControl>
@@ -71,64 +114,67 @@
       </FormControl>
     </FormField>
 
-    <FormField {form} name="gender" description="">
-      <FormControl label="Gender">
+    <FormField {form} name="breed" class="grow" description="">
+      <FormControl label="Breed">
         {#snippet children({ props })}
-          <SingleSelect
+          <Input
             {...props}
             required
-            placeholder="Select gender"
-            options={ANIMALS.GENDER.OPTIONS}
-            bind:value={$form_data.gender}
+            placeholder="Border Collie, Domestic Short Hair, etc"
+            bind:value={$form_data.breed}
           />
         {/snippet}
       </FormControl>
     </FormField>
   </div>
 
-  <FormField
-    {form}
-    name="intake_date"
-    description={$form_data.intake_date
-      ? `${Format.date($form_data.intake_date)} (${Format.date_distance(
-          $form_data.intake_date,
-          {},
-        )})`
-      : "When did they get to the shelter? Approximate date is fine"}
-  >
-    <FormControl label="Intake Date">
-      {#snippet children({ props })}
-        <NaturalLanguageDatePicker
-          {...props}
-          placeholder="Today, or 2 weeks ago"
-          parsing_options={{ forwardDate: false }}
-          bind:value={$form_data.intake_date}
-        />
-      {/snippet}
-    </FormControl>
-  </FormField>
+  <div class="flex flex-col gap-3 sm:flex-row">
+    <FormField
+      {form}
+      class="grow"
+      name="intake_date"
+      description={$form_data.intake_date
+        ? `${Format.date($form_data.intake_date)} (${Format.date_distance(
+            $form_data.intake_date,
+            {},
+          )})`
+        : "When did they get to the shelter? Approximate date is fine"}
+    >
+      <FormControl label="Intake Date">
+        {#snippet children({ props })}
+          <NaturalLanguageDatePicker
+            {...props}
+            placeholder="Today, or 2 weeks ago"
+            parsing_options={{ forwardDate: false }}
+            bind:value={$form_data.intake_date}
+          />
+        {/snippet}
+      </FormControl>
+    </FormField>
 
-  <FormField
-    {form}
-    name="date_of_birth"
-    description={$form_data.date_of_birth
-      ? `Born on ${Format.date($form_data.date_of_birth)} (about ${Format.date_distance(
-          $form_data.date_of_birth,
-          { suffix: false },
-        )} old)`
-      : "Roughly when was the animal born?"}
-  >
-    <FormControl label="Date of Birth">
-      {#snippet children({ props })}
-        <NaturalLanguageDatePicker
-          {...props}
-          placeholder="5 years ago, or 16 June 2020"
-          parsing_options={{ forwardDate: false }}
-          bind:value={$form_data.date_of_birth}
-        />
-      {/snippet}
-    </FormControl>
-  </FormField>
+    <FormField
+      {form}
+      class="grow"
+      name="date_of_birth"
+      description={$form_data.date_of_birth
+        ? `Born on ${Format.date($form_data.date_of_birth)} (about ${Format.date_distance(
+            $form_data.date_of_birth,
+            { suffix: false },
+          )} old)`
+        : "Roughly when was the animal born?"}
+    >
+      <FormControl label="Date of Birth">
+        {#snippet children({ props })}
+          <NaturalLanguageDatePicker
+            {...props}
+            placeholder="5 years ago, or 16 June 2020"
+            parsing_options={{ forwardDate: false }}
+            bind:value={$form_data.date_of_birth}
+          />
+        {/snippet}
+      </FormControl>
+    </FormField>
+  </div>
 
   <FormField {form} name="description" description="A short bio of the animal">
     <FormControl label="Bio">

@@ -81,7 +81,11 @@
 
             <Separator />
 
-            <ImageUploader resource_kind="shelter" resource_id={shelter!.id} />
+            <ImageUploader
+              resource_kind="shelter"
+              resource_id={shelter!.id}
+              bind:images
+            />
 
             <div class="flex flex-wrap gap-3">
               {#each images as image (image.id)}

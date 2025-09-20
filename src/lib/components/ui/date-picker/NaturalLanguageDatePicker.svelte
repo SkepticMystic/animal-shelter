@@ -26,7 +26,7 @@
     parsing_options?: ParsingOption;
   } = $props();
 
-  let query = $state(value ? Format.date(value) : "");
+  let query = $derived(value ? Format.date(value) : "");
 
   const get_date_value_from_query = (q: string) => {
     const date = parseDate(q, reference_date, parsing_options);

@@ -20,6 +20,7 @@ export const ROUTES = {
   SHELTERS_VIEW: "/shelters/[short_id]",
 
   ANIMALS: "/animals",
+  ANIMALS_CREATE: "/animals/create",
   ANIMALS_VIEW: "/animals/[short_id]",
   ANIMALS_EDIT: "/animals/[short_id]/edit",
 

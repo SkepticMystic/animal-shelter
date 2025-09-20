@@ -18,9 +18,9 @@
     value = $bindable(),
     placeholder = "Select an option...",
   }: {
-    value: V;
     open?: boolean;
     placeholder?: string;
+    value: V | null | undefined;
     options: SelectOption<V, D>[];
     on_value_change?: (value: V) => void;
   } = $props();

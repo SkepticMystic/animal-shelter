@@ -11,6 +11,10 @@ import { createInsertSchema, createUpdateSchema } from "drizzle-zod";
 import type z from "zod";
 import { ANIMALS } from "../../../const/animal.const";
 import { TIME } from "../../../const/time";
+import {
+  microchip_number_schema,
+  type MicrochipNumber,
+} from "../../../schema/microchip_lookup.schema";
 import { Dates } from "../../../utils/dates";
 import { AnimalEventTable } from "./animal_event.model";
 import { OrganizationTable } from "./auth.model";
@@ -36,16 +40,21 @@ export const AnimalTable = pgTable(
     ...StaticSchema.short_id(),
     ...DynamicSchema.org_id(),
 
+    /** Can either be set on the Animal form, then used to populate other fields,
+     * Or can be set after adding a microchip animal_event afterwards
+     */
+    microchip_number: varchar({ length: 63 }).$type<MicrochipNumber | null>(),
+
     name: varchar({ length: 255 }).notNull(),
     description: text().default("").notNull(),
 
-    date_of_birth: timestamp({ mode: "date" }),
     intake_date: timestamp({ mode: "date" }),
+    date_of_birth: timestamp({ mode: "date" }),
 
+    breed: varchar({ length: 255 }),
     species: animal_species_enum().notNull(),
-    // breed: varchar({ length: 255 }),
-    // color: varchar({ length: 255 }),
     gender: animal_gender_enum().default("u").notNull(),
+    // color: varchar({ length: 255 }),
 
     ...StaticSchema.timestamps,
   },
@@ -70,6 +79,8 @@ export const animal_relations = relations(AnimalTable, ({ one, many }) => ({
 export type Animal = typeof AnimalTable.$inferSelect;
 
 const refinements = {
+  microchip_number: microchip_number_schema.optional().nullable(),
+
   description: (s: z.ZodString) =>
     s.max(1000, "Bio must be at most 1000 characters"),
 
@@ -95,9 +106,11 @@ const pick = {
   name: true,
   gender: true,
   species: true,
+  breed: true,
   description: true,
   intake_date: true,
   date_of_birth: true,
+  microchip_number: true,
 } satisfies Partial<Record<keyof Animal, true>>;
 
 export namespace AnimalSchema {

@@ -14,12 +14,12 @@ export const AnimalEventUtil = {
         return `Received "${event.data.vaccine_name}"`;
       }
 
-      case "spay-neuter": {
+      case "sterilise": {
         return "-";
       }
 
       case "microchip": {
-        return `Microchip ID: ${event.data.microchip_id}`;
+        return `No: ${event.data.microchip_number}`;
       }
 
       default: {

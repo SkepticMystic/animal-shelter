@@ -60,6 +60,7 @@ const statement = {
   image: ["create", "update", "delete"],
   animal: ["create", "update", "delete"],
   animal_event: ["create", "update", "delete"],
+  microchip_lookup: ["create", "delete"],
 } as const;
 
 const ac = createAccessControl(statement);
@@ -72,6 +73,7 @@ export const OrganizationAccessControl = {
       image: ["create"],
       animal: ["create"],
       animal_event: ["create"],
+      microchip_lookup: ["create"],
     }),
 
     admin: ac.newRole({
@@ -79,6 +81,7 @@ export const OrganizationAccessControl = {
       image: ["create", "update", "delete"],
       animal: ["create", "update", "delete"],
       animal_event: ["create", "update", "delete"],
+      microchip_lookup: ["create", "delete"],
     }),
 
     owner: ac.newRole({
@@ -86,6 +89,7 @@ export const OrganizationAccessControl = {
       image: ["create", "update", "delete"],
       animal: ["create", "update", "delete"],
       animal_event: ["create", "update", "delete"],
+      microchip_lookup: ["create", "delete"],
     }),
   } satisfies Record<IOrganization.RoleId, ReturnType<typeof ac.newRole>>,
 };
