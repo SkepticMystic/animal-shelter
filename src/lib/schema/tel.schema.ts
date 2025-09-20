@@ -8,7 +8,6 @@ const preproc_full_tel_schema = z.preprocess(
     }
 
     const parsed = parsePhoneNumber(cell, "ZA");
-    console.log("preproc_full_tel_schema parsed", parsed);
 
     if (parsed && parsed.isValid()) {
       return {
