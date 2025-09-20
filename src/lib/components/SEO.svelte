@@ -29,3 +29,8 @@
   <meta property="og:image:secure_url" content={page.data.seo.image} />
   <meta property="twitter:image" content={page.data.seo.image} />
 {/if}
+
+<meta
+  property="twitter:card"
+  content={page.data.seo?.image ? "summary_large_image" : "summary"}
+/>
