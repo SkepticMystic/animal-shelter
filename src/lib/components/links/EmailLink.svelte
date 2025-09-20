@@ -11,13 +11,15 @@
   }: HTMLAnchorAttributes & {
     link: Link;
   } = $props();
+
+  const label = $derived(link.label || LinkUtil.format_href(link));
 </script>
 
 <Anchor
   {...rest}
   href={link.href}
-  title="Send an email"
+  title="Email {label}"
   icon={LINKS.KIND.MAP["mailto"].icon}
 >
-  {link.label || LinkUtil.format_href(link)}
+  {label}
 </Anchor>

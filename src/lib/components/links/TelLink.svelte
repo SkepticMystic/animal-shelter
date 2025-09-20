@@ -11,13 +11,15 @@
   }: HTMLAnchorAttributes & {
     link: Link;
   } = $props();
+
+  const label = $derived(link.label || LinkUtil.format_href(link));
 </script>
 
 <Anchor
   {...rest}
   href={link.href}
-  title="Call this number"
+  title="Call {label}"
   icon={LINKS.KIND.MAP["tel"].icon}
 >
-  {link.label || LinkUtil.format_href(link)}
+  {label}
 </Anchor>
