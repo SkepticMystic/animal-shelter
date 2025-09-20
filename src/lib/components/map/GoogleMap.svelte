@@ -19,9 +19,11 @@ SOURCE: https://stackoverflow.com/questions/42457368/google-maps-night-mode-embe
   allowfullscreen
   title={place.formatted_address}
   referrerpolicy="no-referrer-when-downgrade"
-  style={mode.current === "dark" ? "filter: invert(90%)" : ""}
   src="https://www.google.com/maps/embed/v1/place?key={PUBLIC_GOOGLE_MAPS_API_KEY}
   &q=place_id:{encodeURIComponent(place.external_id)}&zoom=14"
+  style={mode.current === "dark"
+    ? "filter: invert(90%) hue-rotate(180deg);"
+    : ""}
   {...rest_props}
 >
 </iframe>

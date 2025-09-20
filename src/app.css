@@ -171,8 +171,9 @@ h3 {
 h4 {
   @apply text-lg font-medium;
 }
-h5 {
-  @apply text-base font-medium;
+
+blockquote {
+  @apply border-l-2 pl-4 text-muted-foreground italic;
 }
 
 /* NOTE: In Anchor.svelte and Button.svelte, we add the .loading class to the button when loading starts 

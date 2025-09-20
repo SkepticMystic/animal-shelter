@@ -50,18 +50,17 @@
       required
       type="file"
       name="file"
+      class="w-[200px]"
       accept="image/*"
-      capture="environment"
-      class="w-52"
     />
+    <!-- NOTE: On my phone, atleast, this forces the camera, no option for file upload -->
+    <!-- capture="environment" -->
 
     <Button
       type="submit"
-      icon="lucide/image"
       variant="secondary"
+      icon="lucide/upload"
       loading={Boolean(upload_image_remote.pending)}
-    >
-      Upload
-    </Button>
+    ></Button>
   </div>
 </form>

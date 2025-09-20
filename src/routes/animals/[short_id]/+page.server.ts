@@ -13,6 +13,9 @@ export const load = (async ({ params }) => {
       where: (animal, { eq }) => eq(animal.short_id, params.short_id),
 
       with: {
+        shelter: {
+          columns: { name: true, short_id: true, place: true },
+        },
         images: {
           columns: { url: true, thumbhash: true },
         },

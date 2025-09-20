@@ -36,9 +36,9 @@
   {#if data.shelter.images.length}
     <Carousel>
       {#snippet content()}
-        <CarouselContent class="-ml-2 md:-ml-4">
+        <CarouselContent class="-ml-2 md:-ml-3">
           {#each data.shelter.images as image}
-            <CarouselItem class="pl-2 sm:basis-1/2 md:basis-1/3 md:pl-4">
+            <CarouselItem class="basis-auto pl-2 md:pl-3">
               <Picture {image} {...IMAGES.SIZES.PREVIEW} />
             </CarouselItem>
           {/each}

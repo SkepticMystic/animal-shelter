@@ -6,6 +6,7 @@
   import * as Dialog from "$lib/components/ui/dialog/index.js";
   import type { DialogRootProps } from "bits-ui";
   import type { Snippet } from "svelte";
+  import ScrollArea from "../scroll-area/scroll-area.svelte";
 
   let {
     open,
@@ -62,7 +63,9 @@
       </Dialog.Header>
     {/if}
 
-    {@render content({ close })}
+    <ScrollArea class="max-h-[75vh] w-full">
+      {@render content({ close })}
+    </ScrollArea>
 
     {#if actions}
       <Dialog.Footer>
