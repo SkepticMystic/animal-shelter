@@ -39,7 +39,7 @@
 
 <List {items}>
   {#snippet row(item)}
-    <Icon icon={item.icon} size="size-7" />
+    <Icon icon={item.icon} class="size-7" />
 
     <div class="grow">
       <p class="text-lg">

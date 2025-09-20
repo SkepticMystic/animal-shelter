@@ -33,7 +33,7 @@
   bind:ref
   {...restProps}
 >
-  <Icon icon="lucide/arrow-right" size="size-4" />
+  <Icon icon="lucide/arrow-right" class="size-4" />
 
   <span class="sr-only">Next slide</span>
 </Button>

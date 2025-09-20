@@ -2,9 +2,10 @@
   import FormFieldset from "$lib/components/form/fields/FormFieldSet.svelte";
   import Button from "$lib/components/ui/button/button.svelte";
   import FormButton from "$lib/components/ui/form/form-button.svelte";
-  import FormElementField from "$lib/components/ui/form/form-element-field.svelte";
   import Input from "$lib/components/ui/input/input.svelte";
+  import Textarea from "$lib/components/ui/textarea/textarea.svelte";
   import { ICONS } from "$lib/const/icon.const";
+  import { LINKS } from "$lib/const/link.const";
   import type { MaybePromise } from "$lib/interfaces";
   import type {
     Shelter,
@@ -17,9 +18,9 @@
   import FormField from "../fields/FormField.svelte";
   import FormMessage from "../FormMessage.svelte";
   import EmailInput from "../inputs/EmailInput.svelte";
+  import LinkInput from "../inputs/LinkInput.svelte";
   import TelInput from "../inputs/TelInput.svelte";
   import GooglePlaceAutocomplete from "../place/GooglePlaceAutocomplete.svelte";
-  import Textarea from "$lib/components/ui/textarea/textarea.svelte";
 
   type In = ShelterSchema.InsertIn;
   type Out = ShelterSchema.InsertOut;
@@ -56,8 +57,10 @@
         ];
       },
 
-      remove: (field: LinkField, index: number) => {
-        $form_data[field] = $form_data[field].filter((_, i) => i !== index);
+      remove: (field: LinkField, link_id: string) => {
+        $form_data[field] = $form_data[field].filter(
+          (link) => link.id !== link_id,
+        );
       },
     },
   };
@@ -111,49 +114,30 @@
     class="space-y-3 rounded-md border px-3 pb-2"
     description="Optional phone numbers to contact the shelter."
   >
-    <div class="grid gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-      {#each $form_data.phones as _phone, phone_i (_phone.id)}
-        <div class="flex gap-0.5">
-          <FormElementField {form} class="grow" name="phones[{phone_i}].href">
-            <FormControl label="">
-              {#snippet children({ props })}
-                <TelInput
-                  {...props}
-                  bind:value={
-                    () => LinkUtil.format_href($form_data.phones[phone_i]),
-                    (value) => ($form_data.phones[phone_i].href = value)
-                  }
-                />
-              {/snippet}
-            </FormControl>
-          </FormElementField>
-          <!-- 
-          <FormElementField {form} name="phones[{phone_i}].label">
-            <FormControl label="">
-              {#snippet children({ props })}
-                <Input
-                  {...props}
-                  placeholder="Contact name (optional)"
-                  bind:value={$form_data.phones[phone_i].label}
-                />
-              {/snippet}
-            </FormControl>
-          </FormElementField> -->
-
-          <Button
-            type="button"
-            variant="warning"
-            icon={ICONS.CLOSE}
-            title="Remove phone"
-            onclick={() => actions.links.remove("phones", phone_i)}
-          />
-        </div>
+    <div class="grid gap-3 sm:grid-cols-2">
+      {#each $form_data.phones as phone, phone_i (phone.id)}
+        <LinkInput
+          {form}
+          name="phones[{phone_i}]"
+          on_remove={() => actions.links.remove("phones", phone.id)}
+          bind:link={$form_data.phones[phone_i]}
+        >
+          {#snippet href_input({ props })}
+            <TelInput
+              {...props}
+              bind:value={
+                () => LinkUtil.format_href($form_data.phones[phone_i]),
+                (value) => ($form_data.phones[phone_i].href = value)
+              }
+            />
+          {/snippet}
+        </LinkInput>
       {/each}
 
       <Button
         type="button"
         variant="outline"
-        icon={ICONS.ADD}
+        icon={LINKS.KIND.MAP["tel"].icon}
         onclick={() => actions.links.add("phones")}
       >
         Add phone number
@@ -170,49 +154,30 @@
     class="space-y-3 rounded-md border px-3 pb-2"
     description="Optional email addresses to contact the shelter."
   >
-    <div class="grid gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-      {#each $form_data.emails as _email, email_i (_email.id)}
-        <div class="flex gap-0.5">
-          <FormElementField {form} class="grow" name="emails[{email_i}].href">
-            <FormControl label="">
-              {#snippet children({ props })}
-                <EmailInput
-                  {...props}
-                  bind:value={
-                    () => LinkUtil.format_href($form_data.emails[email_i]),
-                    (value) => ($form_data.emails[email_i].href = value)
-                  }
-                />
-              {/snippet}
-            </FormControl>
-          </FormElementField>
-          <!-- 
-          <FormElementField {form} name="emails[{email_i}].label">
-            <FormControl label="">
-              {#snippet children({ props })}
-                <Input
-                  {...props}
-                  placeholder="Contact name (optional)"
-                  bind:value={$form_data.emails[email_i].label}
-                />
-              {/snippet}
-            </FormControl>
-          </FormElementField> -->
-
-          <Button
-            type="button"
-            variant="warning"
-            icon={ICONS.CLOSE}
-            title="Remove email"
-            onclick={() => actions.links.remove("emails", email_i)}
-          />
-        </div>
+    <div class="grid gap-3 sm:grid-cols-2">
+      {#each $form_data.emails as email, email_i (email.id)}
+        <LinkInput
+          {form}
+          name="emails[{email_i}]"
+          on_remove={() => actions.links.remove("emails", email.id)}
+          bind:link={$form_data.emails[email_i]}
+        >
+          {#snippet href_input({ props })}
+            <EmailInput
+              {...props}
+              bind:value={
+                () => LinkUtil.format_href($form_data.emails[email_i]),
+                (value) => ($form_data.emails[email_i].href = value)
+              }
+            />
+          {/snippet}
+        </LinkInput>
       {/each}
 
       <Button
         type="button"
         variant="outline"
-        icon={ICONS.ADD}
+        icon={LINKS.KIND.MAP["mailto"].icon}
         onclick={() => actions.links.add("emails")}
       >
         Add email address
@@ -229,51 +194,32 @@
     class="space-y-3 rounded-md border px-3 pb-2"
     description="Optional links to the shelter's website or social media profiles."
   >
-    <div class="grid gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+    <div class="grid gap-3 sm:grid-cols-2">
       <!-- WARN: Don't bind to _link, rather use $form_data.links[link_i] -->
-      {#each $form_data.urls as _url, url_i (_url.id)}
-        <div class="flex gap-0.5">
-          <FormElementField {form} class="grow" name="urls[{url_i}].href">
-            <FormControl label="">
-              {#snippet children({ props })}
-                <Input
-                  {...props}
-                  placeholder="https://example.com"
-                  bind:value={
-                    () => LinkUtil.format_href($form_data.urls[url_i]),
-                    (value) => ($form_data.urls[url_i].href = value)
-                  }
-                />
-              {/snippet}
-            </FormControl>
-          </FormElementField>
-          <!-- 
-          <FormElementField {form} name="urls[{url_i}].label">
-            <FormControl label="">
-              {#snippet children({ props })}
-                <Input
-                  {...props}
-                  placeholder="Label (optional)"
-                  bind:value={$form_data.urls[url_i].label}
-                />
-              {/snippet}
-            </FormControl>
-          </FormElementField> -->
-
-          <Button
-            type="button"
-            variant="warning"
-            icon={ICONS.CLOSE}
-            title="Remove link"
-            onclick={() => actions.links.remove("urls", url_i)}
-          />
-        </div>
+      {#each $form_data.urls as url, url_i (url.id)}
+        <LinkInput
+          {form}
+          name="urls[{url_i}]"
+          on_remove={() => actions.links.remove("urls", url.id)}
+          bind:link={$form_data.urls[url_i]}
+        >
+          {#snippet href_input({ props })}
+            <Input
+              {...props}
+              placeholder="www.example.com"
+              bind:value={
+                () => LinkUtil.format_href($form_data.urls[url_i]),
+                (value) => ($form_data.urls[url_i].href = value)
+              }
+            />
+          {/snippet}
+        </LinkInput>
       {/each}
 
       <Button
         type="button"
         variant="outline"
-        icon={ICONS.ADD}
+        icon={LINKS.KIND.MAP["https"].icon}
         onclick={() => actions.links.add("urls")}
       >
         Add link

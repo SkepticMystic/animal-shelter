@@ -1,23 +1,22 @@
 <script lang="ts">
+  import { cn } from "$lib/utils/shadcn.util";
   import type { ClassValue } from "svelte/elements";
 
   let {
     icon,
     label,
     bg = false,
-    size = "size-4",
     class: klass = "",
   }: {
     bg?: boolean;
+    label?: string;
     icon?: ClassValue;
     class?: ClassValue;
-    size?: `size-${number}`;
-    label?: string;
   } = $props();
 </script>
 
 {#snippet inner()}
-  <span class="{bg ? 'icon-bg' : 'icon'} {icon} {size} {klass}"></span>
+  <span class={cn(bg ? "icon-bg" : "icon", icon, "size-4", klass)}></span>
 {/snippet}
 
 <!-- These values are configurable in the iconify/tailwind plugin, found in app.css -->
