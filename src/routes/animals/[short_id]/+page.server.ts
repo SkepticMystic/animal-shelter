@@ -1,4 +1,3 @@
-import { safe_get_session } from "$lib/auth/server";
 import { db } from "$lib/server/db/drizzle.db";
 import { error } from "@sveltejs/kit";
 import type { PageServerLoad } from "./$types";

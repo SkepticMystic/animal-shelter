@@ -29,14 +29,7 @@
         on_success={({ merged }) => {
           if (!merged.found) return;
 
-          if (merged.microchip.implant_date) {
-            $form_data.timestamp = merged.microchip.implant_date;
-          }
-
-          if (merged.microchip.implanted_by_name) {
-            $form_data.administered_by_name =
-              merged.microchip.implanted_by_name;
-          }
+          $form_data.data = { ...$form_data.data, ...merged.animal_event };
 
           toast.success("Microchip data found and filled in");
         }}

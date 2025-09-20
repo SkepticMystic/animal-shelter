@@ -1,6 +1,9 @@
 import z from "zod";
 import { microchip_number_schema } from "./microchip_lookup.schema";
 
+// WARN: BE CAREFUL adding non-primitive fields to the objects...
+// They're stored in a JSONB column in the DB, so they're stringified
+// See https://github.com/SkepticMystic/animal-shelter/blob/eb49b812edb9b83e96fc9c28e928cb4d60532d23/src/lib/services/microchip_lookup/microchip_lookup.service.ts#L18
 export const animal_event_data_schema = z.discriminatedUnion("kind", [
   z.object({
     kind: z.literal("weigh"),

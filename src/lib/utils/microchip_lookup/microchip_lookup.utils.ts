@@ -1,10 +1,9 @@
 import { MICROCHIP_LOOKUP } from "$lib/const/microchip_lookup.const";
-import type { MicrochipLookupResult } from "$lib/services/microchip_lookup/microchip_lookup.service";
+import type { MicrochipLookup } from "$lib/server/db/schema/microchip_lookup.model";
+import { Objects } from "../objects.util";
 
 export const MicrochipLookupUtil = {
-  merge_results_data: (
-    results: MicrochipLookupResult[],
-  ): MicrochipLookupResult["data"] => {
+  merge_results_data: (results: MicrochipLookup[]): MicrochipLookup["data"] => {
     const found_results = results
       .filter((r) => r.data.found)
       .sort(
@@ -18,29 +17,13 @@ export const MicrochipLookupUtil = {
       return { found: false } as const;
     }
 
-    const data: MicrochipLookupResult["data"] = {
-      found: true,
-      animal: {},
-      microchip: {},
-    };
+    let data = { ...found_results[0].data };
 
-    for (const result of found_results) {
+    for (const result of found_results.slice(1)) {
       // NOTE: We know they're found, but TS doesn't, and the Extract<> is too complex
       if (!result.data.found) continue;
 
-      Object.entries(result.data.animal).forEach(([key, value]) => {
-        if (value && data.animal && !(key in data.animal)) {
-          //@ts-expect-error: I've tried various castings, but can't get around this
-          data.animal[key] = value;
-        }
-      });
-
-      Object.entries(result.data.microchip).forEach(([key, value]) => {
-        if (value && data.microchip && !(key in data.microchip)) {
-          //@ts-expect-error: I've tried various castings, but can't get around this
-          data.microchip[key] = value;
-        }
-      });
+      data = Objects.deep_merge_nullish(data, result.data);
     }
 
     return data;

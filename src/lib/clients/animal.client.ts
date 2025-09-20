@@ -8,13 +8,13 @@ import type { AnimalSchema } from "$lib/server/db/schema/animal.model";
 import { Client } from "./index.client";
 
 export const AnimalClient = {
-  create: (input: AnimalSchema.Insert) =>
+  create: (input: AnimalSchema.InsertIn) =>
     Client.request(
       () => create_animal_remote(input).updates(get_animals_remote({})),
       { toast: { success: "Animal created" } },
     ),
 
-  update: (id: string, update: AnimalSchema.Update) =>
+  update: (id: string, update: AnimalSchema.UpdateIn) =>
     Client.request(
       () =>
         update_animal_remote({ id, update }).updates(get_animals_remote({})),

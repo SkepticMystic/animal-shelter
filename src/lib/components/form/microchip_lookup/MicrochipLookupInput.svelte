@@ -3,7 +3,7 @@
   import Button from "$lib/components/ui/button/button.svelte";
   import Input from "$lib/components/ui/input/input.svelte";
   import type { MaybePromise } from "$lib/interfaces";
-  import type { MicrochipLookupResult } from "$lib/services/microchip_lookup/microchip_lookup.service";
+  import type { MicrochipLookup } from "$lib/server/db/schema/microchip_lookup.model";
   import type { APIResult } from "$lib/utils/form.util";
   import { MicrochipLookupUtil } from "$lib/utils/microchip_lookup/microchip_lookup.utils";
   import type { ComponentProps } from "svelte";
@@ -20,8 +20,8 @@
     microchip_number?: string | null;
 
     on_success: (data: {
-      results: MicrochipLookupResult[];
-      merged: MicrochipLookupResult["data"];
+      results: MicrochipLookup[];
+      merged: MicrochipLookup["data"];
     }) => MaybePromise<unknown>;
 
     on_error?: (

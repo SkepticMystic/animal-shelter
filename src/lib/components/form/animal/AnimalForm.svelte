@@ -19,8 +19,8 @@
   import FormMessage from "../FormMessage.svelte";
   import MicrochipLookupInput from "../microchip_lookup/MicrochipLookupInput.svelte";
 
-  type In = AnimalSchema.Insert;
-  type Out = Animal;
+  type In = AnimalSchema.InsertIn;
+  type Out = AnimalSchema.InsertOut;
 
   let {
     submit,
@@ -30,7 +30,7 @@
     form_input: SuperValidated<In>;
 
     submit: (data: In) => Promise<APIResult<Out>>;
-    on_success?: (animal: Out) => MaybePromise<void>;
+    on_success?: (animal: Animal) => MaybePromise<void>;
   } = $props();
 
   const form = make_super_form(form_input, {

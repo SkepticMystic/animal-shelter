@@ -81,6 +81,8 @@ export type AnimalEvent = typeof AnimalEventTable.$inferSelect;
 
 const refinements = {
   data: animal_event_data_schema,
+  // NOTE: We coerce from date when decoding MicrcochipLookup.data.animal_event.timestamp
+  timestamp: z.coerce.date().optional().nullable(),
 
   notes: (s: z.ZodString) =>
     s.max(2000, "Notes must be at most 2000 characters"),
@@ -106,5 +108,6 @@ export namespace AnimalEventSchema {
 
   export type InsertIn = z.input<typeof insert>;
   export type InsertOut = z.output<typeof insert>;
-  export type Update = z.input<typeof update>;
+  export type UpdateIn = z.input<typeof update>;
+  export type UpdateOut = z.output<typeof update>;
 }

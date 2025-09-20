@@ -12,7 +12,7 @@ export const AnimalEventClient = {
       toast: { success: "Event created" },
     }),
 
-  update: async (id: string, update: AnimalEventSchema.Update) =>
+  update: async (id: string, update: AnimalEventSchema.UpdateIn) =>
     Client.request(() => update_animal_event_remote({ id, update }), {
       toast: { success: "Event updated" },
     }),

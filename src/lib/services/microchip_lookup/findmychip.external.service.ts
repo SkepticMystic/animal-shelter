@@ -3,14 +3,15 @@ import type { IMicrochipLookup } from "$lib/const/microchip_lookup.const";
 import type { MicrochipLookupInput } from "$lib/schema/microchip_lookup.schema";
 import type { Animal } from "$lib/server/db/schema/animal.model";
 import type { APIResult } from "$lib/utils/form.util";
+import { Log } from "$lib/utils/logger.util";
 import { err, suc } from "$lib/utils/result.util";
 import { parseDate } from "chrono-node";
-import { Context, Effect } from "effect";
+import { Context, Effect, pipe } from "effect";
 import ky, { HTTPError } from "ky";
 import {
-  MicrochipLookupService,
+  ExternalMicrochipLookupService,
   type MicrochipLookupResult,
-} from "./microchip_lookup.service";
+} from "./abstract.external.service";
 
 const DATABASE_IDS = [
   "agrichip",
@@ -124,13 +125,16 @@ const normalise_database_response = (
             : undefined,
         },
 
-        microchip: {
-          microchip_number: animal?.microchip_number || undefined,
-          implanted_by_name: animal?.microchip_implanter || undefined,
-
-          implant_date: animal?.implant_date
+        animal_event: {
+          administered_by_name: animal?.microchip_implanter || undefined,
+          timestamp: animal?.implant_date
             ? (parseDate(animal?.implant_date) ?? undefined)
             : undefined,
+
+          data: {
+            kind: "microchip",
+            microchip_number: input.microchip_number,
+          },
         },
       }
     : { found: false };
@@ -140,6 +144,9 @@ const inner_lookup = async (
   input: MicrochipLookupInput["Parsed"],
 ): Promise<APIResult<MicrochipLookupResult[]>> =>
   ky
+    // TOD: Rather zod parse the result than casting
+    // Once done, I won't need to pass input.microchip_number to get a branded type
+    // I can actually pass the database result
     .get<LookupResult>(
       `https://pb.findmychip.co.za/api/microchip/${input.microchip_number}`,
       {
@@ -169,45 +176,43 @@ const inner_lookup = async (
       ),
     );
 
-const service_implementation: Context.Tag.Service<MicrochipLookupService> = {
+const implementation: Context.Tag.Service<ExternalMicrochipLookupService> = {
   lookup: (input) =>
-    Effect.tryPromise({
-      try: () => inner_lookup(input),
+    pipe(
+      Effect.tryPromise({
+        try: () => inner_lookup(input),
 
-      catch: (error) => {
-        if (error instanceof HTTPError) {
-          error.response
-            .json()
-            .then((json) =>
-              console.log("[findmychip.microchip_lookup] error:", {
-                json,
-                message: error.message,
-                status: error.response.status,
-              }),
-            )
-            .catch(() =>
-              console.log(
-                "[findmychip.microchip_lookup] error: (failed to parse JSON)",
-                {
-                  message: error.message,
-                  status: error.response.status,
-                },
-              ),
-            );
+        catch: (error) => {
+          if (error instanceof HTTPError) {
+            error.response
+              .json()
+              .then((json) =>
+                Log.error(
+                  { json, message: error.message },
+                  "[findmychip.microchip_lookup] error:",
+                ),
+              )
+              .catch(() =>
+                Log.error(
+                  { message: error.message },
+                  "[findmychip.microchip_lookup] error: (failed to parse JSON)",
+                ),
+              );
 
-          return err({
-            status: error.response.status,
-            message: `Microchip lookup service error: ${error.message}`,
-          });
-        } else {
-          console.error("Failed to lookup microchip:", error);
+            return err({
+              message: `Microchip lookup service error: ${error.message}`,
+            });
+          } else {
+            Log.error(error, "[findmychip.microchip_lookup] unexpected error");
 
-          return err({ message: "Failed to lookup microchip" });
-        }
-      },
-    }).pipe(Effect.catchAll((e) => Effect.succeed(e))),
+            return err({ message: "Failed to lookup microchip" });
+          }
+        },
+      }),
+
+      Effect.catchAll((e) => Effect.succeed(e)),
+    ),
 };
 
-export const MicrochipLookupLive = MicrochipLookupService.of(
-  service_implementation,
-);
+export const ExternalMicrochipLookupLive =
+  ExternalMicrochipLookupService.of(implementation);

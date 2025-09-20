@@ -1,16 +1,20 @@
 import { command, query } from "$app/server";
+import { BetterAuthClient } from "$lib/auth-client";
 import { safe_get_session } from "$lib/auth/server";
+import type { IOrganization } from "$lib/const/organization.const";
 import { db } from "$lib/server/db/drizzle.db";
 import {
   AnimalSchema,
   AnimalTable,
   type Animal,
 } from "$lib/server/db/schema/animal.model";
+import { AnimalEventTable } from "$lib/server/db/schema/animal_event.model";
 import { ImageService } from "$lib/services/image.service";
+import { MicrochipLookupLive } from "$lib/services/microchip_lookup/microchip_lookup.service";
 import type { APIResult } from "$lib/utils/form.util";
+import { MicrochipLookupUtil } from "$lib/utils/microchip_lookup/microchip_lookup.utils";
 import { err, suc } from "$lib/utils/result.util";
 import { and, eq } from "drizzle-orm";
-
 import z from "zod";
 
 const SMART_FIELDS = ["name", "description"] satisfies (keyof Animal)[];
@@ -80,13 +84,44 @@ export const create_animal_remote = command(
       return err({ message: "Unauthorized", status: 401 });
     }
 
-    const [animal] = await db
-      .insert(AnimalTable)
-      .values({
-        ...input,
-        org_id: session.session.org_id,
+    const [[animal], microchip_lookup] = await Promise.all([
+      db
+        .insert(AnimalTable)
+        .values({
+          ...input,
+          org_id: session.session.org_id,
+        })
+        .returning(),
+
+      input.microchip_number &&
+      BetterAuthClient.organization.checkRolePermission({
+        role: session.session.member_role as IOrganization.RoleId,
+        permissions: { animal_event: ["create"], microchip_lookup: ["create"] },
       })
-      .returning();
+        ? MicrochipLookupLive.lookup({
+            microchip_number: input.microchip_number,
+          })
+        : null,
+    ]);
+
+    if (microchip_lookup && microchip_lookup.ok) {
+      const merged = MicrochipLookupUtil.merge_results_data(
+        microchip_lookup.data,
+      );
+
+      if (merged.found) {
+        await db
+          .insert(AnimalEventTable)
+          .values({
+            ...merged.animal_event,
+
+            animal_id: animal.id,
+            org_id: session.session.org_id,
+            created_by_member_id: session.session.member_id,
+          })
+          .returning();
+      }
+    }
 
     return suc(animal);
   },

@@ -117,6 +117,8 @@ export namespace AnimalSchema {
   export const insert = createInsertSchema(AnimalTable, refinements).pick(pick);
   export const update = createUpdateSchema(AnimalTable, refinements).pick(pick);
 
-  export type Insert = z.infer<typeof insert>;
-  export type Update = z.infer<typeof update>;
+  export type InsertIn = z.input<typeof insert>;
+  export type InsertOut = z.output<typeof insert>;
+  export type UpdateIn = z.input<typeof update>;
+  export type UpdateOut = z.output<typeof update>;
 }

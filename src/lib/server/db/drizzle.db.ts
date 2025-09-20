@@ -5,6 +5,7 @@ import * as AnimalModel from "./schema/animal.model";
 import * as AnimalEventModel from "./schema/animal_event.model";
 import * as AuthModels from "./schema/auth.model";
 import * as ImageModel from "./schema/image.model";
+import * as MicrochipLookupModel from "./schema/microchip_lookup.model";
 import * as ShelterModel from "./schema/shelter.model";
 
 if (!DATABASE_URL) throw new Error("DATABASE_URL is not set");
@@ -27,6 +28,7 @@ const { ImageTable, ...image_rest } = ImageModel;
 const { AnimalTable, ...animal_rest } = AnimalModel;
 const { AnimalEventTable, ...animal_event_rest } = AnimalEventModel;
 const { ShelterTable, ...shelter_rest } = ShelterModel;
+const { MicrochipLookupTable, ...microchip_lookup_rest } = MicrochipLookupModel;
 
 export const db = drizzle(client, {
   casing: "snake_case",
@@ -53,5 +55,8 @@ export const db = drizzle(client, {
 
     animal_event: AnimalEventTable,
     ...animal_event_rest,
+
+    microchip_lookup: MicrochipLookupTable,
+    ...microchip_lookup_rest,
   },
 });
