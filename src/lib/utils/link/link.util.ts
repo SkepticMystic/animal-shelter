@@ -39,7 +39,11 @@ const format_href = (link: Link, parts?: (keyof URL)[]): string => {
     case "tel": {
       const tel = Url.strip_protocol(link.href);
 
-      return parsePhoneNumber(tel)?.formatNational() ?? tel;
+      try {
+        return parsePhoneNumber(tel).formatNational();
+      } catch (error) {
+        return tel;
+      }
     }
   }
 };

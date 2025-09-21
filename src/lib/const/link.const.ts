@@ -8,11 +8,11 @@ const KIND_MAP = {
     icon: "lucide/globe",
   },
   mailto: {
-    label: "Email",
+    label: "Email Address",
     icon: "lucide/mail",
   },
   tel: {
-    label: "Phone",
+    label: "Phone Number",
     icon: "lucide/phone",
   },
 } satisfies Record<
