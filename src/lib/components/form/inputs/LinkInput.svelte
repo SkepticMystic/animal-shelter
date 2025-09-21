@@ -12,6 +12,7 @@
   import FormControl from "../controls/FormControl.svelte";
   import EmailInput from "./EmailInput.svelte";
   import TelInput from "./TelInput.svelte";
+  import UrlInput from "./URLInput.svelte";
 
   let {
     form,
@@ -40,13 +41,7 @@
         {#if kind === "https"}
           <!-- NOTE: Don't add type="url"
            We are more lenient on input than it allows -->
-          <Input
-            {...props}
-            inputmode="url"
-            autocomplete="url"
-            placeholder="www.example.com"
-            bind:value={get_href, set_href}
-          />
+          <UrlInput {...props} bind:value={get_href, set_href} />
         {:else if kind === "tel"}
           <TelInput {...props} bind:value={get_href, set_href} />
         {:else if kind === "mailto"}

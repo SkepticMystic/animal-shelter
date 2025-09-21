@@ -78,9 +78,9 @@
   </FormField>
 
   {#if $form_data.data.kind === "weigh"}
-    <WeighingEventDataForm {form} {form_data} />
+    <WeighingEventDataForm {form} />
   {:else if $form_data.data.kind === "vaccine"}
-    <VaccinationEventDataForm {form} {form_data} />
+    <VaccinationEventDataForm {form} />
   {:else if $form_data.data.kind === "sterilise"}
     <!--  -->
   {:else if $form_data.data.kind === "microchip"}

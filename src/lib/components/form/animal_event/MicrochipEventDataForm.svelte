@@ -14,7 +14,7 @@
     form: FsSuperForm<In>;
   } = $props();
 
-  const { form: form_data } = form;
+  const form_data = form.form;
 </script>
 
 <FormField

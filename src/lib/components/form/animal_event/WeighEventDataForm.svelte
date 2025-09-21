@@ -9,11 +9,11 @@
 
   let {
     form,
-    form_data,
   }: {
     form: FsSuperForm<In>;
-    form_data: FsSuperForm<In>["form"];
   } = $props();
+
+  const form_data = form.form;
 </script>
 
 <FormField {form} name="data.grams" description="Weight in kg">

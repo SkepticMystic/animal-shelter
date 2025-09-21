@@ -5,13 +5,12 @@
   let {
     value = $bindable(),
     ...rest
-  }: Omit<ComponentProps<typeof Input>, "type" | "value" | "files"> & {
+  }: Omit<ComponentProps<typeof Input>, "value" | "files"> & {
     value?: string;
   } = $props();
 </script>
 
 <Input
-  type="url"
   inputmode="url"
   autocomplete="url"
   placeholder="https://example.com"
