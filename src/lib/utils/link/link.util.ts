@@ -3,7 +3,7 @@ import type { Link } from "$lib/schema/link.schema";
 import { parsePhoneNumber } from "libphonenumber-js/min";
 import { Url } from "../urls";
 
-const get_kind = (link: Link): ILink.KindId => {
+const get_kind = (link: Omit<Link, "id">): ILink.KindId => {
   if (link.href.startsWith("https://")) {
     return "https";
   } else if (link.href.startsWith("mailto:")) {
@@ -15,7 +15,7 @@ const get_kind = (link: Link): ILink.KindId => {
   }
 };
 
-const format_href = (link: Link, parts?: (keyof URL)[]): string => {
+const format_href = (link: Omit<Link, "id">, parts?: (keyof URL)[]): string => {
   const kind = get_kind(link);
 
   switch (kind) {
