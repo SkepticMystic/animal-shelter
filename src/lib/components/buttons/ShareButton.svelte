@@ -1,10 +1,10 @@
 <script lang="ts">
   import { ICONS } from "$lib/const/icon.const";
   import { SHARE } from "$lib/const/share.const";
+  import { Share } from "$lib/utils/share/share.util";
+  import Button from "../ui/button/button.svelte";
   import Dialog from "../ui/dialog/dialog.svelte";
   import Icon from "../ui/icon/Icon.svelte";
-  import NativeShareButton from "./NativeShareButton.svelte";
-  import SocialShareButton from "./SocialShareButton.svelte";
 
   let {
     data,
@@ -18,12 +18,16 @@
   }
 </script>
 
-{#if navigator.share}
-  <NativeShareButton {data} />
+{#if navigator.canShare?.(data)}
+  <Button
+    variant="outline"
+    icon={ICONS.SHARE}
+    onclick={() => Share.native(data)}
+  />
 {:else}
   <Dialog
-    title="Share"
     size="icon"
+    title="Share"
     variant="outline"
     description="Share {data.title || 'this page'} on"
   >
@@ -34,9 +38,17 @@
     {#snippet content()}
       <div class="grid grid-cols-1 gap-1 sm:grid-cols-2 md:grid-cols-3">
         {#each SHARE.SOCIAL.IDS as social_id}
-          <SocialShareButton {social_id} {data}>
+          {@const platform = SHARE.SOCIAL.MAP[social_id]}
+
+          <Button
+            target="_blank"
+            variant="outline"
+            icon={platform.icon}
+            title="Share on {platform.label}"
+            href={Share.build_social_url[social_id](data).toString()}
+          >
             {SHARE.SOCIAL.MAP[social_id].label}
-          </SocialShareButton>
+          </Button>
         {/each}
       </div>
     {/snippet}

@@ -1,5 +1,6 @@
 <script lang="ts">
   import type { ResolvedPathname } from "$app/types";
+  import Anchor from "$lib/components/ui/anchor/Anchor.svelte";
 
   type Route = {
     label: string;
@@ -21,17 +22,17 @@
   <ul class="my-3 list-inside list-disc">
     {#each routes as route (route.href)}
       <li>
-        <a class="link link-primary" href={route.href}>
+        <Anchor href={route.href}>
           {route.label}
-        </a>
+        </Anchor>
 
         {#if route.routes?.length}
           <ul class="list-inside list-disc pl-5">
             {#each route.routes as subroute (subroute.href)}
               <li>
-                <a class="link link-primary" href={subroute.href}>
+                <Anchor href={subroute.href}>
                   {subroute.label}
-                </a>
+                </Anchor>
               </li>
             {/each}
           </ul>

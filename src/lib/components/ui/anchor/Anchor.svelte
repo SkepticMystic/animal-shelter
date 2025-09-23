@@ -31,15 +31,17 @@
     // But we don't take the rest cause then it forces the `size` classes on us
     "inline-block underline underline-offset-4",
     // Mine
-    "flex items-center gap-1.5 text-sm font-medium",
+    "text-sm font-medium",
     klass,
   )}
   bind:this={ref}
   {...rest_props}
 >
-  <Loading {loading} />
+  <span class="flex items-center gap-1.5">
+    <Loading {loading} />
 
-  <Icon {icon} />
+    <Icon {icon} />
 
-  {@render children?.()}
+    {@render children?.()}
+  </span>
 </a>
