@@ -1,0 +1,1 @@
+ALTER TABLE "shelter" ADD COLUMN "npo_number" varchar(50);

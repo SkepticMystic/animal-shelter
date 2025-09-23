@@ -14,6 +14,7 @@
   import DonationMethodsFormFieldSet from "../donation_method/DonationMethodsFormFieldSet.svelte";
   import FormField from "../fields/FormField.svelte";
   import FormMessage from "../FormMessage.svelte";
+  import SuperformInput from "../inputs/SuperformInput.svelte";
   import LinksFormFieldSet from "../links/LinksFormFieldSet.svelte";
   import GooglePlaceAutocomplete from "../place/GooglePlaceAutocomplete.svelte";
 
@@ -41,72 +42,104 @@
   $inspect("$form_data", $form_data);
 </script>
 
-<form class="flex flex-col gap-2" method="POST" use:form.enhance>
-  <div class="grid gap-3 md:grid-cols-3">
-    <FormField {form} name="name" description="The name of the shelter">
-      <FormControl label="Name">
-        {#snippet children({ props })}
-          <Input
-            {...props}
-            required
-            placeholder="Name"
-            bind:value={$form_data.name}
-          />
+<form class="space-y-7" method="POST" use:form.enhance>
+  <section>
+    <div class="grid gap-3 md:grid-cols-3">
+      <FormField {form} name="name" description="The name of the shelter">
+        {#snippet children(props)}
+          <FormControl {...props} label="Name">
+            {#snippet children({ props })}
+              <SuperformInput {...props} {form} required placeholder="Name" />
+            {/snippet}
+          </FormControl>
         {/snippet}
-      </FormControl>
-    </FormField>
+      </FormField>
+
+      <FormField
+        {form}
+        name="place"
+        class="md:col-span-2"
+        description="Where is the shelter located?"
+      >
+        {#snippet children(props)}
+          <FormControl {...props} label="Location">
+            {#snippet children({ props })}
+              <GooglePlaceAutocomplete
+                {...props}
+                bind:place={$form_data.place}
+              />
+            {/snippet}
+          </FormControl>
+        {/snippet}
+      </FormField>
+    </div>
 
     <FormField
       {form}
-      name="place"
-      class="md:col-span-2"
-      description="Where is the shelter located?"
+      name="description"
+      description="Tell us about the shelter"
     >
-      <FormControl label="Location">
-        {#snippet children({ props })}
-          <GooglePlaceAutocomplete {...props} bind:place={$form_data.place} />
-        {/snippet}
-      </FormControl>
-    </FormField>
-  </div>
-
-  <FormField {form} name="description" description="Tell us about the shelter">
-    <FormControl label="Description">
-      {#snippet children({ props })}
-        <Textarea
-          {...props}
-          placeholder="Description"
-          bind:value={$form_data.description}
-        />
+      {#snippet children(props)}
+        <FormControl {...props} label="Description">
+          {#snippet children({ props })}
+            <Textarea
+              {...props}
+              class="max-h-52 resize-y"
+              placeholder="Description"
+              bind:value={$form_data.description}
+            />
+          {/snippet}
+        </FormControl>
       {/snippet}
-    </FormControl>
-  </FormField>
+    </FormField>
+  </section>
 
-  <LinksFormFieldSet
-    {form}
-    kind="tel"
-    name="phones"
-    legend="Phone numbers"
-    description="Optional phone numbers to contact the shelter."
-  />
+  <section class="space-y-3">
+    <h4>Contact Info & Links</h4>
 
-  <LinksFormFieldSet
-    {form}
-    kind="mailto"
-    name="emails"
-    legend="Email addresses"
-    description="Optional email addresses to contact the shelter."
-  />
+    <LinksFormFieldSet
+      {form}
+      kind="tel"
+      name="phones"
+      legend="Phone numbers"
+      description="Optional phone numbers to contact the shelter."
+    />
+    <LinksFormFieldSet
+      {form}
+      kind="mailto"
+      name="emails"
+      legend="Email addresses"
+      description="Optional email addresses to contact the shelter."
+    />
+    <LinksFormFieldSet
+      {form}
+      name="urls"
+      kind="https"
+      legend="Links"
+      description="Optional links to the shelter's website or social media profiles."
+    />
+  </section>
 
-  <LinksFormFieldSet
-    {form}
-    name="urls"
-    kind="https"
-    legend="Links"
-    description="Optional links to the shelter's website or social media profiles."
-  />
+  <section class="space-y-3">
+    <h4>Donations</h4>
 
-  <DonationMethodsFormFieldSet {form} name="donation_methods" />
+    <FormField
+      {form}
+      class="w-fit"
+      name="npo_number"
+      description="Non-Profit Organization registration number"
+    >
+      {#snippet children(props)}
+        <FormControl {...props} label="NPO Number">
+          {#snippet children({ props })}
+            <SuperformInput {...props} {form} placeholder="123-456 NPO" />
+          {/snippet}
+        </FormControl>
+      {/snippet}
+    </FormField>
+
+    <DonationMethodsFormFieldSet {form} name="donation_methods" />
+  </section>
 
   <FormButton {form} class="w-full" icon={ICONS.EDIT}>
     Update shelter

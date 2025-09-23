@@ -37,6 +37,12 @@
     </div>
   {/if}
 
+  {#if data.shelter.description}
+    <blockquote>
+      {data.shelter.description}
+    </blockquote>
+  {/if}
+
   {#if data.shelter.images.length}
     <Carousel>
       {#snippet content()}
@@ -53,9 +59,21 @@
 
   {#if data.shelter.donation_methods.length}
     <div class="space-y-2">
-      <Iconed reversed icon="lucide/hand-heart">
+      <Iconed reversed icon="lucide/hand-heart" class="size-7">
         <h2>Donate</h2>
       </Iconed>
+
+      {#if data.shelter.npo_number}
+        <span class="flex items-center gap-1">
+          {data.shelter.name} is a registered non-profit organization (<ExternalLink
+            favicon={false}
+            link={{
+              label: data.shelter.npo_number,
+              href: "https://www.npo.gov.za/PublicNpo/Npo",
+            }}
+          />)
+        </span>
+      {/if}
 
       <div class="flex flex-col gap-4">
         {#each data.shelter.donation_methods as donation_method}

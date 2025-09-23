@@ -7,7 +7,7 @@ const KIND_IDS = ["bank", "url"] as const;
 
 const KIND_MAP = {
   bank: {
-    label: "Bank Transfer",
+    label: "Bank Details",
     icon: "lucide/bank",
   },
   url: {

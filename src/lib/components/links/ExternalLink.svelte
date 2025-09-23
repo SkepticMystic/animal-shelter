@@ -7,9 +7,11 @@
   import Favicon from "../images/Favicon.svelte";
   import Anchor from "../ui/anchor/Anchor.svelte";
   import Icon from "../ui/icon/Icon.svelte";
+  import { cn } from "$lib/utils/shadcn.util";
 
   let {
     link,
+    class: klass,
     favicon = true,
     ...rest
   }: HTMLAnchorAttributes & {
@@ -25,7 +27,7 @@
   {href}
   target="_blank"
   rel="noopener noreferrer"
-  class="flex w-fit items-center gap-1.5"
+  class={cn("flex w-fit items-center gap-1.5", klass)}
 >
   {#if favicon}
     <Favicon {href} class="shrink-0">

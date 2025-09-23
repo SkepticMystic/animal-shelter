@@ -1,11 +1,11 @@
-import {
-  donation_method_schema,
-  type DonationMethod,
-} from "../../../schema/donation_method.schema";
 import { relations } from "drizzle-orm";
 import { index, jsonb, pgTable, text, varchar } from "drizzle-orm/pg-core";
 import { createInsertSchema, createUpdateSchema } from "drizzle-zod";
 import z from "zod";
+import {
+  donation_method_schema,
+  type DonationMethod,
+} from "../../../schema/donation_method.schema";
 import { LinkSchema, type Link } from "../../../schema/link.schema";
 import { place_schema, type Place } from "../../../schema/place.schema";
 import { AnimalTable } from "./animal.model";
@@ -34,6 +34,13 @@ export const ShelterTable = pgTable(
     phones: jsonb().$type<Link[]>().default([]).notNull(),
     emails: jsonb().$type<Link[]>().default([]).notNull(),
 
+    // CURSED: At first I thought the final param was just the number without 0s and dashes
+    // But https://www.npo.gov.za/PublicNpo/Npo/DetailsPublicDocs/51663948 has nothing to do with it's actual npo number
+    // https://www.npo.gov.za/PublicNpo/Npo/DetailsPublicDocs/2950
+    // Seems to be: /\d{3}-\d{3} NPO/
+    npo_number: varchar({ length: 50 }),
+    // pbo_number: varchar({ length: 50 }),
+
     donation_methods: jsonb().$type<DonationMethod[]>().default([]).notNull(),
 
     ...StaticSchema.timestamps,
@@ -60,6 +67,30 @@ const shelter_refinements = {
   emails: z.array(LinkSchema["mailto"]).max(5),
 
   donation_methods: z.array(donation_method_schema).max(5),
+
+  npo_number: z
+    .string()
+    .transform((s, ctx) => {
+      if (s.trim() === "") return undefined;
+
+      const matches = s.match(/(\d{3})[- ]?(\d{3})/);
+      if (!matches) {
+        ctx.addIssue({
+          input: s,
+          continue: false,
+          format: "npo_number",
+          code: "invalid_format",
+          message: "NPO number must be in the format 123-456",
+        });
+
+        return z.NEVER;
+      } else {
+        return `${matches[1]}-${matches[2]} NPO` as const;
+      }
+    })
+    .brand("NPONumber")
+    .optional()
+    .nullable(),
 };
 
 const pick = {
@@ -69,6 +100,7 @@ const pick = {
   emails: true,
   phones: true,
   description: true,
+  npo_number: true,
   donation_methods: true,
 } satisfies Partial<Record<keyof Shelter, true>>;
 

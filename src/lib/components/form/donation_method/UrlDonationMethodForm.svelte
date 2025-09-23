@@ -10,7 +10,7 @@
   import FormControl from "../controls/FormControl.svelte";
   import UrlInput from "../inputs/URLInput.svelte";
 
-  type T = ShelterSchema.InsertIn;
+  type T = ShelterSchema.InsertOut;
   type V = Extract<DonationMethod["data"], { kind: "url" }>;
 
   let {

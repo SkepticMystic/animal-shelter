@@ -17,8 +17,8 @@
     form,
     name,
   }: {
-    form: SuperForm<ShelterSchema.InsertIn>;
-    name: FormPath<ShelterSchema.InsertIn, DonationMethod>;
+    form: SuperForm<ShelterSchema.InsertOut>;
+    name: FormPath<ShelterSchema.InsertOut, DonationMethod>;
   } = $props();
 
   const donation_method = fieldProxy(form, name);
