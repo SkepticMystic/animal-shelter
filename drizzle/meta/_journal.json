@@ -22,6 +22,13 @@
       "when": 1758380312149,
       "tag": "0002_blue_surge",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1758613688471,
+      "tag": "0003_overjoyed_warhawk",
+      "breakpoints": true
     }
   ]
 }

@@ -1,0 +1,1 @@
+ALTER TABLE "shelter" ADD COLUMN "donation_methods" jsonb DEFAULT '[]'::jsonb NOT NULL;
