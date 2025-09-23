@@ -1,4 +1,3 @@
-import type { ResolvedPathname } from "$app/types";
 import { auth } from "$lib/auth.js";
 import { ROUTES } from "$lib/const/routes.const.js";
 import { TOAST } from "$lib/const/toast.const.js";
@@ -35,7 +34,11 @@ export const actions = {
   default: async ({ request, url }) => {
     const search = Parsers.url(
       url,
-      z.object({ redirect_uri: z.string() }).partial(),
+      z
+        .object({
+          redirect_uri: z.string().brand("RouteId"),
+        })
+        .partial(),
     );
 
     const form = await superValidate(request, zod4(AuthSchema.signin_form));
@@ -66,7 +69,7 @@ export const actions = {
 
     redirect(
       303,
-      App.url((search.redirect_uri as ResolvedPathname) ?? ROUTES.HOME, {
+      App.url(search.redirect_uri ?? ROUTES.AUTH_DIRECT_USER, {
         toast: TOAST.IDS.SIGNED_IN,
       }),
     );

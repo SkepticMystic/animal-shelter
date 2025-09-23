@@ -51,9 +51,6 @@ export const load: PageServerLoad = async ({ request, url }) => {
     return {
       search,
       session,
-      inviter: null,
-      invitation: null,
-      organization: null,
       prompt: "wrong_account" as const,
     };
   } else if (invitation.status !== "pending") {

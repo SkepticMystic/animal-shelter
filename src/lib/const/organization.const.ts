@@ -70,9 +70,9 @@ export const OrganizationAccessControl = {
   roles: {
     member: ac.newRole({
       ...memberAc.statements,
-      image: ["create"],
-      animal: ["create"],
-      animal_event: ["create"],
+      image: ["create", "update"],
+      animal: ["create", "update"],
+      animal_event: ["create", "update"],
       microchip_lookup: ["create"],
     }),
 

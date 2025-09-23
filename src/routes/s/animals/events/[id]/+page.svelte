@@ -25,7 +25,7 @@
         variant="outline"
         icon={ICONS.EDIT}
         title="Edit event"
-        href={resolve(ROUTES.ANIMAL_EVENTS_EDIT, data.animal_event)}
+        href={resolve(ROUTES.SHELTER_ANIMAL_EVENTS_EDIT, data.animal_event)}
       />
     </div>
   </div>
@@ -34,9 +34,11 @@
     <AnimalLink animal={data.animal_event.animal} class="w-fit" />
   </Labeled>
 
-  <Labeled label="Administrator">
-    <UserAvatar user={data.animal_event.administrator.user} />
-  </Labeled>
+  {#if data.animal_event.administrator?.user}
+    <Labeled label="Administrator">
+      <UserAvatar user={data.animal_event.administrator.user} />
+    </Labeled>
+  {/if}
 
   <div class="flex flex-wrap gap-3">
     {#each data.animal_event.images as image (image.thumbhash)}

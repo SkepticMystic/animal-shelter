@@ -17,7 +17,7 @@
   } = $props();
 
   const onSuccess = () => {
-    location.href = App.url(redirect_uri ?? ROUTES.HOME, {
+    location.href = App.url(redirect_uri ?? ROUTES.AUTH_DIRECT_USER, {
       toast: TOAST.IDS.SIGNED_IN,
     });
   };

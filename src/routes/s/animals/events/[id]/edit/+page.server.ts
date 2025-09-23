@@ -1,4 +1,4 @@
-import { get_session } from "$lib/auth/server";
+import { get_member_session } from "$lib/auth/server";
 import { db } from "$lib/server/db/drizzle.db";
 import {
   AnimalEventSchema,
@@ -12,7 +12,7 @@ import type { PageServerLoad } from "./$types";
 
 export const load: PageServerLoad = async ({ params }) => {
   const [session, animal_event] = await Promise.all([
-    get_session({ member_permissions: { animal_event: ["update"] } }),
+    get_member_session({ member_permissions: { animal_event: ["update"] } }),
 
     db.query.animal_event.findFirst({
       where: eq(AnimalEventTable.id, params.id),

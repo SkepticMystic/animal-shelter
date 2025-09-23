@@ -97,7 +97,7 @@
         icon: ICONS.VIEW,
         title: "View event",
 
-        href: (row) => resolve(ROUTES.ANIMAL_EVENTS_VIEW, row.original),
+        href: (row) => resolve(ROUTES.SHELTER_ANIMAL_EVENTS_VIEW, row.original),
       },
       {
         kind: "item",
@@ -106,7 +106,7 @@
 
         disabled: () => !AccessClient.member_can({ animal_event: ["update"] }),
 
-        href: (row) => resolve(ROUTES.ANIMAL_EVENTS_EDIT, row.original),
+        href: (row) => resolve(ROUTES.SHELTER_ANIMAL_EVENTS_EDIT, row.original),
       },
       {
         kind: "item",

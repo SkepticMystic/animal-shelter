@@ -1,5 +1,6 @@
 <script lang="ts">
   import BackButton from "$lib/components/buttons/BackButton.svelte";
+  import ShareButton from "$lib/components/buttons/ShareButton.svelte";
   import AnimalCard from "$lib/components/cards/AnimalCard.svelte";
   import Picture from "$lib/components/images/Picture.svelte";
   import ExternalLink from "$lib/components/links/ExternalLink.svelte";
@@ -10,17 +11,29 @@
   import Carousel from "$lib/components/ui/carousel/Carousel.svelte";
   import Dialog from "$lib/components/ui/dialog/dialog.svelte";
   import Iconed from "$lib/components/ui/icon/Iconed.svelte";
+  import { APP } from "$lib/const/app.js";
   import { DONATION_METHOD } from "$lib/const/donation_method.const.js";
   import { IMAGES } from "$lib/const/image.const";
   import type { DonationMethod } from "$lib/schema/donation_method.schema";
 
   let { data } = $props();
+
+  const share_data: ShareData = {
+    title: data.shelter.name,
+    text: `Check out ${data.shelter.name} on ${APP.NAME}`,
+  };
 </script>
 
 <div class="space-y-7">
-  <div class="flex items-center gap-2">
-    <BackButton />
-    <h1>{data.shelter.name}</h1>
+  <div class="flex items-center justify-between">
+    <div class="flex items-center gap-2">
+      <BackButton />
+      <h1>{data.shelter.name}</h1>
+    </div>
+
+    <div>
+      <ShareButton data={share_data} />
+    </div>
   </div>
 
   <div class="flex flex-wrap gap-4">

@@ -1,6 +1,8 @@
 <script lang="ts">
+  import { dev } from "$app/environment";
   import { goto } from "$app/navigation";
   import { asset } from "$app/paths";
+  import { page } from "$app/state";
   import { BetterAuthClient } from "$lib/auth-client";
   import { AdminClient } from "$lib/clients/admin.client";
   import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
@@ -21,16 +23,26 @@
     icon: ClassValue;
     /** Only show if user is authenticated */
     authed: boolean;
+    /** Only show if user is a member of an organization */
+    member?: boolean;
     admin?: boolean;
   }
 
   const routes: Route[] = [
     {
       side: "right",
-      label: "Shelter",
-      href: ROUTES.ORGANIZATION,
+      label: "Home",
+      href: ROUTES.AUTH_DIRECT_USER,
       icon: "lucide/home",
       authed: true,
+    },
+    {
+      side: "right",
+      label: "Team",
+      href: ROUTES.AUTH_ORGANIZATION,
+      icon: "lucide/users",
+      authed: true,
+      member: true,
     },
     {
       side: "right",
@@ -63,14 +75,16 @@
     },
   ];
 
-  const show_route = (
-    user: typeof $user,
-    route: Route,
-    side?: Route["side"],
-  ) => {
-    if (side && route.side !== side) return false;
-    if (route.authed !== !!user) return false;
-    if (route.admin && user?.role !== "admin") return false;
+  const show_route = (route: Route, side?: Route["side"]) => {
+    if (side && route.side !== side) {
+      return false;
+    } else if (route.authed !== !!$user) {
+      return false;
+    } else if (route.member && !$session.data?.session.activeOrganizationId) {
+      return false;
+    } else if (route.admin && $user?.role !== "admin") {
+      return false;
+    }
 
     return true;
   };
@@ -92,10 +106,16 @@
   class="bg-base-100 mx-auto flex h-16 max-w-4xl items-center justify-between px-3"
 >
   <div>
-    <Button href="/" size="icon" variant="ghost">
+    <Button href={ROUTES.AUTH_DIRECT_USER} size="icon" variant="ghost">
       <img src={asset("/favicon.svg")} alt="Logo" class="h-7 w-7" />
     </Button>
   </div>
+
+  {#if dev}
+    <div>
+      <span class="font-mono">{page.url.pathname}</span>
+    </div>
+  {/if}
 
   <div class="flex gap-1">
     <OrganizationSelector />
@@ -110,36 +130,28 @@
       </DropdownMenu.Trigger>
 
       <DropdownMenu.Content align="end">
-        <DropdownMenu.Group>
-          <DropdownMenu.Label>My Account</DropdownMenu.Label>
-
-          <DropdownMenu.Separator />
-
-          {#each routes as r (r.href)}
-            {#if show_route($user, r)}
-              <DropdownMenu.Item onSelect={() => goto(r.href)}>
-                <Icon icon={r.icon} />
-                {r.label}
-              </DropdownMenu.Item>
-            {/if}
-          {/each}
-
-          {#if $user}
-            <DropdownMenu.Item onSelect={signout}>
-              <Icon icon="lucide/log-out" />
-              Sign out
+        {#each routes as r (r.href)}
+          {#if show_route(r)}
+            <DropdownMenu.Item onSelect={() => goto(r.href)}>
+              <Icon icon={r.icon} />
+              {r.label}
             </DropdownMenu.Item>
           {/if}
+        {/each}
 
-          {#if $session.data?.session.impersonatedBy}
-            <DropdownMenu.Item
-              onSelect={() => AdminClient.stop_impersonating()}
-            >
-              <Icon icon="lucide/stop-circle" />
-              Stop impersonating
-            </DropdownMenu.Item>
-          {/if}
-        </DropdownMenu.Group>
+        {#if $user}
+          <DropdownMenu.Item onSelect={signout}>
+            <Icon icon="lucide/log-out" />
+            Sign out
+          </DropdownMenu.Item>
+        {/if}
+
+        {#if $session.data?.session.impersonatedBy}
+          <DropdownMenu.Item onSelect={() => AdminClient.stop_impersonating()}>
+            <Icon icon="lucide/stop-circle" />
+            Stop impersonating
+          </DropdownMenu.Item>
+        {/if}
       </DropdownMenu.Content>
     </DropdownMenu.Root>
   </div>

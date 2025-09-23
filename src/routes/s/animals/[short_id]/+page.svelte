@@ -1,26 +1,22 @@
 <script lang="ts">
+  import { resolve } from "$app/paths";
   import BackButton from "$lib/components/buttons/BackButton.svelte";
-  import ShareButton from "$lib/components/buttons/ShareButton.svelte";
   import Picture from "$lib/components/images/Picture.svelte";
-  import ShelterLink from "$lib/components/links/ShelterLink.svelte";
   import GoogleMap from "$lib/components/map/GoogleMap.svelte";
+  import Button from "$lib/components/ui/button/button.svelte";
   import CarouselContent from "$lib/components/ui/carousel/carousel-content.svelte";
   import CarouselItem from "$lib/components/ui/carousel/carousel-item.svelte";
   import Carousel from "$lib/components/ui/carousel/Carousel.svelte";
   import Icon from "$lib/components/ui/icon/Icon.svelte";
   import Iconed from "$lib/components/ui/icon/Iconed.svelte";
   import { ANIMALS } from "$lib/const/animal.const";
-  import { APP } from "$lib/const/app.js";
+  import { ICONS } from "$lib/const/icon.const.js";
   import { IMAGES } from "$lib/const/image.const";
+  import { ROUTES } from "$lib/const/routes.const.js";
   import { Format } from "$lib/utils/format.util";
 
   let { data } = $props();
   let animal = $state(data.animal);
-
-  const share_data: ShareData = {
-    title: animal.name,
-    text: `Check out ${animal.name} on ${APP.NAME}`,
-  };
 </script>
 
 <div class="space-y-5">
@@ -31,18 +27,16 @@
     </div>
 
     <div class="flex items-center gap-2">
-      <ShareButton data={share_data} />
+      <Button
+        variant="outline"
+        icon={ICONS.EDIT}
+        title="Edit {animal.name}"
+        href={resolve(ROUTES.SHELTER_ANIMALS_EDIT, animal)}
+      />
     </div>
   </div>
 
   <ul>
-    <li>
-      <span class="flex items-center gap-1">
-        <strong>Shelter:</strong>
-        <ShelterLink shelter={data.animal.shelter} />
-      </span>
-    </li>
-
     <li>
       <span class="flex items-center gap-1">
         <strong>Gender:</strong>

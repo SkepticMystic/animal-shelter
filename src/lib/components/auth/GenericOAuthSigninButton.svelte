@@ -27,7 +27,7 @@
           disableRedirect: false,
           providerId: provider_id,
           scopes: ["openid", "profile", "email"],
-          callbackURL: App.url(redirect_uri ?? ROUTES.HOME, {
+          callbackURL: App.url(redirect_uri ?? ROUTES.AUTH_DIRECT_USER, {
             toast: TOAST.IDS.SIGNED_IN,
           }),
         }),

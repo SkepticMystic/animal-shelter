@@ -1,12 +1,18 @@
+import z from "zod";
 import { LINKS, type ILink } from "../const/link.const";
 import { tel_schema } from "../schema/tel.schema";
-import z from "zod";
 
-const add_search = (url: URL, search: Record<string, unknown>) => {
-  for (const key in search) {
-    if (search[key] === undefined) continue;
+const add_search = (
+  url: URL,
+  search: URLSearchParams | Record<string, unknown>,
+) => {
+  const resolved =
+    search instanceof URLSearchParams ? Object.fromEntries(search) : search;
 
-    url.searchParams.set(key, String(search[key]));
+  for (const key in resolved) {
+    if (resolved[key] === undefined) continue;
+
+    url.searchParams.set(key, String(resolved[key]));
   }
 
   return url;
@@ -15,7 +21,7 @@ const add_search = (url: URL, search: Record<string, unknown>) => {
 const build = (
   base: string,
   path: string,
-  search?: Record<string, unknown>,
+  search?: URLSearchParams | Record<string, unknown>,
 ) => {
   const url = new URL(base + path);
 

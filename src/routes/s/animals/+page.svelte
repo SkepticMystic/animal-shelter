@@ -1,23 +1,30 @@
 <script lang="ts">
   import Button from "$lib/components/ui/button/button.svelte";
-  import MultiCombobox from "$lib/components/ui/combobox/MultiCombobox.svelte";
   import DataTable from "$lib/components/ui/data-table/data-table.svelte";
   import DateRangePicker from "$lib/components/ui/date-picker/DateRangePicker.svelte";
   import Input from "$lib/components/ui/input/input.svelte";
   import Loading from "$lib/components/ui/loading/Loading.svelte";
   import MultiSelect from "$lib/components/ui/select/MultiSelect.svelte";
   import { ANIMALS } from "$lib/const/animal.const";
-  import { get_animals_remote } from "$lib/remote/animal.remote";
-  import type { Shelter } from "$lib/server/db/schema/shelter.model";
+  import { ROUTES } from "$lib/const/routes.const";
+  import { get_shelter_animals_remote } from "$lib/remote/animal.remote";
   import type { DateRange } from "bits-ui";
   import { columns } from "./columns";
+  import BackButton from "$lib/components/buttons/BackButton.svelte";
 
-  const get_animals = get_animals_remote({});
+  const get_animals = get_shelter_animals_remote({});
 </script>
 
 <div class="space-y-4">
   <div class="flex items-center justify-between">
-    <h1>Animals</h1>
+    <div class="flex items-center gap-2">
+      <BackButton />
+      <h1>Animals</h1>
+    </div>
+
+    <Button icon="lucide/plus" href={ROUTES.SHELTER_ANIMALS_CREATE}>
+      New animal
+    </Button>
   </div>
 
   {#await get_animals}
@@ -61,26 +68,6 @@
               (value) => table.getColumn("date_of_birth")?.setFilterValue(value)
             }
           />
-
-          <MultiCombobox
-            placeholder="Shelters"
-            options={(
-              table
-                .getColumn("shelter_name")
-                ?.getFacetedUniqueValues()
-                .keys()
-                .toArray() ?? []
-            ).map((facet: Shelter["name"]) => ({
-              label: facet,
-              value: facet,
-            }))}
-            bind:value={
-              () =>
-                (table.getColumn("shelter_name")?.getFilterValue() ??
-                  []) as string[],
-              (value) => table.getColumn("shelter_name")?.setFilterValue(value)
-            }
-          ></MultiCombobox>
 
           {#if table.getState().columnFilters.length}
             <Button

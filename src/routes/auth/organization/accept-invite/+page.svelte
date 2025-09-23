@@ -1,6 +1,6 @@
 <script lang="ts">
-  import { goto } from "$app/navigation";
   import { page } from "$app/state";
+  import type { ResolvedPathname } from "$app/types";
   import { InvitationClient } from "$lib/clients/invitation.client.js";
   import Button from "$lib/components/ui/button/button.svelte";
   import { ROUTES } from "$lib/const/routes.const.js";
@@ -9,17 +9,25 @@
 
   let { data } = $props();
 
-  const redirect_uri = page.url.pathname;
+  const redirect_uri = (page.url.pathname +
+    page.url.search) as ResolvedPathname;
 
   const accept_invite = async () => {
     if (!data.invitation) return;
 
     const res = await InvitationClient.accept(data.invitation.id);
     if (res.ok) {
-      await goto(
-        App.url(ROUTES.HOME, { toast: TOAST.IDS.ORG_INVITE_ACCEPTED }),
-      );
+      // goto doesn't update the session...
+      location.href = App.url(ROUTES.AUTH_DIRECT_USER, {
+        toast: TOAST.IDS.ORG_INVITE_ACCEPTED,
+      });
     }
+  };
+
+  const reject_invite = async () => {
+    if (!data.invitation) return;
+
+    await InvitationClient.reject(data.invitation.id);
   };
 </script>
 
@@ -38,22 +46,25 @@
     <Button onclick={accept_invite} icon="lucide/check-circle">
       Accept Invite
     </Button>
+
+    <Button
+      variant="destructive"
+      icon="lucide/x-circle"
+      onclick={reject_invite}
+    >
+      Reject Invite
+    </Button>
   {:else if data.prompt === "signup_login"}
     <p>Please login or signup to accept the invitation.</p>
 
     <div class="flex gap-2">
-      <a
-        class="btn btn-primary"
-        href={App.url(ROUTES.AUTH_SIGNIN, { redirect_uri })}
-      >
+      <Button href={App.url(ROUTES.AUTH_SIGNIN, { redirect_uri })}>
         Login
-      </a>
-      <a
-        class="btn btn-secondary"
-        href={App.url(ROUTES.AUTH_SIGNUP, { redirect_uri })}
-      >
+      </Button>
+
+      <Button href={App.url(ROUTES.AUTH_SIGNUP, { redirect_uri })}>
         Signup
-      </a>
+      </Button>
     </div>
   {:else if data.prompt === "wrong_account"}
     <p>
@@ -62,25 +73,17 @@
     </p>
 
     <div class="flex gap-2">
-      <a
-        class="btn btn-primary"
-        href={App.url(ROUTES.AUTH_SIGNIN, { redirect_uri })}
-      >
+      <Button href={App.url(ROUTES.AUTH_SIGNIN, { redirect_uri })}>
         Login
-      </a>
-      <a
-        class="btn btn-secondary"
-        href={App.url(ROUTES.AUTH_SIGNUP, { redirect_uri })}
-      >
+      </Button>
+      <Button href={App.url(ROUTES.AUTH_SIGNUP, { redirect_uri })}>
         Signup
-      </a>
+      </Button>
     </div>
   {:else if data.prompt === "already_member"}
     <p class="">You are already a member of the organization.</p>
 
-    <a class="btn btn-primary" href={ROUTES.ORGANIZATION}>
-      View Organization
-    </a>
+    <Button href={ROUTES.AUTH_ORGANIZATION}>View Organization</Button>
   {:else if data.prompt === "invite_not_pending"}
     <p class="text-error">
       The invitation is no longer pending. Please contact the inviter for more

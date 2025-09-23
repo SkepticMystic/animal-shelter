@@ -10,7 +10,7 @@ export const UserClient = {
     options: {
       callbackURL?: string;
     } = {
-      callbackURL: ROUTES.HOME,
+      callbackURL: ROUTES.AUTH_DIRECT_USER,
     },
   ) =>
     Client.request(

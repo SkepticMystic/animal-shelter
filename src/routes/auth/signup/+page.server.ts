@@ -55,7 +55,9 @@ export const actions = {
 
           callbackURL:
             search.redirect_uri ??
-            App.url(ROUTES.HOME, { toast: TOAST.IDS.EMAIL_VERIFIED }),
+            App.url(ROUTES.AUTH_DIRECT_USER, {
+              toast: TOAST.IDS.EMAIL_VERIFIED,
+            }),
         },
       });
     } catch (error) {

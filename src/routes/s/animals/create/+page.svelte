@@ -17,6 +17,6 @@
   <AnimalForm
     form_input={data.form_input}
     submit={(insert) => AnimalClient.create(insert)}
-    on_success={(animal) => goto(resolve(ROUTES.ANIMALS_EDIT, animal))}
+    on_success={(animal) => goto(resolve(ROUTES.SHELTER_ANIMALS_EDIT, animal))}
   />
 </div>

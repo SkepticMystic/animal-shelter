@@ -1,6 +1,6 @@
 import { command, query } from "$app/server";
 import { BetterAuthClient } from "$lib/auth-client";
-import { safe_get_session } from "$lib/auth/server";
+import { safe_get_member_session, safe_get_session } from "$lib/auth/server";
 import type { IOrganization } from "$lib/const/organization.const";
 import { db } from "$lib/server/db/drizzle.db";
 import {
@@ -68,6 +68,42 @@ export const get_animals_remote = query(
       });
     } catch (error) {
       console.error("Error in get_animals_remote:", error);
+      throw error;
+    }
+  },
+);
+
+export const get_shelter_animals_remote = query(
+  z.object({
+    pagination: z
+      .object({
+        offset: z.number().min(0).default(0),
+        limit: z.number().min(1).max(100).default(10),
+      })
+      .default({ limit: 100, offset: 0 }),
+  }),
+
+  async (input) => {
+    const session = await safe_get_member_session();
+    if (!session) {
+      return [];
+    }
+
+    try {
+      console.log("get_shelter_animals_remote input:", input);
+      return await db.query.animal.findMany({
+        ...input.pagination,
+
+        where: (table, { eq }) => eq(table.org_id, session.session.org_id),
+
+        with: {
+          images: {
+            columns: { url: true, thumbhash: true },
+          },
+        },
+      });
+    } catch (error) {
+      console.error("get_shelter_animals_remote error:", error);
       throw error;
     }
   },

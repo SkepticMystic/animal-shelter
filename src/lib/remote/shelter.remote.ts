@@ -1,16 +1,32 @@
 import { command, query } from "$app/server";
-import { safe_get_session } from "$lib/auth/server";
+import { safe_get_member_session, safe_get_session } from "$lib/auth/server";
 import { db } from "$lib/server/db/drizzle.db";
 import {
   ShelterSchema,
   ShelterTable,
   type Shelter,
 } from "$lib/server/db/schema/shelter.model";
-import { ImageService } from "$lib/services/image.service";
 import type { APIResult } from "$lib/utils/form.util";
 import { err, suc } from "$lib/utils/result.util";
 import { and, eq } from "drizzle-orm";
 import z from "zod";
+
+export const get_active_shelter_remote = query(
+  z.void(),
+
+  async (): Promise<Shelter | null> => {
+    const session = await safe_get_member_session();
+    if (!session) {
+      return null;
+    }
+
+    const shelter = await db.query.shelter.findFirst({
+      where: (shelter, { eq }) => eq(shelter.org_id, session.session.org_id),
+    });
+
+    return shelter ?? null;
+  },
+);
 
 export const get_shelters_remote = query(
   z.object({
@@ -68,43 +84,6 @@ export const update_shelter_remote = command(
         ),
       )
       .returning();
-
-    return shelter
-      ? suc(shelter)
-      : err({ message: "Shelter not found", status: 404 });
-  },
-);
-
-export const delete_shelter_remote = command(
-  z.uuid(),
-
-  async (id): Promise<APIResult<Shelter>> => {
-    const [session] = await Promise.all([
-      safe_get_session({
-        member_permissions: { organization: ["delete"] },
-      }),
-    ]);
-    if (!session || !session.session.org_id) {
-      return err({ message: "Unauthorized", status: 401 });
-    }
-
-    const [[shelter]] = await Promise.all([
-      db
-        .delete(ShelterTable)
-        .where(
-          and(
-            eq(ShelterTable.id, id),
-            eq(ShelterTable.org_id, session.session.org_id),
-          ),
-        )
-        .returning(),
-
-      ImageService.delete({
-        resource_id: id,
-        resource_kind: "shelter",
-        org_id: session.session.org_id,
-      }),
-    ]);
 
     return shelter
       ? suc(shelter)

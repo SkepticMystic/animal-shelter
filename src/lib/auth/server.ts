@@ -26,7 +26,6 @@ type Options = {
   >[0]["permissions"];
 };
 
-/** Redirect to signin if not logged in. */
 export const get_session = async (options?: Options) => {
   const event = getRequestEvent();
 
@@ -57,6 +56,10 @@ export const get_session = async (options?: Options) => {
       error(403);
     }
   } else if (options?.member_permissions) {
+    if (!session.session.member_role) {
+      error(403);
+    }
+
     const member_role = ORGANIZATION.ROLES.IDS.includes(
       session.session.member_role as IOrganization.RoleId,
     )
@@ -67,7 +70,7 @@ export const get_session = async (options?: Options) => {
       error(403);
     }
 
-    const role_check = await BetterAuthClient.organization.checkRolePermission({
+    const role_check = BetterAuthClient.organization.checkRolePermission({
       role: member_role,
       permissions: options.member_permissions,
     });
@@ -91,6 +94,40 @@ export const safe_get_session = async (options?: Options) => {
     return await get_session(options);
   } catch (e) {
     Log.info(e, "safe_get_session error");
+
+    return null;
+  }
+};
+
+export const get_member_session = async (options?: Options) => {
+  const session = await get_session(options);
+
+  if (
+    !session.session.org_id ||
+    !session.session.member_id ||
+    !session.session.member_role ||
+    !session.session.activeOrganizationId
+  ) {
+    redirect(302, App.url(ROUTES.HOME));
+  }
+
+  return {
+    user: session.user,
+    session: {
+      ...session.session,
+      org_id: session.session.org_id!,
+      member_id: session.session.member_id!,
+      member_role: session.session.member_role!,
+      activeOrganizationId: session.session.activeOrganizationId!,
+    },
+  };
+};
+
+export const safe_get_member_session = async (options?: Options) => {
+  try {
+    return await get_member_session(options);
+  } catch (e) {
+    Log.info(e, "safe_get_member_session error");
 
     return null;
   }
