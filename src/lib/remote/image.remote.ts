@@ -1,44 +1,34 @@
 import { command, form } from "$app/server";
 import { get_session } from "$lib/auth/server";
-import { ImageSchema, type Image } from "$lib/server/db/schema/image.model";
+import { ImageSchema } from "$lib/server/db/schema/image.model";
 import { ImageService } from "$lib/services/image.service";
 import type { APIResult } from "$lib/utils/form.util";
 import { err } from "$lib/utils/result.util";
 import z from "zod";
 
-export const upload_image_remote = form<APIResult<Image>>(async (form) => {
-  const session = await get_session({
-    member_permissions: { image: ["create"] },
-  });
-  if (!session.session.org_id) {
-    return err({ message: "Forbidden", status: 403 });
-  }
-
-  const file = form.get("file") as File | null;
-  if (!file) {
-    return err({ message: "No file provided" });
-  }
-
-  const input = ImageSchema.insert
+export const upload_image_remote = form(
+  ImageSchema.insert
     .pick({
       resource_id: true,
       resource_kind: true,
     })
-    .safeParse({
-      resource_id: form.get("resource_id"),
-      resource_kind: form.get("resource_kind"),
+    .extend({
+      file: z.instanceof(File),
+    }),
+  async (input) => {
+    const session = await get_session({
+      member_permissions: { image: ["create"] },
     });
+    if (!session.session.org_id) {
+      return err({ message: "Forbidden", status: 403 });
+    }
 
-  if (!input.success) {
-    console.log("Image upload input validation error:", input.error);
-    return err({ message: "Invalid input data" });
-  }
-
-  return ImageService.upload(file, {
-    ...input.data,
-    org_id: session.session.org_id,
-  });
-});
+    return ImageService.upload(input.file, {
+      ...input,
+      org_id: session.session.org_id,
+    });
+  },
+);
 
 export const delete_image_remote = command(
   z.uuid(),

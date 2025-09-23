@@ -61,7 +61,7 @@
         {#each data.shelter.donation_methods as donation_method}
           <div class="rounded-lg border p-4">
             <h3>
-              {donation_method.label ??
+              {donation_method.label ||
                 DONATION_METHOD.KIND.MAP[donation_method.data.kind].label}
             </h3>
 

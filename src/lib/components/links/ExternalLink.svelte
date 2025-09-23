@@ -7,7 +7,6 @@
   import Favicon from "../images/Favicon.svelte";
   import Anchor from "../ui/anchor/Anchor.svelte";
   import Icon from "../ui/icon/Icon.svelte";
-  import Iconed from "../ui/icon/Iconed.svelte";
 
   let {
     link,
@@ -36,7 +35,7 @@
     </Favicon>
   {/if}
 
-  <Iconed reversed icon="lucide/external-link">
-    {link.label || LinkUtil.format_href(link, ["hostname"])}
-  </Iconed>
+  <!-- <Iconed reversed icon="lucide/external-link"> -->
+  {link.label || LinkUtil.format_href(link, ["hostname"])}
+  <!-- </Iconed> -->
 </Anchor>
