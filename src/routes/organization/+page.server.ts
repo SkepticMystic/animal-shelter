@@ -20,16 +20,6 @@ export const load = (async () => {
             where: (org, { eq }) => eq(org.id, session.activeOrganizationId!),
             with: {
               shelter: {
-                columns: {
-                  id: true,
-                  name: true,
-                  place: true,
-                  urls: true,
-                  phones: true,
-                  emails: true,
-                  description: true,
-                },
-
                 with: {
                   images: {
                     columns: { id: true, url: true, thumbhash: true },

@@ -1,9 +1,14 @@
-<script lang="ts">
-  import FormFieldset from "$lib/components/form/fields/FormFieldSet.svelte";
+<script lang="ts" generics="T extends Record<string, unknown>">
+  import FormFieldset from "$lib/components/form/fieldset/FormFieldSet.svelte";
   import Button from "$lib/components/ui/button/button.svelte";
   import { LINKS, type ILink } from "$lib/const/link.const";
   import type { Link } from "$lib/schema/link.schema";
-  import type { FsSuperForm } from "formsnap";
+  import {
+    arrayProxy,
+    type ArrayProxy,
+    type FormPathArrays,
+    type SuperForm,
+  } from "sveltekit-superforms";
   import LinkInput from "../inputs/LinkInput.svelte";
 
   let {
@@ -12,20 +17,20 @@
     kind,
     legend,
     description,
-    links = $bindable(),
   }: {
-    name: string;
-    links: Link[];
     kind: ILink.KindId;
-    form: FsSuperForm<any>;
     legend?: string;
     description?: string;
+    form: SuperForm<T>;
+    name: FormPathArrays<T, Link>;
   } = $props();
+
+  const { values } = arrayProxy(form, name) as ArrayProxy<Link>;
 
   const actions = {
     add: () => {
-      links = [
-        ...links,
+      $values = [
+        ...$values,
         {
           href: "",
           label: "",
@@ -34,27 +39,20 @@
       ];
     },
 
-    remove: (link_id: string) => {
-      links = links.filter((link) => link.id !== link_id);
+    remove: (id: string) => {
+      $values = $values.filter((link) => link.id !== id);
     },
   };
 </script>
 
-<FormFieldset
-  {form}
-  {name}
-  {legend}
-  {description}
-  class="space-y-3 rounded-md border px-3 pb-2"
->
+<FormFieldset {form} {name} {legend} {description}>
   <div class="grid gap-3 sm:grid-cols-2">
-    {#each links as link, link_i (link.id)}
+    {#each $values as { id }, i (id)}
       <LinkInput
         {form}
         {kind}
-        name="{name}[{link_i}]"
-        on_remove={() => actions.remove(link.id)}
-        bind:link={links[link_i]}
+        name="{name}[{i}]"
+        on_remove={() => actions.remove(id)}
       />
     {/each}
 

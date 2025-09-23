@@ -6,6 +6,7 @@
   import FormFieldErrors from "$lib/components/ui/form/form-field-errors.svelte";
   import FormFieldset from "$lib/components/ui/form/form-fieldset.svelte";
   import FormLegend from "$lib/components/ui/form/form-legend.svelte";
+  import { cn } from "$lib/utils/shadcn.util";
   import type { ComponentProps } from "svelte";
   import type { FormPath } from "sveltekit-superforms";
 
@@ -23,7 +24,12 @@
   } = $props();
 </script>
 
-<FormFieldset {form} {name} class={klass} {...rest_props}>
+<FormFieldset
+  {form}
+  {name}
+  class={cn("space-y-3 rounded-md border px-3 pb-2", klass)}
+  {...rest_props}
+>
   {#snippet children(control_props)}
     {#if legend}
       <FormLegend>{legend}</FormLegend>

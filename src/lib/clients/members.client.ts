@@ -41,11 +41,6 @@ export const MembersClient = {
       },
     ),
 
-  // TODO: Report a bug on better-auth orgs
-  // - Owner A invited member B
-  // - Member B tried to remove Owner A
-  // - The error says: "You cannot leave the organization as the only owner"
-  // - But it should be a permission error, since B is not an owner
   remove_member: (memberIdOrEmail: string) =>
     Client.better_auth(
       () => BetterAuthClient.organization.removeMember({ memberIdOrEmail }),

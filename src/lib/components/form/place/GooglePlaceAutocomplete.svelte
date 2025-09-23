@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { dev } from "$app/environment";
   import { PUBLIC_GOOGLE_MAPS_API_KEY } from "$env/static/public";
   import GoogleMap from "$lib/components/map/GoogleMap.svelte";
   import Dialog from "$lib/components/ui/dialog/dialog.svelte";
@@ -23,7 +24,7 @@
     on_change?: (place: Place) => MaybePromise<unknown>;
   } = $props();
 
-  const geolocation = useGeolocation();
+  const geolocation = dev ? null : useGeolocation();
 
   // Control API request parameters
   const requestParams: Partial<RequestParams> = $state({
@@ -33,12 +34,13 @@
     input: place?.formatted_address ?? "",
 
     // The origin point from which to calculate geodesic distance to the destination
-    origin: geolocation.error
-      ? undefined
-      : {
-          lat: geolocation.position.coords.latitude,
-          lng: geolocation.position.coords.longitude,
-        },
+    origin:
+      !geolocation || geolocation.error
+        ? undefined
+        : {
+            lat: geolocation.position.coords.latitude,
+            lng: geolocation.position.coords.longitude,
+          },
   });
 
   // Control which data fields are fetched for Place Details (affects cost!)
@@ -59,7 +61,6 @@
     clear_input: false,
     placeholder: "Search for an address...",
 
-    // TODO: Map component
     // TODO: Change indigo highlight colour
     // SOURCE: https://places-autocomplete-demo.pages.dev/examples/styling
     classes: {

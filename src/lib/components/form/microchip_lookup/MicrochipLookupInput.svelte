@@ -10,13 +10,11 @@
   import { toast } from "svelte-sonner";
 
   let {
-    warn,
     on_error,
     on_success,
     microchip_number = $bindable(),
     ...rest_props
   }: {
-    warn?: boolean;
     microchip_number?: string | null;
 
     on_success: (data: {
@@ -31,14 +29,6 @@
 
   const lookup = async () => {
     if (!microchip_number) return;
-    else if (
-      warn &&
-      !confirm(
-        "If found, some of this data will overwrite existing data you've filled in. Continue?",
-      )
-    ) {
-      return;
-    }
 
     const result = await MicrochipLookupClient.lookup({ microchip_number });
 

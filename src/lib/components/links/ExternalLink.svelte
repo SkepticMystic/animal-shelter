@@ -14,7 +14,7 @@
     favicon = true,
     ...rest
   }: HTMLAnchorAttributes & {
-    link: Link;
+    link: Omit<Link, "id">;
     favicon?: boolean;
   } = $props();
 

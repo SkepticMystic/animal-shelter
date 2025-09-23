@@ -11,6 +11,7 @@
   import { make_super_form, type APIResult } from "$lib/utils/form.util";
   import type { SuperValidated } from "sveltekit-superforms";
   import FormControl from "../controls/FormControl.svelte";
+  import DonationMethodsFormFieldSet from "../donation_method/DonationMethodsFormFieldSet.svelte";
   import FormField from "../fields/FormField.svelte";
   import FormMessage from "../FormMessage.svelte";
   import LinksFormFieldSet from "../links/LinksFormFieldSet.svelte";
@@ -35,7 +36,9 @@
     on_success,
   });
 
-  const { form: form_data } = form;
+  const form_data = form.form;
+
+  $inspect("$form_data", $form_data);
 </script>
 
 <form class="flex flex-col gap-2" method="POST" use:form.enhance>
@@ -85,7 +88,6 @@
     name="phones"
     legend="Phone numbers"
     description="Optional phone numbers to contact the shelter."
-    bind:links={$form_data.phones}
   />
 
   <LinksFormFieldSet
@@ -94,7 +96,6 @@
     name="emails"
     legend="Email addresses"
     description="Optional email addresses to contact the shelter."
-    bind:links={$form_data.emails}
   />
 
   <LinksFormFieldSet
@@ -103,8 +104,9 @@
     kind="https"
     legend="Links"
     description="Optional links to the shelter's website or social media profiles."
-    bind:links={$form_data.urls}
   />
+
+  <DonationMethodsFormFieldSet {form} name="donation_methods" />
 
   <FormButton {form} class="w-full" icon={ICONS.EDIT}>
     Update shelter

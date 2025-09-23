@@ -30,7 +30,7 @@
 
     trigger: Snippet;
     content: Snippet<[{ close: typeof close }]>;
-    actions?: Snippet;
+    actions?: Snippet<[{ close: typeof close }]>;
   } = $props();
 
   const close = () => {
@@ -69,7 +69,7 @@
 
     {#if actions}
       <Dialog.Footer>
-        {@render actions?.()}
+        {@render actions?.({ close })}
       </Dialog.Footer>
     {/if}
   </Dialog.Content>

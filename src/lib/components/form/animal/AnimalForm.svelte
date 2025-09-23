@@ -20,17 +20,16 @@
   import MicrochipLookupInput from "../microchip_lookup/MicrochipLookupInput.svelte";
 
   type In = AnimalSchema.InsertIn;
-  type Out = AnimalSchema.InsertOut;
+  type Parsed = AnimalSchema.InsertOut;
 
   let {
     submit,
     on_success,
     form_input,
   }: {
-    form_input: SuperValidated<In>;
-
-    submit: (data: In) => Promise<APIResult<Out>>;
+    submit: (data: In) => Promise<APIResult<Animal>>;
     on_success?: (animal: Animal) => MaybePromise<void>;
+    form_input: SuperValidated<Parsed, App.Superforms.Message, In>;
   } = $props();
 
   const form = make_super_form(form_input, {
@@ -52,16 +51,17 @@
   >
     <FormControl label="Microchip Number">
       {#snippet children({ props })}
-        <!-- 
-            TODO: Cache these lookups
-            NOTE: We don't check `species`, because it has a default value, and will always be truthy
-                  We could check form.isTainted on those paths, but modifying an existing animal doesn't count as tainted on load 
-        -->
         <MicrochipLookupInput
           {...props}
-          warn
           on_success={({ merged }) => {
-            if (!merged.found) return;
+            if (
+              !merged.found ||
+              !confirm(
+                "Microchip data found. Do you want to fill in the form with this data? This may overwrite existing data in the form.",
+              )
+            ) {
+              return;
+            }
 
             $form_data = { ...$form_data, ...merged.animal };
             toast.success("Microchip data found and filled in");

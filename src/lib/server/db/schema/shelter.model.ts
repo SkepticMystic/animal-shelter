@@ -1,3 +1,7 @@
+import {
+  donation_method_schema,
+  type DonationMethod,
+} from "../../../schema/donation_method.schema";
 import { relations } from "drizzle-orm";
 import { index, jsonb, pgTable, text, varchar } from "drizzle-orm/pg-core";
 import { createInsertSchema, createUpdateSchema } from "drizzle-zod";
@@ -30,6 +34,8 @@ export const ShelterTable = pgTable(
     phones: jsonb().$type<Link[]>().default([]).notNull(),
     emails: jsonb().$type<Link[]>().default([]).notNull(),
 
+    donation_methods: jsonb().$type<DonationMethod[]>().default([]).notNull(),
+
     ...StaticSchema.timestamps,
   },
   (table) => [index("idx_shelter_org_id").on(table["org_id"])],
@@ -52,6 +58,8 @@ const shelter_refinements = {
   phones: z.array(LinkSchema["tel"]).max(5),
   urls: z.array(LinkSchema["https"]).max(10),
   emails: z.array(LinkSchema["mailto"]).max(5),
+
+  donation_methods: z.array(donation_method_schema).max(5),
 };
 
 const pick = {
@@ -61,6 +69,7 @@ const pick = {
   emails: true,
   phones: true,
   description: true,
+  donation_methods: true,
 } satisfies Partial<Record<keyof Shelter, true>>;
 
 export namespace ShelterSchema {

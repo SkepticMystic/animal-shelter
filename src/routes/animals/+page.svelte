@@ -33,9 +33,9 @@
       states={{ sorting: [{ id: "intake_date", desc: true }] }}
     >
       {#snippet filters(table)}
-        <div class="flex gap-1.5">
+        <div class="flex flex-wrap gap-1">
           <Input
-            class="max-w-sm"
+            class="w-32"
             placeholder="Name"
             bind:value={
               () => table.getColumn("name")?.getFilterValue() ?? "",

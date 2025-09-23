@@ -52,7 +52,9 @@ export const load = (async ({ params }) => {
         animal_id: animal.id,
         timestamp: new Date(),
         administered_by_member_id: session?.session.member_id ?? "",
-        data: ANIMAL_EVENTS.KINDS.DEFAULT_DATA[ANIMAL_EVENTS.KINDS.IDS[0]],
+        data: {
+          ...ANIMAL_EVENTS.KINDS.DEFAULT_DATA[ANIMAL_EVENTS.KINDS.IDS[0]],
+        },
       },
       zod4(AnimalEventSchema.insert),
     ),

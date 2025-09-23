@@ -82,69 +82,41 @@ export const auth = Effect.runSync(
           },
 
           update: {
-            // before: async (session, ctx) => {
-            //   console.log(ctx);
-            //   const ctx_session = ctx?.context.session;
-            //   console.log({ session, ctx_session }, "session.update.before");
-            //   // If no session (shouldn't happen, otherwise we'd be in the create hook),
-            //   // or no active org, just return the session as-is
-            //   if (!ctx_session?.session.activeOrganizationId) {
-            //     return { data: session as Session };
-            //   }
-            //   const member = await db.query.member.findFirst({
-            //     columns: { id: true, role: true },
-            //     where: (member, { eq, and }) =>
-            //       and(
-            //         eq(member.userId, ctx_session.session.userId),
-            //         eq(
-            //           member.organizationId,
-            //           ctx_session.session.activeOrganizationId,
-            //         ),
-            //       ),
-            //   });
-            //   return {
-            //     data: {
-            //       ...ctx_session?.session,
-            //       member_id: member ? member.id : null,
-            //       member_role: member ? member.role : null,
-            //       activeOrganizationId:
-            //         ctx_session?.session.activeOrganizationId,
-            //     },
-            //   };
-            // },
-            // after: async (session, ctx) => {
-            //   console.log("session.update.after ctx", ctx);
-            //   console.log("session.update.after session", session);
-            //   //   console.log(ctx);
-            //   //   const ctx_session = ctx?.context.session;
-            //   //   console.log({ session, ctx_session }, "session.update.before");
-            //   // If no session (shouldn't happen, otherwise we'd be in the create hook),
-            //   // or no active org, just return the session as-is
-            //   if (typeof session.activeOrganizationId !== "string") {
-            //     return;
-            //   }
-            //   const member = await db.query.member.findFirst({
-            //     where: (member, { eq, and }) =>
-            //       and(
-            //         eq(member.userId, session.userId),
-            //         eq(
-            //           member.organizationId,
-            //           session.activeOrganizationId as string,
-            //         ),
-            //       ),
-            //     columns: { id: true, role: true },
-            //   });
-            //   ctx?.context.session;
-            //   // ctx?.context.setNewSession({});
-            //   // return {
-            //   //   data: {
-            //   //     ...session,
-            //   //     member_id: member ? member.id : null,
-            //   //     member_role: member ? member.role : null,
-            //   //     activeOrganizationId: session.activeOrganizationId,
-            //   //   },
-            //   // };
-            // },
+            before: async (patch, ctx) => {
+              // NOTE: Represents a _patch_ of the session, not a full PUT
+              // So make sure the relevant field is being updated before applying some transform
+              if (
+                !patch.activeOrganizationId ||
+                !ctx?.context.session?.session
+              ) {
+                return { data: patch as Session };
+              }
+
+              Log.debug({ patch }, "session.update.before patch");
+
+              const member = await db.query.member.findFirst({
+                columns: { id: true, role: true },
+
+                where: (member, { eq, and }) =>
+                  and(
+                    eq(member.userId, ctx.context.session!.session.userId),
+                    eq(
+                      member.organizationId,
+                      patch.activeOrganizationId as string,
+                    ),
+                  ),
+              });
+
+              Log.debug(member, "Found member for updated session org");
+
+              return {
+                data: {
+                  ...(patch as Session),
+                  member_id: member ? member.id : null,
+                  member_role: member ? member.role : null,
+                },
+              };
+            },
           },
         },
       },

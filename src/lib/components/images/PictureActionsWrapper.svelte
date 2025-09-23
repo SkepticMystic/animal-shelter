@@ -14,7 +14,6 @@
   } = $props();
 </script>
 
-<!-- TODO: These hover actions don't work on mobile -->
 <div class="group relative">
   {@render children()}
 
