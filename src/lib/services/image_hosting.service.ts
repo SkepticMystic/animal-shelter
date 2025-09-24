@@ -59,7 +59,8 @@ const of_cloudinary: Context.Tag.Service<ImageHostingService> = {
                   resource_type: "image",
                   discard_original_filename: true,
                   upload_preset: PUBLIC_CLOUDINARY_UPLOAD_PRESET,
-                  transformation: [{ quality: "auto", fetch_format: "auto" }],
+                  // NOTE: We don't apply any transforms at upload time
+                  // Rather keep the original, then transform in Picture.svelte
                 },
                 (error, result) => (error ? reject(error) : resolve(result)),
               )

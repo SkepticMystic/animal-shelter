@@ -9,6 +9,7 @@
   } from "sveltekit-superforms";
   import FormControl from "../controls/FormControl.svelte";
   import UrlInput from "../inputs/URLInput.svelte";
+  import { untrack } from "svelte";
 
   type T = ShelterSchema.InsertOut;
   type V = Extract<DonationMethod["data"], { kind: "url" }>;
@@ -21,7 +22,12 @@
     name: FormPath<T, V>;
   } = $props();
 
-  const value = $derived(fieldProxy(form, name) satisfies FieldProxy<V>);
+  const value = $derived(
+    fieldProxy(
+      untrack(() => form),
+      name,
+    ) satisfies FieldProxy<V>,
+  );
   $inspect(name, $value);
 </script>
 

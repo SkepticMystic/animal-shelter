@@ -4,7 +4,7 @@
 
 <script lang="ts" generics="T extends Record<string, unknown>">
   import Input from "$lib/components/ui/input/input.svelte";
-
+  import { untrack } from "svelte";
   import type { HTMLInputAttributes } from "svelte/elements";
   import {
     fieldProxy,
@@ -25,7 +25,12 @@
     name: string | FormPathLeaves<T>;
   } = $props();
 
-  const value = $derived(fieldProxy(form, name as FormPathLeaves<T>));
+  const value = $derived(
+    fieldProxy(
+      untrack(() => form),
+      name as FormPathLeaves<T>,
+    ),
+  );
   $inspect(name, $value);
 </script>
 

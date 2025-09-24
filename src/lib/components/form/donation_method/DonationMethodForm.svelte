@@ -12,6 +12,7 @@
   import SuperformInput from "../inputs/SuperformInput.svelte";
   import BankDonationMethodForm from "./BankDonationMethodForm.svelte";
   import UrlDonationMethodForm from "./UrlDonationMethodForm.svelte";
+  import { untrack } from "svelte";
 
   let {
     form,
@@ -21,7 +22,12 @@
     name: FormPath<ShelterSchema.InsertOut, DonationMethod>;
   } = $props();
 
-  const donation_method = $derived(fieldProxy(form, name));
+  const donation_method = $derived(
+    fieldProxy(
+      untrack(() => form),
+      name,
+    ),
+  );
 
   // const set_kind = (kind: IDonationMethod.KindId) => {
   //   $donation_method = {

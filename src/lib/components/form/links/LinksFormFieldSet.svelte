@@ -10,6 +10,7 @@
     type SuperForm,
   } from "sveltekit-superforms";
   import LinkInput from "../inputs/LinkInput.svelte";
+  import { untrack } from "svelte";
 
   let {
     form,
@@ -22,10 +23,15 @@
     legend?: string;
     description?: string;
     form: SuperForm<T>;
-    name: FormPathArrays<T, Link>;
+    name: FormPathArrays<T, Link[]>;
   } = $props();
 
-  const { values } = arrayProxy(form, name) as ArrayProxy<Link>;
+  const { values } = $derived(
+    arrayProxy(
+      untrack(() => form),
+      name,
+    ) as ArrayProxy<Link>,
+  );
   $inspect(name, $values);
 
   const actions = {

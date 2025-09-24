@@ -7,9 +7,7 @@ import { App } from "$lib/utils/app.js";
 export const load = (async ({ url }) => {
   const session = await safe_get_session();
 
-  if (!session) {
-    redirect(302, App.url(ROUTES.AUTH_SIGNIN, url.searchParams));
-  } else if (!session.session.org_id) {
+  if (!session || !session.session.org_id) {
     redirect(302, App.url(ROUTES.HOME, url.searchParams));
   } else {
     redirect(302, App.url(ROUTES.SHELTER, url.searchParams));

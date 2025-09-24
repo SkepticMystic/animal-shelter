@@ -78,9 +78,9 @@
     <Carousel>
       {#snippet content()}
         <CarouselContent class="-ml-2 md:-ml-3">
-          {#each data.animal.images as image}
+          {#each data.animal.images as image, i (image.url)}
             <CarouselItem class="basis-auto pl-2 md:pl-3">
-              <Picture {image} {...IMAGES.SIZES.PREVIEW} />
+              <Picture {image} prioritize={i < 2} {...IMAGES.SIZES.PREVIEW} />
             </CarouselItem>
           {/each}
         </CarouselContent>
