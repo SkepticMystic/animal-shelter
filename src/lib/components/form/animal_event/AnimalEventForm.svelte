@@ -13,7 +13,7 @@
     type IAnimalEvents,
   } from "$lib/const/animal_event.const";
   import type { MaybePromise } from "$lib/interfaces";
-  import { get_animals_remote } from "$lib/remote/animal.remote";
+  import { get_shelter_animals_remote } from "$lib/remote/animal.remote";
   import type {
     AnimalEvent,
     AnimalEventSchema,
@@ -101,7 +101,7 @@
           <AsyncSingleComboxbox
             {...props}
             search={async (query) => {
-              const r = await get_animals_remote({ smart: { query } });
+              const r = await get_shelter_animals_remote({ smart: { query } });
               return r.map((a) => ({ value: a.id, label: a.name }));
             }}
             bind:value={$form_data.animal_id}

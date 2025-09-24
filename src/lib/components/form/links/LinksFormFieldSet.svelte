@@ -26,6 +26,7 @@
   } = $props();
 
   const { values } = arrayProxy(form, name) as ArrayProxy<Link>;
+  $inspect(name, $values);
 
   const actions = {
     add: () => {

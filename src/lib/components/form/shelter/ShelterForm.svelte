@@ -1,6 +1,5 @@
 <script lang="ts">
   import FormButton from "$lib/components/ui/form/form-button.svelte";
-  import Input from "$lib/components/ui/input/input.svelte";
   import Textarea from "$lib/components/ui/textarea/textarea.svelte";
   import { ICONS } from "$lib/const/icon.const";
   import type { MaybePromise } from "$lib/interfaces";

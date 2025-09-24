@@ -21,7 +21,7 @@
     name: FormPath<ShelterSchema.InsertOut, DonationMethod>;
   } = $props();
 
-  const donation_method = fieldProxy(form, name);
+  const donation_method = $derived(fieldProxy(form, name));
 
   // const set_kind = (kind: IDonationMethod.KindId) => {
   //   $donation_method = {

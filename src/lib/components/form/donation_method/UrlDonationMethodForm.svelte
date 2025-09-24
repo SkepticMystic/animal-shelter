@@ -21,8 +21,8 @@
     name: FormPath<T, V>;
   } = $props();
 
-  console.log("field", name);
-  const value = fieldProxy(form, name) satisfies FieldProxy<V>;
+  const value = $derived(fieldProxy(form, name) satisfies FieldProxy<V>);
+  $inspect(name, $value);
 </script>
 
 <FormControl label="URL">

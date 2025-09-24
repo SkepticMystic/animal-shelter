@@ -25,8 +25,7 @@
     name: string | FormPathLeaves<T>;
   } = $props();
 
-  const value = fieldProxy(form, name as FormPathLeaves<T>);
-
+  const value = $derived(fieldProxy(form, name as FormPathLeaves<T>));
   $inspect(name, $value);
 </script>
 

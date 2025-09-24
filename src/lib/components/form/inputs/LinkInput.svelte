@@ -34,7 +34,8 @@
     on_remove?: () => void;
   } = $props();
 
-  const link = fieldProxy(form, name) satisfies FieldProxy<V>;
+  const link = $derived(fieldProxy(form, name) satisfies FieldProxy<V>);
+  $inspect(name, $link);
 
   const get_leaf_name = <F extends keyof V>(field: F) =>
     `${name}.${field}` as FormPathLeaves<T, V[F]>;

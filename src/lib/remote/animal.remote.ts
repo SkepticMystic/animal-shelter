@@ -14,48 +14,63 @@ import { MicrochipLookupLive } from "$lib/services/microchip_lookup/microchip_lo
 import type { APIResult } from "$lib/utils/form.util";
 import { MicrochipLookupUtil } from "$lib/utils/microchip_lookup/microchip_lookup.utils";
 import { err, suc } from "$lib/utils/result.util";
-import { and, eq } from "drizzle-orm";
+import { and, eq, getOperators } from "drizzle-orm";
 import z from "zod";
 
 const SMART_FIELDS = ["name", "description"] satisfies (keyof Animal)[];
 
+const animal_query_schema = z.object({
+  ids: z.array(z.uuid()).optional(),
+
+  smart: z
+    .object({
+      query: z.string().max(100),
+      fields: z.array(z.enum(SMART_FIELDS)).default(SMART_FIELDS),
+    })
+    .optional(),
+
+  pagination: z
+    .object({
+      offset: z.number().min(0).default(0),
+      limit: z.number().min(1).max(100).default(10),
+    })
+    .default({ limit: 100, offset: 0 }),
+});
+
+const build_animal_where_clause = (
+  input: z.infer<typeof animal_query_schema>,
+  org_id?: string,
+) => {
+  const { and, or, inArray, ilike } = getOperators();
+
+  return and(
+    org_id ? eq(AnimalTable.org_id, org_id) : undefined,
+
+    input.ids?.length //
+      ? inArray(AnimalTable.id, input.ids)
+      : undefined,
+
+    input.smart?.query && input.smart.fields.length
+      ? or(
+          ...input.smart.fields.map((field) =>
+            ilike(AnimalTable[field], `%${input.smart!.query}%`),
+          ),
+        )
+      : undefined,
+  );
+};
+
 export const get_animals_remote = query(
-  z.object({
-    ids: z.array(z.uuid()).optional(),
-
-    smart: z
-      .object({
-        query: z.string().max(100),
-        fields: z.array(z.enum(SMART_FIELDS)).default(SMART_FIELDS),
-      })
-      .optional(),
-
-    pagination: z
-      .object({
-        offset: z.number().min(0).default(0),
-        limit: z.number().min(1).max(100).default(10),
-      })
-      .default({ limit: 100, offset: 0 }),
-  }),
+  animal_query_schema,
 
   async (input) => {
     try {
       console.log("get_animals_remote input:", input);
+
       return await db.query.animal.findMany({
         ...input.pagination,
 
-        where: (table, { or, and, ilike, inArray }) =>
-          and(
-            input.ids?.length ? inArray(table.id, input.ids) : undefined,
-
-            input.smart?.query && input.smart.fields.length
-              ? or(
-                  ...input.smart.fields.map((field) =>
-                    ilike(table[field], `%${input.smart!.query}%`),
-                  ),
-                )
-              : undefined,
-          ),
+        where: build_animal_where_clause(input),
 
         with: {
           images: {
@@ -74,14 +89,7 @@ export const get_animals_remote = query(
 );
 
 export const get_shelter_animals_remote = query(
-  z.object({
-    pagination: z
-      .object({
-        offset: z.number().min(0).default(0),
-        limit: z.number().min(1).max(100).default(10),
-      })
-      .default({ limit: 100, offset: 0 }),
-  }),
+  animal_query_schema,
 
   async (input) => {
     const session = await safe_get_member_session();
@@ -91,10 +99,11 @@ export const get_shelter_animals_remote = query(
 
     try {
       console.log("get_shelter_animals_remote input:", input);
+
       return await db.query.animal.findMany({
         ...input.pagination,
 
-        where: (table, { eq }) => eq(table.org_id, session.session.org_id),
+        where: build_animal_where_clause(input, session.session.org_id),
 
         with: {
           images: {
