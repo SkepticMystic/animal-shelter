@@ -12,6 +12,8 @@
     image,
     fallback,
     class: klass,
+    loading,
+    fetchpriority,
     prioritize = false,
     ...props
   }: Omit<ImageProps, "src"> & {
@@ -33,32 +35,34 @@
       )
     : undefined;
 
+  // NOTE: ...rest props are readonly,
+  // so we destructure them above and pass them down to Picture
   if (prioritize) {
-    props.loading ??= "eager";
-    props.fetchpriority ??= "high";
+    loading ??= "eager";
+    fetchpriority ??= "high";
   }
 </script>
 
 {#if image || props.src}
-  <a href={image?.url || props.src} target="_blank" rel="noopener noreferrer">
-    <Picture
-      src={image?.url}
-      class={cn("h-full w-full rounded-md", klass)}
-      background={thumbhash_url}
-      operations={{
-        cloudinary: {
-          f: "auto",
-          q: "auto",
+  <Picture
+    {loading}
+    {fetchpriority}
+    src={image?.url}
+    class={cn("h-full w-full rounded-md", klass)}
+    background={thumbhash_url}
+    operations={{
+      cloudinary: {
+        f: "auto",
+        q: "auto",
 
-          // "auto" seems fancy, but expensive
-          // "fill" seems like a cheaper alternative
-          c: "fill",
-          g: "auto",
-        },
-      }}
-      {...props}
-    />
-  </a>
+        // "auto" seems fancy, but expensive
+        // "fill" seems like a cheaper alternative
+        c: "fill",
+        g: "auto",
+      },
+    }}
+    {...props}
+  />
 
   <!-- <div
     style="object-fit: cover; 
