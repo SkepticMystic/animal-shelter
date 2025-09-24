@@ -36,6 +36,13 @@
       "when": 1758619956525,
       "tag": "0004_loose_toro",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1758739110780,
+      "tag": "0005_silent_scarecrow",
+      "breakpoints": true
     }
   ]
 }
