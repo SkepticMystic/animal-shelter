@@ -4,6 +4,7 @@
 
 <script lang="ts" generics="T extends Record<string, unknown>">
   import Input from "$lib/components/ui/input/input.svelte";
+  import type { FsSuperForm } from "formsnap";
   import { untrack } from "svelte";
   import type { HTMLInputAttributes } from "svelte/elements";
   import {
@@ -17,7 +18,7 @@
     name,
     ...rest
   }: Omit<HTMLInputAttributes, "name" | "form"> & {
-    form: SuperForm<T>;
+    form: SuperForm<T> | FsSuperForm<T>;
     // Not having `| string` would be nice
     // But in practice, we get the `name` prop from the wrapping Control
     // and it doesn't narrow the name type
@@ -27,7 +28,7 @@
 
   const value = $derived(
     fieldProxy(
-      untrack(() => form),
+      untrack(() => form as SuperForm<T>),
       name as FormPathLeaves<T>,
     ),
   );

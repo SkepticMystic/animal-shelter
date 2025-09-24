@@ -1,5 +1,6 @@
 import { relations } from "drizzle-orm";
 import {
+  boolean,
   index,
   pgEnum,
   pgTable,
@@ -30,6 +31,8 @@ export const animal_species_enum = pgEnum(
 
 export const animal_gender_enum = pgEnum("animal_gender", ANIMALS.GENDER.IDS);
 
+export const animal_status_enum = pgEnum("animal_status", ANIMALS.STATUS.IDS);
+
 /** Defines the table of animals in a shelter (org)
  * Each animal is associated with an organization and a member (staff)
  */
@@ -47,6 +50,9 @@ export const AnimalTable = pgTable(
 
     name: varchar({ length: 255 }).notNull(),
     description: text().default("").notNull(),
+
+    sterilised: boolean(),
+    status: animal_status_enum().default("available").notNull(),
 
     intake_date: timestamp({ mode: "date" }),
     date_of_birth: timestamp({ mode: "date" }),
@@ -104,9 +110,11 @@ const refinements = {
 
 const pick = {
   name: true,
+  breed: true,
+  status: true,
   gender: true,
   species: true,
-  breed: true,
+  sterilised: true,
   description: true,
   intake_date: true,
   date_of_birth: true,

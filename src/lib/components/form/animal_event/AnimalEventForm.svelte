@@ -14,6 +14,7 @@
   } from "$lib/const/animal_event.const";
   import type { MaybePromise } from "$lib/interfaces";
   import { get_shelter_animals_remote } from "$lib/remote/animal.remote";
+  import type { Animal } from "$lib/server/db/schema/animal.model";
   import type {
     AnimalEvent,
     AnimalEventSchema,
@@ -25,12 +26,15 @@
   import FormControl from "../controls/FormControl.svelte";
   import FormField from "../fields/FormField.svelte";
   import FormMessage from "../FormMessage.svelte";
+  import AdoptEventDataForm from "./AdoptEventDataForm.svelte";
+  import FosterEventDataForm from "./FosterEventDataForm.svelte";
   import MicrochipEventForm from "./MicrochipEventDataForm.svelte";
   import VaccinationEventDataForm from "./VaccineEventDataForm.svelte";
   import WeighingEventDataForm from "./WeighEventDataForm.svelte";
 
   type In = AnimalEventSchema.InsertIn;
   type Out = AnimalEventSchema.InsertOut;
+  type Data = { animal_event: AnimalEvent; animal: Animal | undefined };
 
   let {
     mode,
@@ -41,8 +45,8 @@
     mode: "insert" | "update";
     form_input: SuperValidated<Out, App.Superforms.Message, In>;
 
-    submit: (data: In) => Promise<APIResult<AnimalEvent>>;
-    on_success?: (animal_event: AnimalEvent) => MaybePromise<void>;
+    submit: (input: In) => Promise<APIResult<Data>>;
+    on_success?: (data: Data) => MaybePromise<void>;
   } = $props();
 
   const form = make_super_form(form_input, { submit, on_success });
@@ -85,6 +89,14 @@
     <!--  -->
   {:else if $form_data.data.kind === "microchip"}
     <MicrochipEventForm {form} />
+  {:else if $form_data.data.kind === "injury"}
+    <!--  -->
+  {:else if $form_data.data.kind === "fostered"}
+    <FosterEventDataForm {form} />
+  {:else if $form_data.data.kind === "adopted"}
+    <AdoptEventDataForm {form} />
+  {:else if $form_data.data.kind === "deceased"}
+    <!--  -->
   {/if}
 
   {#if !form_input.data.animal_id}
@@ -115,9 +127,9 @@
     <FormField
       {form}
       name="administered_by_member_id"
-      description="The member who administered the event"
+      description="The member who noticed/administered the event"
     >
-      <FormControl label="Administered by (member)">
+      <FormControl label="Linked member (optional)">
         {#snippet children({ props })}
           {#await BetterAuthClient.organization.listMembers()}
             <Loading loading title="Loading members..." />
@@ -130,6 +142,7 @@
                     (m.id === $session.data?.session.member_id ? " (you)" : ""),
                 }))
               : []}
+
             <SingleCombobox
               {...props}
               {options}
@@ -145,7 +158,7 @@
       name="administered_by_name"
       description="Or, if not a member, the name of the person"
     >
-      <FormControl label="Administered by (name)">
+      <FormControl label="Linked name (optional)">
         {#snippet children({ props })}
           <Input {...props} bind:value={$form_data.administered_by_name} />
         {/snippet}

@@ -1,6 +1,7 @@
 import { command } from "$app/server";
 import { safe_get_session } from "$lib/auth/server";
 import { db } from "$lib/server/db/drizzle.db";
+import { AnimalTable, type Animal } from "$lib/server/db/schema/animal.model";
 import {
   AnimalEventSchema,
   AnimalEventTable,
@@ -12,7 +13,7 @@ import { and, eq } from "drizzle-orm";
 import z from "zod";
 
 const authorize_input = async (
-  input: AnimalEventSchema.InsertOut | AnimalEventSchema.UpdateOut,
+  input: AnimalEventSchema.InsertOut,
   org_id: string,
 ): Promise<APIResult<null>> => {
   const resources = await Promise.all([
@@ -28,17 +29,15 @@ const authorize_input = async (
         })
       : true,
 
-    input.animal_id
-      ? db.query.animal.findFirst({
-          columns: { id: true },
+    db.query.animal.findFirst({
+      columns: { id: true },
 
-          where: (animal, { and, eq }) =>
-            and(
-              eq(animal.org_id, org_id),
-              eq(animal.id, input.animal_id!), //
-            ),
-        })
-      : true,
+      where: (animal, { and, eq }) =>
+        and(
+          eq(animal.org_id, org_id),
+          eq(animal.id, input.animal_id), //
+        ),
+    }),
   ]);
 
   return resources.every(Boolean)
@@ -46,9 +45,53 @@ const authorize_input = async (
     : err({ message: "Invalid event input" });
 };
 
+const update_animal = async (
+  event: AnimalEventSchema.InsertOut,
+): Promise<Animal | undefined> => {
+  const clause = eq(AnimalTable.id, event.animal_id);
+
+  switch (event.data.kind) {
+    case "fostered":
+    case "adopted":
+    case "deceased": {
+      return db
+        .update(AnimalTable)
+        .set({ status: event.data.kind })
+        .where(clause)
+        .returning()
+        .then((r) => r.at(0));
+    }
+
+    case "sterilise": {
+      return db
+        .update(AnimalTable)
+        .set({ sterilised: true })
+        .where(clause)
+        .returning()
+        .then((r) => r.at(0));
+    }
+
+    case "microchip": {
+      return db
+        .update(AnimalTable)
+        .set({ microchip_number: event.data.microchip_number })
+        .where(clause)
+        .returning()
+        .then((r) => r.at(0));
+    }
+  }
+};
+
 export const create_animal_event_remote = command(
   AnimalEventSchema.insert,
-  async (input): Promise<APIResult<AnimalEvent>> => {
+  async (
+    input,
+  ): Promise<
+    APIResult<{
+      animal: Animal | undefined;
+      animal_event: AnimalEvent;
+    }>
+  > => {
     const session = await safe_get_session({
       member_permissions: { animal_event: ["create"] },
     });
@@ -59,22 +102,34 @@ export const create_animal_event_remote = command(
     const authorized = await authorize_input(input, session.session.org_id);
     if (!authorized) return authorized;
 
-    const [event] = await db
-      .insert(AnimalEventTable)
-      .values({
-        ...input,
-        org_id: session.session.org_id,
-        created_by_member_id: session.session.member_id,
-      })
-      .returning();
+    const [[animal_event], animal] = await Promise.all([
+      db
+        .insert(AnimalEventTable)
+        .values({
+          ...input,
+          org_id: session.session.org_id,
+          created_by_member_id: session.session.member_id,
+        })
+        .returning(),
 
-    return suc(event);
+      update_animal(input),
+    ]);
+
+    return suc({ animal, animal_event });
   },
 );
 
 export const update_animal_event_remote = command(
-  z.object({ id: z.uuid(), update: AnimalEventSchema.update }),
-  async (input): Promise<APIResult<AnimalEvent>> => {
+  z.object({ id: z.uuid(), update: AnimalEventSchema.insert }),
+
+  async (
+    input,
+  ): Promise<
+    APIResult<{
+      animal: Animal | undefined;
+      animal_event: AnimalEvent;
+    }>
+  > => {
     const session = await safe_get_session({
       member_permissions: { animal_event: ["update"] },
     });
@@ -88,18 +143,24 @@ export const update_animal_event_remote = command(
     );
     if (!authorized) return authorized;
 
-    const [event] = await db
-      .update(AnimalEventTable)
-      .set(input.update)
-      .where(
-        and(
-          eq(AnimalEventTable.id, input.id),
-          eq(AnimalEventTable.org_id, session.session.org_id),
-        ),
-      )
-      .returning();
+    const [[animal_event], animal] = await Promise.all([
+      db
+        .update(AnimalEventTable)
+        .set(input.update)
+        .where(
+          and(
+            eq(AnimalEventTable.id, input.id),
+            eq(AnimalEventTable.org_id, session.session.org_id),
+          ),
+        )
+        .returning(),
 
-    return event ? suc(event) : err({ message: "Animal event not found" });
+      update_animal(input.update),
+    ]);
+
+    return animal_event
+      ? suc({ animal, animal_event })
+      : err({ message: "Animal event not found" });
   },
 );
 

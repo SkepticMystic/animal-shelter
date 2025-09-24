@@ -22,6 +22,22 @@ export const AnimalEventUtil = {
         return `No: ${event.data.microchip_number}`;
       }
 
+      case "injury": {
+        return "-";
+      }
+
+      case "fostered": {
+        return `By ${event.data.fosterer_name}`;
+      }
+
+      case "adopted": {
+        return `By ${event.data.adopter_name}`;
+      }
+
+      case "deceased": {
+        return "-";
+      }
+
       default: {
         return "UNHANDLED";
       }

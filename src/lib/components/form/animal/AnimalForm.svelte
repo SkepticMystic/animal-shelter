@@ -86,6 +86,20 @@
   </FormField>
 
   <div class="flex flex-wrap gap-3">
+    <FormField {form} name="status" description="">
+      <FormControl label="Status">
+        {#snippet children({ props })}
+          <SingleSelect
+            {...props}
+            required
+            placeholder="Select status"
+            options={ANIMALS.STATUS.OPTIONS}
+            bind:value={$form_data.status}
+          />
+        {/snippet}
+      </FormControl>
+    </FormField>
+
     <FormField {form} name="gender" description="">
       <FormControl label="Gender">
         {#snippet children({ props })}

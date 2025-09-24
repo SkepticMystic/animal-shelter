@@ -39,6 +39,13 @@
   <ul>
     <li>
       <span class="flex items-center gap-1">
+        <strong>Status:</strong>
+        {ANIMALS.STATUS.MAP[animal.status].label}
+      </span>
+    </li>
+
+    <li>
+      <span class="flex items-center gap-1">
         <strong>Gender:</strong>
         <Icon {...ANIMALS.GENDER.MAP[animal.gender]} />
       </span>

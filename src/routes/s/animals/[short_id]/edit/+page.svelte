@@ -82,8 +82,12 @@
             mode="insert"
             form_input={data.event_form_input}
             submit={AnimalEventClient.create}
-            on_success={(animal_event) => {
-              animal.events = [...animal.events, animal_event];
+            on_success={(data) => {
+              animal = {
+                ...animal,
+                ...data.animal,
+                events: [data.animal_event, ...animal.events],
+              };
               close();
             }}
           />

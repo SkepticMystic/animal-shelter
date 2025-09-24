@@ -1,3 +1,4 @@
+import type { Animal } from "$lib/server/db/schema/animal.model";
 import z from "zod";
 import { microchip_number_schema } from "./microchip_lookup.schema";
 
@@ -28,5 +29,29 @@ export const animal_event_data_schema = z.discriminatedUnion("kind", [
   z.object({
     kind: z.literal("microchip"),
     microchip_number: microchip_number_schema,
+  }),
+
+  z.object({
+    kind: z.literal("injury"),
+  }),
+
+  z.object({
+    kind: z.literal("fostered" satisfies Animal["status"]),
+    fosterer_name: z
+      .string()
+      .max(255, "Fosterer name must be at most 255 characters")
+      .optional(),
+  }),
+
+  z.object({
+    kind: z.literal("adopted" satisfies Animal["status"]),
+    adopter_name: z
+      .string()
+      .max(255, "Adopter name must be at most 255 characters")
+      .optional(),
+  }),
+
+  z.object({
+    kind: z.literal("deceased" satisfies Animal["status"]),
   }),
 ]);

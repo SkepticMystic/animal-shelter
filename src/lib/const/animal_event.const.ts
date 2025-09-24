@@ -9,6 +9,10 @@ const KIND_IDS = [
   "vaccine", //
   "sterilise",
   "microchip",
+  "injury",
+  "fostered",
+  "adopted",
+  "deceased",
 ] as const;
 
 const KIND_MAP = {
@@ -27,6 +31,22 @@ const KIND_MAP = {
   microchip: {
     label: "Microchip",
     icon: "lucide/microchip",
+  },
+  injury: {
+    label: "Injury",
+    icon: "lucide/first-aid",
+  },
+  fostered: {
+    label: "Fostered",
+    icon: "lucide/house-heart",
+  },
+  adopted: {
+    label: "Adopted",
+    icon: "lucide/heart-handshake",
+  },
+  deceased: {
+    label: "Deceased",
+    icon: "lucide/cross",
   },
 } satisfies {
   [K in IAnimalEvents.Kind]: {
@@ -59,6 +79,18 @@ export const ANIMAL_EVENTS = {
       microchip: {
         kind: "microchip",
         microchip_number: "" as MicrochipNumber,
+      },
+      injury: {
+        kind: "injury",
+      },
+      fostered: {
+        kind: "fostered",
+      },
+      adopted: {
+        kind: "adopted",
+      },
+      deceased: {
+        kind: "deceased",
       },
     } satisfies {
       [K in IAnimalEvents.Kind]: Extract<

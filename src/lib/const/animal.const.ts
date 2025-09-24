@@ -38,6 +38,39 @@ const GENDER_MAP = {
   { label: string; icon: ClassValue }
 >;
 
+const STATUS_IDS = [
+  /** At the shelter, ready for adoption */
+  "available",
+  /** Out on foster */
+  "fostered",
+  /** Has been adopted */
+  "adopted",
+  /** Euthanised, died */
+  "deceased",
+] as const;
+
+const STATUS_MAP = {
+  available: {
+    label: "Available",
+  },
+  fostered: {
+    label: "Fostered",
+  },
+  adopted: {
+    label: "Adopted",
+  },
+  deceased: {
+    label: "Deceased",
+  },
+} satisfies Record<
+  (typeof STATUS_IDS)[number],
+  {
+    label: string;
+    // NOTE: icons seem a little distasteful here...
+    // icon: ClassValue;
+  }
+>;
+
 export const ANIMALS = {
   SPECIES: {
     IDS: SPECIES_IDS,
@@ -54,6 +87,15 @@ export const ANIMALS = {
     OPTIONS: GENDER_IDS.map((id) => ({
       value: id,
       label: GENDER_MAP[id].label,
+    })) satisfies SelectOption[],
+  },
+
+  STATUS: {
+    IDS: STATUS_IDS,
+    MAP: STATUS_MAP,
+    OPTIONS: STATUS_IDS.map((id) => ({
+      value: id,
+      label: STATUS_MAP[id].label,
     })) satisfies SelectOption[],
   },
 };

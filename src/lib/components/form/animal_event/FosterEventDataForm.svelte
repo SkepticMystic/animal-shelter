@@ -14,9 +14,13 @@
   } = $props();
 </script>
 
-<FormField {form} name="data.vaccine_name" description="Name of the vaccine">
+<FormField
+  {form}
+  name="data.fosterer_name"
+  description="Name of the person fostering them"
+>
   {#snippet children(props)}
-    <FormControl {...props} label="Vaccine name">
+    <FormControl {...props} label="Fosterer Name">
       {#snippet children({ props })}
         <SuperformInput {...props} {form} />
       {/snippet}
