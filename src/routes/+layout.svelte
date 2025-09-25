@@ -107,6 +107,8 @@
   </Loading>
 </main>
 
+<!-- TODO: footer -->
+
 <!-- NOTE: I struggled to get shad semantic classes working to style the toasts
  It's possible to apply them, but only when toastOptions.unstyled: true
  And then ALL other styles are removed... 

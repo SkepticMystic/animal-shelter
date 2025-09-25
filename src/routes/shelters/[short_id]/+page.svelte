@@ -9,9 +9,7 @@
   import GoogleMap from "$lib/components/map/GoogleMap.svelte";
   import PrerenderedMarkdown from "$lib/components/text/PrerenderedMarkdown.svelte";
   import Button from "$lib/components/ui/button/button.svelte";
-  import CarouselContent from "$lib/components/ui/carousel/carousel-content.svelte";
-  import CarouselItem from "$lib/components/ui/carousel/carousel-item.svelte";
-  import Carousel from "$lib/components/ui/carousel/Carousel.svelte";
+  import ItemCarousel from "$lib/components/ui/carousel/ItemCarousel.svelte";
   import Dialog from "$lib/components/ui/dialog/dialog.svelte";
   import Iconed from "$lib/components/ui/icon/Iconed.svelte";
   import { APP } from "$lib/const/app.js";
@@ -20,7 +18,7 @@
   import { IMAGES } from "$lib/const/image.const";
   import { ROUTES } from "$lib/const/routes.const.js";
   import type { DonationMethod } from "$lib/schema/donation_method.schema";
-  import { member } from "$lib/stores/session.js";
+  import { Format } from "$lib/utils/format.util.js";
 
   let { data } = $props();
 
@@ -31,15 +29,15 @@
 </script>
 
 <!-- TODO: Use some better wrapper elements. Like article, probably. Just check if the h1 should be in or out of the article -->
-<div class="space-y-7">
-  <div class="flex items-center justify-between">
+<article class="space-y-7">
+  <header class="flex items-center justify-between">
     <div class="flex items-center gap-2">
       <BackButton />
       <h1>{data.shelter.name}</h1>
     </div>
 
     <div class="flex items-center gap-2">
-      {#if AccessClient.member_can( { organization: ["update"] }, ) && data.shelter.org_id === $member.data?.organizationId}
+      {#if AccessClient.member_can( { organization: ["update"] }, ) && AccessClient.org_owns(data.shelter)}
         <Button
           icon={ICONS.EDIT}
           href={ROUTES.SHELTER_EDIT}
@@ -49,44 +47,42 @@
 
       <ShareButton data={share_data} />
     </div>
-  </div>
+  </header>
 
-  <div class="flex flex-wrap gap-4">
+  <section class="flex flex-wrap gap-4">
     {#each [...data.shelter.urls, ...data.shelter.emails, ...data.shelter.phones] as link}
       <LinkLink {link} />
     {/each}
-  </div>
+  </section>
 
   {#if data.shelter.animals.length}
-    <div class="flex flex-wrap gap-3">
+    <section class="flex flex-wrap gap-3">
       {#each data.shelter.animals as animal}
         <AnimalCard {animal} />
       {/each}
-    </div>
+    </section>
   {/if}
 
   {#if data.prerendered.description}
-    <blockquote>
-      <PrerenderedMarkdown html={data.prerendered.description} />
-    </blockquote>
+    <section>
+      <blockquote>
+        <PrerenderedMarkdown html={data.prerendered.description} />
+      </blockquote>
+    </section>
   {/if}
 
   {#if data.shelter.images.length}
-    <Carousel>
-      {#snippet content()}
-        <CarouselContent class="-ml-2 md:-ml-3">
-          {#each data.shelter.images as image}
-            <CarouselItem class="basis-auto pl-2 md:pl-3">
-              <Picture {image} {...IMAGES.SIZES.PREVIEW} />
-            </CarouselItem>
-          {/each}
-        </CarouselContent>
-      {/snippet}
-    </Carousel>
+    <section>
+      <ItemCarousel items={data.shelter.images}>
+        {#snippet item(image, i)}
+          <Picture {image} {...IMAGES.SIZES.PREVIEW} prioritize={i < 2} />
+        {/snippet}
+      </ItemCarousel>
+    </section>
   {/if}
 
   {#if data.shelter.donation_methods.length}
-    <div class="space-y-2">
+    <section class="space-y-2">
       <Iconed reversed icon="lucide/hand-heart" class="size-7">
         <h2>Donate</h2>
       </Iconed>
@@ -169,16 +165,22 @@
           </div>
         {/each}
       </div>
-    </div>
+    </section>
   {/if}
 
   {#if data.shelter.place}
-    <div class="space-y-2">
+    <section class="space-y-2">
       <Iconed reversed icon="lucide/map-pin">
         <h2>Location</h2>
       </Iconed>
 
       <GoogleMap place={data.shelter.place} />
-    </div>
+    </section>
   {/if}
-</div>
+
+  <footer>
+    <p class="text-sm text-muted-foreground">
+      Last updated: <em>{Format.datetime(data.shelter.updatedAt)}</em>
+    </p>
+  </footer>
+</article>
