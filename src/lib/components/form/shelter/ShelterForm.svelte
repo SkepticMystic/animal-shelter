@@ -1,6 +1,5 @@
 <script lang="ts">
   import FormButton from "$lib/components/ui/form/form-button.svelte";
-  import Textarea from "$lib/components/ui/textarea/textarea.svelte";
   import { ICONS } from "$lib/const/icon.const";
   import type { MaybePromise } from "$lib/interfaces";
   import type {
@@ -16,6 +15,7 @@
   import SuperformInput from "../inputs/SuperformInput.svelte";
   import LinksFormFieldSet from "../links/LinksFormFieldSet.svelte";
   import GooglePlaceAutocomplete from "../place/GooglePlaceAutocomplete.svelte";
+  import MarkdownTextarea from "../textarea/MarkdownTextarea.svelte";
 
   type In = ShelterSchema.InsertIn;
   type Out = ShelterSchema.InsertOut;
@@ -28,7 +28,7 @@
   }: {
     submit: (validated: In) => Promise<APIResult<Data>>;
     on_success?: (data: Data) => MaybePromise<unknown>;
-    form_input: SuperValidated<Out, App.Superforms.Message, In>;
+    form_input: SuperValidated<In>;
   } = $props();
 
   const form = make_super_form(form_input, {
@@ -81,12 +81,7 @@
       {#snippet children(props)}
         <FormControl {...props} label="Description">
           {#snippet children({ props })}
-            <Textarea
-              {...props}
-              class="max-h-52 resize-y"
-              placeholder="Description"
-              bind:value={$form_data.description}
-            />
+            <MarkdownTextarea {...props} bind:value={$form_data.description} />
           {/snippet}
         </FormControl>
       {/snippet}

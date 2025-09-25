@@ -23,8 +23,8 @@
     form,
     name,
   }: {
-    form: SuperForm<ShelterSchema.InsertOut>;
-    name: FormPathArrays<ShelterSchema.InsertOut, DonationMethod>;
+    form: SuperForm<ShelterSchema.InsertIn>;
+    name: FormPathArrays<ShelterSchema.InsertIn, DonationMethod>;
   } = $props();
 
   const { values } = arrayProxy(

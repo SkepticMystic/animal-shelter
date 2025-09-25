@@ -27,11 +27,15 @@ export const AnimalEventUtil = {
       }
 
       case "fostered": {
-        return `By ${event.data.fosterer_name}`;
+        return event.data.fosterer_name
+          ? `By ${event.data.fosterer_name}`
+          : "-";
       }
 
       case "adopted": {
-        return `By ${event.data.adopter_name}`;
+        return event.data.adopter_name //
+          ? `By ${event.data.adopter_name}`
+          : "-";
       }
 
       case "deceased": {

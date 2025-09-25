@@ -12,9 +12,9 @@
     content,
     actions,
   }: {
-    description?: string;
     class?: ClassValue;
     title?: string | Snippet;
+    description?: string | null;
 
     content: Snippet;
     actions?: Snippet;

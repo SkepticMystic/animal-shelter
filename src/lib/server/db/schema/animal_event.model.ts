@@ -34,7 +34,8 @@ export const AnimalEventTable = pgTable(
     administered_by_member_id: uuid() //
       .references(() => MemberTable.id, { onDelete: "set null" }),
 
-    notes: text().default("").notNull(),
+    // TODO: Markdown
+    notes: text(),
     timestamp: timestamp({ mode: "date" }),
     data: jsonb().$type<z.infer<typeof animal_event_data_schema>>().notNull(),
 
@@ -85,7 +86,11 @@ const refinements = {
   timestamp: z.coerce.date().optional().nullable(),
 
   notes: (s: z.ZodString) =>
-    s.max(2000, "Notes must be at most 2000 characters"),
+    s
+      .trim()
+      .max(2000, "Notes must be at most 2000 characters")
+      .optional()
+      .nullable(),
 };
 
 const pick = {

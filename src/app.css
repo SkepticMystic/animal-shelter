@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@plugin "@tailwindcss/typography";
 
 @plugin "@iconify/tailwind4" {
   prefixes: mdi, lucide;
@@ -176,7 +177,7 @@ h4 {
 }
 
 blockquote {
-  @apply border-l-2 pl-4 text-muted-foreground italic;
+  @apply border-l-2 pl-4 text-muted-foreground;
 }
 
 /* NOTE: In Anchor.svelte and Button.svelte, we add the .loading class to the button when loading starts 
@@ -186,4 +187,50 @@ blockquote {
 a.loading > .icon:not(:first-child),
 button.loading > .icon:not(:first-child) {
   display: none !important;
+}
+
+/* Carta */
+@import "carta-md/default.css";
+
+/* Required to have the editor working correctly! */
+.carta-font-code {
+  font-family: monospace;
+  font-size: 1.1rem;
+  line-height: 1.1rem;
+  letter-spacing: normal;
+}
+
+/* TODO: Doesn't quite work... do I need to set these variables? */
+.dark .carta-theme__default {
+  --border-color: var(--border-color-dark);
+  --selection-color: var(--selection-color-dark);
+  --focus-outline: var(--focus-outline-dark);
+  --hover-color: var(--hover-color-dark);
+  --caret-color: var(--caret-color-dark);
+  --text-color: var(--text-color-dark);
+}
+
+/* The default height is way too much */
+.carta-input,
+.carta-renderer {
+  @apply max-h-[250px];
+}
+
+/* Apply prose styling.
+-viewer is the RenderMarkdown or PrerenderedMarkdown component
+-renderer is the "Preview" tab of the editor */
+.carta-viewer,
+.carta-renderer {
+  @apply prose max-w-none prose-neutral;
+}
+
+/* But we don't need this much margin in the renderer */
+.carta-renderer p {
+  @apply mt-0;
+}
+
+/* Dark mode */
+.dark .carta-viewer,
+.dark .carta-renderer {
+  @apply prose-invert;
 }

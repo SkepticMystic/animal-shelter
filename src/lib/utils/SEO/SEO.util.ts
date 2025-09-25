@@ -1,4 +1,5 @@
 import { APP } from "$lib/const/app";
+import { Markdown } from "../markdown";
 import { Url } from "../urls";
 
 type UTMData = {
@@ -43,6 +44,16 @@ const utmify = (href: string, params: UTMData) => {
   return Url.add_search(url, resolved).toString();
 };
 
+const transform_page = (
+  seo: NonNullable<App.PageData["seo"]>,
+): NonNullable<App.PageData["seo"]> => ({
+  ...seo,
+  description: seo.description
+    ? Markdown.strip(seo.description).slice(0, 160)
+    : undefined,
+});
+
 export const SEOUtil = {
   utmify,
+  transform_page,
 };

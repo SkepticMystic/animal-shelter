@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { AccessClient } from "$lib/clients/access_control.client.js";
   import BackButton from "$lib/components/buttons/BackButton.svelte";
   import ShareButton from "$lib/components/buttons/ShareButton.svelte";
   import AnimalCard from "$lib/components/cards/AnimalCard.svelte";
@@ -6,6 +7,8 @@
   import ExternalLink from "$lib/components/links/ExternalLink.svelte";
   import LinkLink from "$lib/components/links/LinkLink.svelte";
   import GoogleMap from "$lib/components/map/GoogleMap.svelte";
+  import PrerenderedMarkdown from "$lib/components/text/PrerenderedMarkdown.svelte";
+  import Button from "$lib/components/ui/button/button.svelte";
   import CarouselContent from "$lib/components/ui/carousel/carousel-content.svelte";
   import CarouselItem from "$lib/components/ui/carousel/carousel-item.svelte";
   import Carousel from "$lib/components/ui/carousel/Carousel.svelte";
@@ -13,8 +16,11 @@
   import Iconed from "$lib/components/ui/icon/Iconed.svelte";
   import { APP } from "$lib/const/app.js";
   import { DONATION_METHOD } from "$lib/const/donation_method.const.js";
+  import { ICONS } from "$lib/const/icon.const.js";
   import { IMAGES } from "$lib/const/image.const";
+  import { ROUTES } from "$lib/const/routes.const.js";
   import type { DonationMethod } from "$lib/schema/donation_method.schema";
+  import { member } from "$lib/stores/session.js";
 
   let { data } = $props();
 
@@ -24,6 +30,7 @@
   };
 </script>
 
+<!-- TODO: Use some better wrapper elements. Like article, probably. Just check if the h1 should be in or out of the article -->
 <div class="space-y-7">
   <div class="flex items-center justify-between">
     <div class="flex items-center gap-2">
@@ -31,7 +38,15 @@
       <h1>{data.shelter.name}</h1>
     </div>
 
-    <div>
+    <div class="flex items-center gap-2">
+      {#if AccessClient.member_can( { organization: ["update"] }, ) && data.shelter.org_id === $member.data?.organizationId}
+        <Button
+          icon={ICONS.EDIT}
+          href={ROUTES.SHELTER_EDIT}
+          title="Edit shelter"
+        />
+      {/if}
+
       <ShareButton data={share_data} />
     </div>
   </div>
@@ -50,9 +65,9 @@
     </div>
   {/if}
 
-  {#if data.shelter.description}
+  {#if data.prerendered.description}
     <blockquote>
-      {data.shelter.description}
+      <PrerenderedMarkdown html={data.prerendered.description} />
     </blockquote>
   {/if}
 

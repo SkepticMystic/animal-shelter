@@ -1,4 +1,5 @@
 import { db } from "$lib/server/db/drizzle.db";
+import { Markdown } from "$lib/utils/markdown";
 import { error } from "@sveltejs/kit";
 import type { PageServerLoad } from "./$types";
 
@@ -22,5 +23,11 @@ export const load = (async ({ params }) => {
     error(404, "Animal not found");
   }
 
-  return { animal };
+  const prerendered = {
+    description: animal.description
+      ? Markdown.to_html(animal.description)
+      : null,
+  };
+
+  return { animal, prerendered };
 }) satisfies PageServerLoad;

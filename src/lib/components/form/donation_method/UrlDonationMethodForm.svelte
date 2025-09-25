@@ -11,7 +11,7 @@
   import UrlInput from "../inputs/URLInput.svelte";
   import { untrack } from "svelte";
 
-  type T = ShelterSchema.InsertOut;
+  type T = ShelterSchema.InsertIn;
   type V = Extract<DonationMethod["data"], { kind: "url" }>;
 
   let {

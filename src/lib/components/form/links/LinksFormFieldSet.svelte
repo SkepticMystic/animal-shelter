@@ -6,6 +6,7 @@
   import {
     arrayProxy,
     type ArrayProxy,
+    type FormPath,
     type FormPathArrays,
     type SuperForm,
   } from "sveltekit-superforms";
@@ -58,8 +59,8 @@
       <LinkInput
         {form}
         {kind}
-        name="{name}[{i}]"
         on_remove={() => actions.remove(id)}
+        name={`${name}[${i}]` as FormPath<T, Link>}
       />
     {/each}
 

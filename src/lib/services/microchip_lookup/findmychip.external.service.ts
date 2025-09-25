@@ -3,6 +3,7 @@ import type { IMicrochipLookup } from "$lib/const/microchip_lookup.const";
 import type { MicrochipLookupInput } from "$lib/schema/microchip_lookup.schema";
 import type { Animal } from "$lib/server/db/schema/animal.model";
 import type { APIResult } from "$lib/utils/form.util";
+import { HTMLUtil } from "$lib/utils/html/html.util";
 import { Log } from "$lib/utils/logger.util";
 import { err, suc } from "$lib/utils/result.util";
 import { parseDate } from "chrono-node";
@@ -114,7 +115,10 @@ const normalise_database_response = (
         animal: {
           name: animal?.name || undefined,
           breed: animal?.breed || undefined,
-          description: animal?.description || undefined,
+
+          description: animal?.description
+            ? HTMLUtil.sanitize(animal.description)
+            : undefined,
 
           gender: animal?.gender
             ? GENDER_ID_MAP[animal.gender.toLowerCase()]

@@ -1,3 +1,4 @@
+import { HTMLUtil, type IHTML } from "../../../utils/html/html.util";
 import { relations } from "drizzle-orm";
 import {
   boolean,
@@ -9,7 +10,7 @@ import {
   varchar,
 } from "drizzle-orm/pg-core";
 import { createInsertSchema, createUpdateSchema } from "drizzle-zod";
-import type z from "zod";
+import z from "zod";
 import { ANIMALS } from "../../../const/animal.const";
 import { TIME } from "../../../const/time";
 import {
@@ -49,7 +50,7 @@ export const AnimalTable = pgTable(
     microchip_number: varchar({ length: 63 }).$type<MicrochipNumber | null>(),
 
     name: varchar({ length: 255 }).notNull(),
-    description: text().default("").notNull(),
+    description: text().$type<IHTML.Sanitized>(),
 
     sterilised: boolean(),
     status: animal_status_enum().default("available").notNull(),
@@ -87,8 +88,13 @@ export type Animal = typeof AnimalTable.$inferSelect;
 const refinements = {
   microchip_number: microchip_number_schema.optional().nullable(),
 
-  description: (s: z.ZodString) =>
-    s.max(1000, "Bio must be at most 1000 characters"),
+  description: z
+    .string()
+    .trim()
+    .max(1000, "Description must be at most 1000 characters")
+    .transform(HTMLUtil.sanitize)
+    .optional()
+    .nullable(),
 
   name: (s: z.ZodString) =>
     s

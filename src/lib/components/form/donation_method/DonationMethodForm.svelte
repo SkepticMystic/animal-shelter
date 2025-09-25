@@ -18,8 +18,8 @@
     form,
     name,
   }: {
-    form: SuperForm<ShelterSchema.InsertOut>;
-    name: FormPath<ShelterSchema.InsertOut, DonationMethod>;
+    form: SuperForm<ShelterSchema.InsertIn>;
+    name: FormPath<ShelterSchema.InsertIn, DonationMethod>;
   } = $props();
 
   const donation_method = $derived(

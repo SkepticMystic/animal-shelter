@@ -6,7 +6,7 @@
   import FormField from "../fields/FormField.svelte";
   import FormInput from "../inputs/SuperformInput.svelte";
 
-  type T = ShelterSchema.InsertOut;
+  type T = ShelterSchema.InsertIn;
   type V = Extract<DonationMethod["data"], { kind: "bank" }>;
 
   let {

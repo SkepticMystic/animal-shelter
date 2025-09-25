@@ -11,6 +11,11 @@ const config = {
     devtoolsJson(),
     partytownVite({ debug: false }),
   ],
+
+  define: {
+    // SOURCE: https://www.npmjs.com/package/carta-md#flags
+    __ENABLE_CARTA_SSR_HIGHLIGHTER__: false,
+  },
 };
 
 export default config;

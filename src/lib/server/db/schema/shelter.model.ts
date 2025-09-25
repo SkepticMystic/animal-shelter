@@ -1,3 +1,4 @@
+import { HTMLUtil, type IHTML } from "../../../utils/html/html.util";
 import { relations } from "drizzle-orm";
 import { index, jsonb, pgTable, text, varchar } from "drizzle-orm/pg-core";
 import { createInsertSchema, createUpdateSchema } from "drizzle-zod";
@@ -26,7 +27,7 @@ export const ShelterTable = pgTable(
     ...DynamicSchema.org_id(),
 
     name: varchar({ length: 255 }).notNull(),
-    description: text().default("").notNull(),
+    description: text().$type<IHTML.Sanitized>(),
 
     place: jsonb().$type<Place>(),
 
@@ -57,8 +58,13 @@ const shelter_refinements = {
       .min(2, "Name must be at least 2 characters")
       .max(255, "Name must be at most 255 characters"),
 
-  description: (s: z.ZodString) =>
-    s.max(2000, "Description must be at most 2000 characters"),
+  description: z
+    .string()
+    .trim()
+    .max(2000, "Description must be at most 2000 characters")
+    .transform(HTMLUtil.sanitize)
+    .optional()
+    .nullable(),
 
   place: place_schema.optional().nullable(),
 

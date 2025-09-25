@@ -4,6 +4,7 @@
   import Picture from "$lib/components/images/Picture.svelte";
   import ShelterLink from "$lib/components/links/ShelterLink.svelte";
   import GoogleMap from "$lib/components/map/GoogleMap.svelte";
+  import PrerenderedMarkdown from "$lib/components/text/PrerenderedMarkdown.svelte";
   import CarouselContent from "$lib/components/ui/carousel/carousel-content.svelte";
   import CarouselItem from "$lib/components/ui/carousel/carousel-item.svelte";
   import Carousel from "$lib/components/ui/carousel/Carousel.svelte";
@@ -83,9 +84,11 @@
     </li>
   </ul>
 
-  <blockquote>
-    {animal.description}
-  </blockquote>
+  {#if data.prerendered.description}
+    <blockquote>
+      <PrerenderedMarkdown html={data.prerendered.description} />
+    </blockquote>
+  {/if}
 
   {#if data.animal.images.length}
     <Carousel>
