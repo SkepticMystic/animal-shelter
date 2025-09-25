@@ -48,47 +48,63 @@
   </header>
 
   <section>
-    <ul>
-      <li>
-        <span class="flex items-center gap-1">
-          <strong>Shelter:</strong>
+    <dl>
+      <div>
+        <dt>Shelter</dt>
+        <dd>
           <ShelterLink shelter={data.animal.shelter} />
-        </span>
-      </li>
-      <li>
-        <span class="flex items-center gap-1">
-          <strong>Status:</strong>
-          {ANIMALS.STATUS.MAP[animal.status].label}
-        </span>
-      </li>
-      <li>
-        <span class="flex items-center gap-1">
-          <strong>Gender:</strong>
+        </dd>
+      </div>
+
+      <div>
+        <dt>Status</dt>
+        <dd>{ANIMALS.STATUS.MAP[animal.status].label}</dd>
+      </div>
+
+      <div>
+        <dt>Gender</dt>
+        <dd>
           <Icon {...ANIMALS.GENDER.MAP[animal.gender]} />
-        </span>
-      </li>
-      <li>
-        <span class="flex items-center gap-1">
-          <strong>Species:</strong>
+        </dd>
+      </div>
+
+      <div>
+        <dt>Species</dt>
+        <dd>
           <Icon {...ANIMALS.SPECIES.MAP[animal.species]} />
-        </span>
-      </li>
-      <li>
-        <strong>Breed:</strong>
-        {animal.breed}
-      </li>
-      <li>
-        <strong>Age:</strong>
-        {Format.date_distance(animal.date_of_birth, {
-          suffix: false,
-          numeric: "always",
-        }) || "Unknown"}
-      </li>
-      <li>
-        <strong>Intake date:</strong>
-        {Format.date(animal.intake_date)}
-      </li>
-    </ul>
+        </dd>
+      </div>
+
+      <div>
+        <dt>Breed</dt>
+        <dd>{animal.breed}</dd>
+      </div>
+
+      <div>
+        <dt>Sterilized</dt>
+        <dd>{animal.sterilised ? "Yes" : "No"}</dd>
+      </div>
+
+      <div>
+        <dt>Microchipped</dt>
+        <dd>{animal.microchip_number ? "Yes" : "No"}</dd>
+      </div>
+
+      <div>
+        <dt>Age</dt>
+        <dd>
+          {Format.date_distance(animal.date_of_birth, {
+            suffix: false,
+            numeric: "always",
+          }) || "Unknown"}
+        </dd>
+      </div>
+
+      <div>
+        <dt>Intake date</dt>
+        <dd>{Format.date(animal.intake_date)}</dd>
+      </div>
+    </dl>
   </section>
 
   {#if data.prerendered.description}

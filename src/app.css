@@ -188,6 +188,17 @@ blockquote {
   @apply border-l-2 pl-4 text-muted-foreground;
 }
 
+dl > div {
+  @apply flex items-center gap-2;
+}
+
+dt {
+  @apply font-semibold;
+}
+dt::after {
+  content: ": ";
+}
+
 /* NOTE: In Anchor.svelte and Button.svelte, we add the .loading class to the button when loading starts 
   This triggers the Loading.svelte component to show the spinner icon
   We hide all other icons except the first one (the spinner) when loading

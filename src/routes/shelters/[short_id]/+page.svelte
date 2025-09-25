@@ -48,16 +48,16 @@
     </div>
   </header>
 
-  <section class="flex flex-wrap gap-4">
+  <address class="flex flex-wrap gap-4">
     {#each [...data.shelter.urls, ...data.shelter.emails, ...data.shelter.phones] as link}
       <LinkLink {link} />
     {/each}
-  </section>
+  </address>
 
   {#if data.shelter.animals.length}
     <section class="flex flex-wrap gap-3">
       {#each data.shelter.animals as animal}
-        <AnimalCard {animal} />
+        <AnimalCard {animal} images={animal.images} shelter={data.shelter} />
       {/each}
     </section>
   {/if}
