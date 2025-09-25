@@ -1,6 +1,6 @@
 <script lang="ts">
   import AnimalCard from "$lib/components/cards/AnimalCard.svelte";
-  import Loading from "$lib/components/ui/loading/Loading.svelte";
+  import Skeleton from "$lib/components/ui/skeleton/skeleton.svelte";
   import { get_animals_remote } from "$lib/remote/animal.remote";
 
   const get_animals = get_animals_remote({});
@@ -12,7 +12,11 @@
   </header>
 
   {#await get_animals}
-    <Loading loading title="Fetching animals..." />
+    <div class="flex flex-wrap gap-3">
+      {#each [1, 2, 3] as _}
+        <Skeleton class="mb-4 h-72 w-56" />
+      {/each}
+    </div>
   {:then animals}
     <div class="flex flex-wrap gap-3">
       {#each animals as animal}

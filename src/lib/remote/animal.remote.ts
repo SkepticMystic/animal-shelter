@@ -123,9 +123,9 @@ export const create_animal_remote = command(
 
   async (input): Promise<APIResult<Animal>> => {
     const [session] = await Promise.all([
-      safe_get_session({ member_permissions: { animal: ["create"] } }),
+      safe_get_member_session({ member_permissions: { animal: ["create"] } }),
     ]);
-    if (!session || !session.session.org_id) {
+    if (!session) {
       return err({ message: "Unauthorized", status: 401 });
     }
 
