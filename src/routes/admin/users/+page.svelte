@@ -7,11 +7,11 @@
   let users = $state(data.users);
 </script>
 
-<div class="space-y-3">
-  <div class="flex items-center gap-2">
+<article>
+  <header class="flex items-center gap-2">
     <BackButton />
     <h1>Users</h1>
-  </div>
+  </header>
 
   <DataTable {columns} data={users}></DataTable>
-</div>
+</article>

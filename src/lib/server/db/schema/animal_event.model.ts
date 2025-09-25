@@ -1,3 +1,4 @@
+import { HTMLUtil, type IHTML } from "$lib/utils/html/html.util";
 import { relations, sql } from "drizzle-orm";
 import {
   index,
@@ -34,8 +35,7 @@ export const AnimalEventTable = pgTable(
     administered_by_member_id: uuid() //
       .references(() => MemberTable.id, { onDelete: "set null" }),
 
-    // TODO: Markdown
-    notes: text(),
+    notes: text().$type<IHTML.Sanitized>(),
     timestamp: timestamp({ mode: "date" }),
     data: jsonb().$type<z.infer<typeof animal_event_data_schema>>().notNull(),
 
@@ -83,14 +83,15 @@ export type AnimalEvent = typeof AnimalEventTable.$inferSelect;
 const refinements = {
   data: animal_event_data_schema,
   // NOTE: We coerce from date when decoding MicrcochipLookup.data.animal_event.timestamp
-  timestamp: z.coerce.date().optional().nullable(),
+  timestamp: z.coerce.date<string | Date>().optional().nullable(),
 
-  notes: (s: z.ZodString) =>
-    s
-      .trim()
-      .max(2000, "Notes must be at most 2000 characters")
-      .optional()
-      .nullable(),
+  notes: z
+    .string()
+    .trim()
+    .max(2000, "Notes cannot be more than 2000 characters")
+    .transform(HTMLUtil.sanitize)
+    .optional()
+    .nullable(),
 };
 
 const pick = {

@@ -9,10 +9,10 @@
   const get_shelters = get_shelters_remote({});
 </script>
 
-<div class="space-y-4">
-  <div class="flex items-center justify-between">
+<article>
+  <header class="flex items-center justify-between">
     <h1>Shelters</h1>
-  </div>
+  </header>
 
   {#await get_shelters}
     <Loading loading title="Fetching shelters..." />
@@ -48,4 +48,4 @@
       Error loading shelters
     </p>
   {/await}
-</div>
+</article>

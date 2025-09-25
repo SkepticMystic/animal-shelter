@@ -160,6 +160,14 @@ body {
     "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
 }
 
+article {
+  @apply mx-auto space-y-5;
+}
+
+section {
+  @apply space-y-3;
+}
+
 h1 {
   @apply scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl;
 }
@@ -213,7 +221,14 @@ button.loading > .icon:not(:first-child) {
 /* The default height is way too much */
 .carta-input,
 .carta-renderer {
-  @apply max-h-[250px];
+  @apply max-h-[200px] md:max-h-[250px];
+}
+
+/* NOTE: This solution is janky as heck
+It just hides the buttons instead of showing the underneath
+But better than nothing */
+.carta-toolbar {
+  @apply flex flex-wrap;
 }
 
 /* Apply prose styling.

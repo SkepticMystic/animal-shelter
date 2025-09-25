@@ -74,9 +74,6 @@ export const OrganizationClient = {
         // BUT, I tried $store.notify and invalidateAll, but neither fully worked
         // const set_active_res = await set_active_inner(create_res.data.id);
         // if (!set_active_res.ok) return set_active_res;
-
-        // TODO: When creating a new org, even if we do manage to get the above working,
-        // The session.member_id and .member_role won't react. Even on full reload()
         await BetterAuthClient.organization.setActive({
           organizationId: create_res.data.id,
         });

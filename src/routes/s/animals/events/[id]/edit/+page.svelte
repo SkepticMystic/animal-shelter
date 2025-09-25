@@ -15,11 +15,11 @@
   let animal_event = $state(data.animal_event);
 </script>
 
-<div class="mx-auto max-w-xl space-y-5">
-  <div class="flex items-center gap-2">
+<article>
+  <header class="flex items-center gap-2">
     <BackButton />
     <h1>Edit event</h1>
-  </div>
+  </header>
 
   <AnimalEventForm
     mode="update"
@@ -30,21 +30,27 @@
 
   <Separator />
 
-  <ImageUploader
-    resource_kind="animal_event"
-    resource_id={animal_event.id}
-    bind:images={animal_event.images}
-  />
+  <section>
+    <div class="flex flex-wrap items-center gap-2">
+      <h2>Images</h2>
 
-  <div class="flex flex-wrap gap-3">
-    {#each animal_event.images as image (image.id)}
-      <PictureActionsWrapper
-        {image}
-        on_delete={() =>
-          (animal_event.images = Items.remove(animal_event.images, image.id))}
-      >
-        <Picture {image} {...IMAGES.SIZES.THUMBNAIL} />
-      </PictureActionsWrapper>
-    {/each}
-  </div>
-</div>
+      <ImageUploader
+        resource_kind="animal_event"
+        resource_id={animal_event.id}
+        bind:images={animal_event.images}
+      />
+    </div>
+
+    <div class="flex flex-wrap gap-3">
+      {#each animal_event.images as image (image.id)}
+        <PictureActionsWrapper
+          {image}
+          on_delete={() =>
+            (animal_event.images = Items.remove(animal_event.images, image.id))}
+        >
+          <Picture {image} {...IMAGES.SIZES.THUMBNAIL} />
+        </PictureActionsWrapper>
+      {/each}
+    </div>
+  </section>
+</article>

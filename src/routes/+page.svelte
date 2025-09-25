@@ -6,10 +6,12 @@
   import { session } from "$lib/stores/session";
 </script>
 
-<div class="mx-auto mt-32 flex max-w-lg flex-col items-center">
-  <h1>{APP.NAME}</h1>
+<article class="mt-32 flex max-w-lg flex-col items-center">
+  <header>
+    <h1>{APP.NAME}</h1>
+  </header>
 
-  <div class="my-14 flex flex-wrap gap-2">
+  <section class="my-14 flex flex-wrap gap-2">
     <Button href={ROUTES.ANIMALS}>Animals</Button>
     <Button href={ROUTES.SHELTERS} variant="secondary">Shelters</Button>
 
@@ -22,5 +24,5 @@
         </Button>
       {/if}
     {/if}
-  </div>
-</div>
+  </section>
+</article>

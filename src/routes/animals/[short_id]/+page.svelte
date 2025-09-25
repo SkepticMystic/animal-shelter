@@ -27,7 +27,7 @@
   };
 </script>
 
-<article class="space-y-5">
+<article>
   <header class="flex justify-between">
     <div class="flex items-center gap-2">
       <BackButton />
@@ -110,7 +110,7 @@
   {/if}
 
   {#if data.animal.shelter.place}
-    <section class="space-y-2">
+    <section>
       <Iconed reversed icon="lucide/map-pin">
         <h2>Shelter</h2>
       </Iconed>

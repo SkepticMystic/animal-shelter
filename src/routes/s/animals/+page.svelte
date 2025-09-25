@@ -15,8 +15,8 @@
   const get_animals = get_shelter_animals_remote({});
 </script>
 
-<div class="space-y-4">
-  <div class="flex items-center justify-between">
+<article>
+  <header class="flex items-center justify-between">
     <div class="flex items-center gap-2">
       <BackButton />
       <h1>Animals</h1>
@@ -25,7 +25,7 @@
     <Button icon="lucide/plus" href={ROUTES.SHELTER_ANIMALS_CREATE}>
       New animal
     </Button>
-  </div>
+  </header>
 
   {#await get_animals}
     <Loading loading title="Fetching animals..." />
@@ -84,4 +84,4 @@
       Error loading animals
     </p>
   {/await}
-</div>
+</article>

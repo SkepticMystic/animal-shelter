@@ -8,15 +8,15 @@
   let { data } = $props();
 </script>
 
-<div class="mx-auto w-fit space-y-5">
-  <div class="flex items-center gap-2">
+<article>
+  <header class="flex items-center gap-2">
     <BackButton />
     <h1>Add a new animal</h1>
-  </div>
+  </header>
 
   <AnimalForm
     form_input={data.form_input}
     submit={(insert) => AnimalClient.create(insert)}
     on_success={(animal) => goto(resolve(ROUTES.SHELTER_ANIMALS_EDIT, animal))}
   />
-</div>
+</article>

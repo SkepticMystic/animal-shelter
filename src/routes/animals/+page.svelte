@@ -15,10 +15,10 @@
   const get_animals = get_animals_remote({});
 </script>
 
-<div class="space-y-4">
-  <div class="flex items-center justify-between">
+<article>
+  <header class="flex items-center justify-between">
     <h1>Animals</h1>
-  </div>
+  </header>
 
   {#await get_animals}
     <Loading loading title="Fetching animals..." />
@@ -97,4 +97,4 @@
       Error loading animals
     </p>
   {/await}
-</div>
+</article>

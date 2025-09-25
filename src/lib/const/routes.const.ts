@@ -28,10 +28,10 @@ export const ROUTES = {
   SHELTER_EDIT: "/s/edit",
   SHELTER_ANIMALS: "/s/animals",
   SHELTER_ANIMALS_CREATE: "/s/animals/create",
-  SHELTER_ANIMALS_VIEW: "/s/animals/[short_id]",
   SHELTER_ANIMALS_EDIT: "/s/animals/[short_id]/edit",
 
   SHELTER_ANIMAL_EVENTS: "/s/animals/events",
+  SHELTER_ANIMAL_EVENTS_CREATE: "/s/animals/events/create",
   SHELTER_ANIMAL_EVENTS_VIEW: "/s/animals/events/[id]",
   SHELTER_ANIMAL_EVENTS_EDIT: "/s/animals/events/[id]/edit",
 } satisfies Record<string, RouteId>;

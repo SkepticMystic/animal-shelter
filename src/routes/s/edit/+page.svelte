@@ -14,8 +14,8 @@
   let images = $derived(shelter.images ?? []);
 </script>
 
-<div class="space-y-5">
-  <div class="flex items-center gap-2">
+<article>
+  <header class="flex items-center gap-2">
     <Picture
       {...IMAGES.SIZES.AVATAR}
       image={images.at(0)}
@@ -23,17 +23,17 @@
     />
 
     <h1>{shelter.name}</h1>
-  </div>
+  </header>
 
-  <div class="space-y-5">
-    <ShelterForm
-      form_input={data.update_shelter_form_input}
-      submit={(update) => ShelterClient.update(shelter.id, update)}
-      on_success={(updated) => (shelter = { ...updated, images })}
-    />
+  <ShelterForm
+    form_input={data.update_shelter_form_input}
+    submit={(update) => ShelterClient.update(shelter.id, update)}
+    on_success={(updated) => (shelter = { ...updated, images })}
+  />
 
-    <Separator />
+  <Separator />
 
+  <section>
     <ImageUploader
       resource_kind="shelter"
       resource_id={shelter.id}
@@ -50,5 +50,5 @@
         </PictureActionsWrapper>
       {/each}
     </div>
-  </div>
-</div>
+  </section>
+</article>

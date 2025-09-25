@@ -13,14 +13,14 @@
   $inspect("animals", animals.current);
 </script>
 
-<div class="space-y-7">
-  <div class="flex items-center justify-between">
+<article>
+  <header class="flex items-center justify-between">
     <h1>Shelter</h1>
 
     <div>
       <Button href={ROUTES.SHELTER_EDIT} icon={ICONS.EDIT}>Edit Shelter</Button>
     </div>
-  </div>
+  </header>
 
   <p>Dashboard</p>
 
@@ -30,4 +30,4 @@
         ?.length ?? 0})
     </li>
   </ul>
-</div>
+</article>

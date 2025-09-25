@@ -88,7 +88,7 @@
     </FormField>
   </section>
 
-  <section class="space-y-3">
+  <section>
     <h4>Contact Info & Links</h4>
 
     <LinksFormFieldSet
@@ -114,7 +114,7 @@
     />
   </section>
 
-  <section class="space-y-3">
+  <section>
     <h4>Donations</h4>
 
     <FormField

@@ -28,8 +28,7 @@
   };
 </script>
 
-<!-- TODO: Use some better wrapper elements. Like article, probably. Just check if the h1 should be in or out of the article -->
-<article class="space-y-7">
+<article>
   <header class="flex items-center justify-between">
     <div class="flex items-center gap-2">
       <BackButton />
@@ -82,7 +81,7 @@
   {/if}
 
   {#if data.shelter.donation_methods.length}
-    <section class="space-y-2">
+    <section>
       <Iconed reversed icon="lucide/hand-heart" class="size-7">
         <h2>Donate</h2>
       </Iconed>
@@ -169,7 +168,7 @@
   {/if}
 
   {#if data.shelter.place}
-    <section class="space-y-2">
+    <section>
       <Iconed reversed icon="lucide/map-pin">
         <h2>Location</h2>
       </Iconed>

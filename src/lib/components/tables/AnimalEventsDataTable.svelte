@@ -9,6 +9,7 @@
   import type { AnimalEvent } from "$lib/server/db/schema/animal_event.model";
   import { AnimalEventUtil } from "$lib/utils/animal_event.util";
   import { Items } from "$lib/utils/items.util";
+  import { Markdown } from "$lib/utils/markdown";
   import { Strings } from "$lib/utils/strings.util";
   import { TanstackTable } from "$lib/utils/tanstack/table.util";
   import type { DateRange } from "bits-ui";
@@ -87,7 +88,9 @@
         meta: { label: "Notes" },
 
         cell: ({ row }) =>
-          row.original.notes ? Strings.ellipsify(row.original.notes, 50) : "-",
+          row.original.notes
+            ? Strings.ellipsify(Markdown.strip(row.original.notes), 50)
+            : "-",
       },
     ],
 

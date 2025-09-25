@@ -18,17 +18,17 @@
   const invitations = get_invitations_remote({});
 </script>
 
-<div class="flex flex-col gap-7">
-  <div class="flex items-end justify-between">
+<article>
+  <header class="flex items-end justify-between">
     <h1>Team</h1>
-  </div>
+  </header>
 
-  <div class="space-y-3">
+  <section>
     <h2>Members</h2>
     <OrganizationMembersList bind:members />
-  </div>
+  </section>
 
-  <div class="space-y-3">
+  <section>
     <div class="flex items-center justify-between">
       <h2>Invites</h2>
 
@@ -60,18 +60,20 @@
     {:else}
       <Loading loading title="Fetching invitations..." />
     {/if}
-  </div>
+  </section>
 
   <Separator />
 
   <!-- NOTE: We delete the org, not the shelter
      Cascade will handle the refs -->
-  <Button
-    class="w-fit"
-    icon={ICONS.DELETE}
-    variant="destructive"
-    onclick={() => OrganizationClient.delete()}
-  >
-    Delete shelter
-  </Button>
-</div>
+  <section>
+    <Button
+      class="w-fit"
+      icon={ICONS.DELETE}
+      variant="destructive"
+      onclick={() => OrganizationClient.delete()}
+    >
+      Delete shelter
+    </Button>
+  </section>
+</article>

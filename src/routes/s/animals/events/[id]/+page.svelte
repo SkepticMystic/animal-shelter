@@ -5,6 +5,7 @@
   import AnimalLink from "$lib/components/links/AnimalLink.svelte";
   import UserAvatar from "$lib/components/ui/avatar/UserAvatar.svelte";
   import Button from "$lib/components/ui/button/button.svelte";
+  import ItemCarousel from "$lib/components/ui/carousel/ItemCarousel.svelte";
   import Labeled from "$lib/components/ui/label/Labeled.svelte";
   import { ICONS } from "$lib/const/icon.const.js";
   import { IMAGES } from "$lib/const/image.const.js";
@@ -13,8 +14,8 @@
   let { data } = $props();
 </script>
 
-<div class="mx-auto max-w-xl space-y-5">
-  <div class="flex items-center justify-between">
+<article>
+  <header class="flex items-center justify-between">
     <div class="flex items-center gap-2">
       <BackButton />
       <h1>Animal event</h1>
@@ -28,23 +29,29 @@
         href={resolve(ROUTES.SHELTER_ANIMAL_EVENTS_EDIT, data.animal_event)}
       />
     </div>
-  </div>
+  </header>
 
-  <Labeled label="Animal">
-    <AnimalLink animal={data.animal_event.animal} class="w-fit" />
-  </Labeled>
-
-  {#if data.animal_event.administrator?.user}
-    <Labeled label="Administrator">
-      <UserAvatar user={data.animal_event.administrator.user} />
+  <section class="flex flex-wrap items-center gap-3">
+    <Labeled label="Animal">
+      <AnimalLink animal={data.animal_event.animal} class="w-fit" />
     </Labeled>
+
+    {#if data.animal_event.administrator?.user}
+      <Labeled label="Administrator">
+        <UserAvatar user={data.animal_event.administrator.user} />
+      </Labeled>
+    {/if}
+  </section>
+
+  {#if data.animal_event.images.length}
+    <section>
+      <ItemCarousel items={data.animal_event.images}>
+        {#snippet item(image)}
+          <Picture {image} {...IMAGES.SIZES.THUMBNAIL} />
+        {/snippet}
+      </ItemCarousel>
+    </section>
   {/if}
 
-  <div class="flex flex-wrap gap-3">
-    {#each data.animal_event.images as image (image.thumbhash)}
-      <Picture {image} {...IMAGES.SIZES.THUMBNAIL} />
-    {/each}
-  </div>
-
   <pre>{JSON.stringify(data.animal_event, null, 2)}</pre>
-</div>
+</article>

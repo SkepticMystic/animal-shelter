@@ -1,19 +1,19 @@
 <script lang="ts">
   import { invalidateAll } from "$app/navigation";
+  import { resolve } from "$app/paths";
   import { AnimalClient } from "$lib/clients/animal.client.js";
-  import { AnimalEventClient } from "$lib/clients/animal_event.client.js";
   import BackButton from "$lib/components/buttons/BackButton.svelte";
   import AnimalForm from "$lib/components/form/animal/AnimalForm.svelte";
-  import AnimalEventForm from "$lib/components/form/animal_event/AnimalEventForm.svelte";
   import Picture from "$lib/components/images/Picture.svelte";
   import PictureActionsWrapper from "$lib/components/images/PictureActionsWrapper.svelte";
   import ImageUploader from "$lib/components/images/upload/ImageUploader.svelte";
   import AnimalEventsDataTable from "$lib/components/tables/AnimalEventsDataTable.svelte";
-  import Dialog from "$lib/components/ui/dialog/dialog.svelte";
-  import Icon from "$lib/components/ui/icon/Icon.svelte";
+  import Button from "$lib/components/ui/button/button.svelte";
   import Separator from "$lib/components/ui/separator/separator.svelte";
   import { ICONS } from "$lib/const/icon.const.js";
   import { IMAGES } from "$lib/const/image.const.js";
+  import { ROUTES } from "$lib/const/routes.const.js";
+  import { App } from "$lib/utils/app.js";
   import { Items } from "$lib/utils/items.util.js";
 
   let { data } = $props();
@@ -21,11 +21,11 @@
   let animal = $state(data.animal);
 </script>
 
-<div class="space-y-5">
-  <div class="flex items-center gap-2">
-    <BackButton />
+<article>
+  <header class="flex items-center gap-2">
+    <BackButton href={resolve(ROUTES.ANIMALS_VIEW, animal)} />
     <h1>Edit {animal.name}</h1>
-  </div>
+  </header>
 
   <AnimalForm
     form_input={data.animal_form_input}
@@ -35,7 +35,7 @@
 
   <Separator />
 
-  <div class="space-y-3">
+  <section>
     <div
       class="flex flex-col gap-2 md:flex-row md:items-center md:justify-between"
     >
@@ -63,41 +63,27 @@
         {/each}
       </div>
     {/if}
-  </div>
+  </section>
 
   <Separator />
 
-  <div class="space-y-3">
+  <section>
     <div class="flex items-center justify-between">
       <h2>Events</h2>
 
-      <Dialog title="Add event" description="Add a new event for {animal.name}">
-        {#snippet trigger()}
-          <Icon icon={ICONS.ADD} />
-          Add event
-        {/snippet}
-
-        {#snippet content({ close })}
-          <AnimalEventForm
-            mode="insert"
-            form_input={data.event_form_input}
-            submit={AnimalEventClient.create}
-            on_success={(data) => {
-              animal = {
-                ...animal,
-                ...data.animal,
-                events: [data.animal_event, ...animal.events],
-              };
-              close();
-            }}
-          />
-        {/snippet}
-      </Dialog>
+      <Button
+        icon={ICONS.ADD}
+        href={App.url(ROUTES.SHELTER_ANIMAL_EVENTS_CREATE, {
+          animal_id: animal.id,
+        })}
+      >
+        Add event
+      </Button>
     </div>
 
     <AnimalEventsDataTable
       visibility={{ animal: false }}
       rows={animal.events.map((e) => ({ ...e, animal }))}
     />
-  </div>
-</div>
+  </section>
+</article>

@@ -100,7 +100,7 @@ export const columns = TanstackTable.make_columns<TData>({
           title: "View",
           icon: "lucide/dog",
 
-          href: (row) => resolve(ROUTES.SHELTER_ANIMALS_VIEW, row.original),
+          href: (row) => resolve(ROUTES.ANIMALS_VIEW, row.original),
         },
 
         {

@@ -7,7 +7,6 @@
   import Input from "$lib/components/ui/input/input.svelte";
   import Loading from "$lib/components/ui/loading/Loading.svelte";
   import SingleSelect from "$lib/components/ui/select/SingleSelect.svelte";
-  import Textarea from "$lib/components/ui/textarea/textarea.svelte";
   import {
     ANIMAL_EVENTS,
     type IAnimalEvents,
@@ -26,6 +25,7 @@
   import FormControl from "../controls/FormControl.svelte";
   import FormField from "../fields/FormField.svelte";
   import FormMessage from "../FormMessage.svelte";
+  import MarkdownTextarea from "../textarea/MarkdownTextarea.svelte";
   import AdoptEventDataForm from "./AdoptEventDataForm.svelte";
   import FosterEventDataForm from "./FosterEventDataForm.svelte";
   import MicrochipEventForm from "./MicrochipEventDataForm.svelte";
@@ -33,7 +33,6 @@
   import WeighingEventDataForm from "./WeighEventDataForm.svelte";
 
   type In = AnimalEventSchema.InsertIn;
-  type Out = AnimalEventSchema.InsertOut;
   type Data = { animal_event: AnimalEvent; animal: Animal | undefined };
 
   let {
@@ -43,7 +42,7 @@
     form_input,
   }: {
     mode: "insert" | "update";
-    form_input: SuperValidated<Out, App.Superforms.Message, In>;
+    form_input: SuperValidated<In>;
 
     submit: (input: In) => Promise<APIResult<Data>>;
     on_success?: (data: Data) => MaybePromise<void>;
@@ -177,7 +176,11 @@
       {#snippet children({ props })}
         <NaturalLanguageDatePicker
           {...props}
-          bind:value={$form_data.timestamp}
+          bind:value={
+            () =>
+              $form_data.timestamp ? new Date($form_data.timestamp) : null,
+            (date) => ($form_data.timestamp = date)
+          }
         />
       {/snippet}
     </FormControl>
@@ -186,7 +189,7 @@
   <FormField {form} name="notes" description="Any notes about the event">
     <FormControl label="Notes">
       {#snippet children({ props })}
-        <Textarea {...props} bind:value={$form_data.notes} />
+        <MarkdownTextarea {...props} bind:value={$form_data.notes} />
       {/snippet}
     </FormControl>
   </FormField>
