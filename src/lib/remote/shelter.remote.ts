@@ -76,7 +76,7 @@ export const update_shelter_remote = command(
 
     const [shelter] = await db
       .update(ShelterTable)
-      .set(input.update)
+      .set({ ...input.update, updatedAt: new Date() })
       .where(
         and(
           eq(ShelterTable.id, input.id),

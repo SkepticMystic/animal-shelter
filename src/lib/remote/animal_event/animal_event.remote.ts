@@ -49,36 +49,36 @@ const update_animal = async (
   event: AnimalEventSchema.InsertOut,
 ): Promise<Animal | undefined> => {
   const clause = eq(AnimalTable.id, event.animal_id);
+  const update: Partial<Animal> = { updatedAt: new Date() };
 
   switch (event.data.kind) {
     case "fostered":
     case "adopted":
     case "deceased": {
-      return db
-        .update(AnimalTable)
-        .set({ status: event.data.kind })
-        .where(clause)
-        .returning()
-        .then((r) => r.at(0));
+      update.status = event.data.kind;
+      break;
     }
 
     case "sterilise": {
-      return db
-        .update(AnimalTable)
-        .set({ sterilised: true })
-        .where(clause)
-        .returning()
-        .then((r) => r.at(0));
+      update.sterilised = true;
+      break;
     }
 
     case "microchip": {
-      return db
-        .update(AnimalTable)
-        .set({ microchip_number: event.data.microchip_number })
-        .where(clause)
-        .returning()
-        .then((r) => r.at(0));
+      update.microchip_number = event.data.microchip_number;
+      break;
     }
+  }
+
+  if (Object.keys(update).length === 1) {
+    return undefined;
+  } else {
+    return db
+      .update(AnimalTable)
+      .set(update)
+      .where(clause)
+      .returning()
+      .then((r) => r.at(0));
   }
 };
 
@@ -146,7 +146,7 @@ export const update_animal_event_remote = command(
     const [[animal_event], animal] = await Promise.all([
       db
         .update(AnimalEventTable)
-        .set(input.update)
+        .set({ ...input.update, updatedAt: new Date() })
         .where(
           and(
             eq(AnimalEventTable.id, input.id),

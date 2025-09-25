@@ -41,10 +41,19 @@
     loading ??= "eager";
     fetchpriority ??= "high";
   }
+
+  const style = [
+    props.width ? `width: ${props.width}px` : "",
+    props.height ? `height: ${props.height}px` : "",
+  ]
+    .filter(Boolean)
+    .join("; ")
+    .trim();
 </script>
 
 {#if image || props.src}
   <Picture
+    {style}
     {loading}
     {fetchpriority}
     src={image?.url}
@@ -72,8 +81,8 @@ background-repeat: no-repeat;
 max-width: 300px; 
 max-height: 300px; 
 aspect-ratio: 1 / 1; 
-width: 100%; 
-height: 100%;"
+width: 300px; 
+height: 300px;"
   ></div> -->
 {:else if fallback}
   <PictureFallback {fallback} class={klass} {...props} />

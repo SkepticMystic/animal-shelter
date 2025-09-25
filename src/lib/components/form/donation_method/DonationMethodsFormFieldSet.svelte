@@ -61,7 +61,7 @@
   <div class="grid gap-3 sm:grid-cols-2">
     {#each $values as { id }, i (id)}
       <div class="flex items-center gap-1">
-        <span class="flex-1 rounded-md border px-2 py-1">
+        <span class="flex-1 truncate rounded-md border px-2 py-1">
           <strong>
             {DONATION_METHOD.KIND.MAP[$values[i].data.kind].label}:
           </strong>
