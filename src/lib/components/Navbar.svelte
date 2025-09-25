@@ -106,7 +106,7 @@
   class="bg-base-100 mx-auto flex h-16 max-w-4xl items-center justify-between px-3"
 >
   <div>
-    <Button href={ROUTES.AUTH_DIRECT_USER} size="icon" variant="ghost">
+    <Button href={ROUTES.HOME} size="icon" variant="ghost">
       <img src={asset("/favicon.svg")} alt="Logo" class="h-7 w-7" />
     </Button>
   </div>

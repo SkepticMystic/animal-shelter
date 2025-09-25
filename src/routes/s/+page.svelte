@@ -3,11 +3,14 @@
   import Button from "$lib/components/ui/button/button.svelte";
   import { ICONS } from "$lib/const/icon.const";
   import { ROUTES } from "$lib/const/routes.const";
+  import { get_shelter_animals_remote } from "$lib/remote/animal.remote";
   import { get_active_shelter_remote } from "$lib/remote/shelter.remote";
 
   const shelter = get_active_shelter_remote();
+  const animals = get_shelter_animals_remote({});
 
   $inspect("shelter", shelter.current);
+  $inspect("animals", animals.current);
 </script>
 
 <div class="space-y-7">
@@ -23,7 +26,8 @@
 
   <ul>
     <li>
-      <Anchor href={ROUTES.SHELTER_ANIMALS}>Animals</Anchor>
+      <Anchor href={ROUTES.SHELTER_ANIMALS}>Animals</Anchor> ({animals.current
+        ?.length ?? 0})
     </li>
   </ul>
 </div>
