@@ -7,8 +7,11 @@
 </script>
 
 <article class="mt-32 flex max-w-lg flex-col items-center">
-  <header>
+  <header class="text-center">
     <h1>{APP.NAME}</h1>
+    <p class="mt-4 text-lg text-muted-foreground">
+      {APP.DESCRIPTION}
+    </p>
   </header>
 
   <section class="my-14 flex flex-wrap gap-2">

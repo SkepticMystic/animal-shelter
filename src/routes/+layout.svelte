@@ -103,7 +103,7 @@
     <Navbar />
   </header>
 
-  <main class="mx-auto w-full flex-grow mt-1 mb-6 max-w-4xl px-2 sm:px-3 md:px-5">
+  <main class="mx-auto w-full flex-grow mt-1 mb-12 max-w-4xl px-2 sm:px-3 md:px-5">
     <Loading {loading}>
       {@render children?.()}
     </Loading>

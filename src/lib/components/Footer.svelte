@@ -92,7 +92,7 @@
     <div class="mt-6 border-t pt-4">
       <p class="text-center text-sm text-muted-foreground">
         © {currentYear}
-        {APP.NAME}. All rights reserved.
+        {APP.NAME}. Made with ❤️ for 🐶
       </p>
     </div>
   </div>
