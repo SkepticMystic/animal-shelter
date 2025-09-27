@@ -6,6 +6,7 @@
       PUBLIC_UMAMI_BASE_URL,
       PUBLIC_UMAMI_WEBSITE_ID
   } from "$env/static/public";
+  import Footer from "$lib/components/Footer.svelte";
   import Navbar from "$lib/components/Navbar.svelte";
   import SEO from "$lib/components/SEO.svelte";
   import Icon from "$lib/components/ui/icon/Icon.svelte";
@@ -97,17 +98,19 @@
 
 <ModeWatcher />
 
-<header>
-  <Navbar />
-</header>
+<div class="min-h-screen flex flex-col">
+  <header>
+    <Navbar />
+  </header>
 
-<main class="mx-auto mt-1 mb-6 max-w-4xl px-2 sm:px-3 md:px-5">
-  <Loading {loading}>
-    {@render children?.()}
-  </Loading>
-</main>
+  <main class="mx-auto w-full flex-grow mt-1 mb-6 max-w-4xl px-2 sm:px-3 md:px-5">
+    <Loading {loading}>
+      {@render children?.()}
+    </Loading>
+  </main>
 
-<!-- TODO: footer -->
+  <Footer />
+</div>
 
 <!-- NOTE: I struggled to get shad semantic classes working to style the toasts
  It's possible to apply them, but only when toastOptions.unstyled: true
@@ -121,7 +124,6 @@
   {#snippet successIcon()}
     <Icon icon="lucide/check" class="size-5" />
   {/snippet}
-
   {#snippet errorIcon()}
     <Icon icon="lucide/x" class="size-5" />
   {/snippet}

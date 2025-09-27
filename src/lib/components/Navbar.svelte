@@ -15,6 +15,7 @@
   import OrganizationSelector from "./auth/organizations/OrganizationSelector.svelte";
   import Button from "./ui/button/button.svelte";
   import Icon from "./ui/icon/Icon.svelte";
+  import AppLogo from "./images/AppLogo.svelte";
 
   interface Route {
     side: "center" | "right";
@@ -107,7 +108,7 @@
 >
   <div>
     <Button href={ROUTES.HOME} size="icon" variant="ghost">
-      <img src={asset("/favicon.svg")} alt="Logo" class="h-7 w-7" />
+      <AppLogo />
     </Button>
   </div>
 

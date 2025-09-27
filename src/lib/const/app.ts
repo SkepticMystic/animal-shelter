@@ -1,3 +1,4 @@
+import { asset } from "$app/paths";
 import { PUBLIC_BASE_URL } from "$env/static/public";
 
 export const APP = {
@@ -6,7 +7,7 @@ export const APP = {
   ID: "animal-shelter",
   NAME: "Rescued",
   URL: PUBLIC_BASE_URL,
+  LOGO: asset("/favicon.svg"),
   DOMAIN: new URL(PUBLIC_BASE_URL).hostname,
-  LOGO_URL: "https://placehold.co/600x400/png",
-  DESCRIPTION: "An app to manage an animal shelter",
+  DESCRIPTION: "Helping animals find their forever homes.",
 };

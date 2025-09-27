@@ -2,11 +2,13 @@
   import { page } from "$app/state";
   import { APP } from "$lib/const/app";
 
+  let image = $derived(page.data.seo?.image ?? APP.LOGO);
+
+  let description = $derived(page.data.seo?.description ?? APP.DESCRIPTION);
+
   let title = $derived(
     page.data.seo?.title ? page.data.seo.title + ` | ${APP.NAME}` : APP.NAME,
   );
-
-  let description = $derived(page.data.seo?.description ?? APP.DESCRIPTION);
 </script>
 
 <title>
@@ -24,11 +26,9 @@
 <meta property="og:description" content={description} />
 <meta property="twitter:description" content={description} />
 
-{#if page.data.seo?.image}
-  <meta property="og:image" content={page.data.seo.image} />
-  <meta property="og:image:secure_url" content={page.data.seo.image} />
-  <meta property="twitter:image" content={page.data.seo.image} />
-{/if}
+<meta property="og:image" content={image} />
+<meta property="twitter:image" content={image} />
+<meta property="og:image:secure_url" content={image} />
 
 <meta
   property="twitter:card"

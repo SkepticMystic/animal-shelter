@@ -3,6 +3,7 @@
   import Button from "$lib/components/ui/button/button.svelte";
   import { LINKS, type ILink } from "$lib/const/link.const";
   import type { Link } from "$lib/schema/link.schema";
+  import { untrack } from "svelte";
   import {
     arrayProxy,
     type ArrayProxy,
@@ -11,7 +12,6 @@
     type SuperForm,
   } from "sveltekit-superforms";
   import LinkInput from "../inputs/LinkInput.svelte";
-  import { untrack } from "svelte";
 
   let {
     form,
