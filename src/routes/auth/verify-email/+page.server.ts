@@ -4,7 +4,7 @@ import { redirect } from "@sveltejs/kit";
 import type { PageServerLoad } from "./$types";
 
 export const load = (async () => {
-  const session = await safe_get_session();
+  const session = await safe_get_session({ email_verified: false });
   if (session?.user.emailVerified) {
     redirect(302, ROUTES.AUTH_DIRECT_USER);
   }

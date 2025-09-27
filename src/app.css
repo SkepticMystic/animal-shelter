@@ -229,10 +229,13 @@ button.loading > .icon:not(:first-child) {
   --text-color: var(--text-color-dark);
 }
 
+.carta-theme__default .carta-container > * {
+  @apply mt-1.5 mb-0;
+}
 /* The default height is way too much */
 .carta-input,
 .carta-renderer {
-  @apply max-h-[200px] md:max-h-[250px];
+  @apply max-h-[200px] overflow-auto md:max-h-[250px];
 }
 
 /* NOTE: This solution is janky as heck

@@ -1,5 +1,5 @@
 import { command, query } from "$app/server";
-import { safe_get_member_session, safe_get_session } from "$lib/auth/server";
+import { get_member_session, safe_get_member_session } from "$lib/auth/server";
 import { db } from "$lib/server/db/drizzle.db";
 import {
   ShelterSchema,
@@ -66,13 +66,8 @@ export const update_shelter_remote = command(
 
   async (input): Promise<APIResult<Shelter>> => {
     const [session] = await Promise.all([
-      safe_get_session({
-        member_permissions: { organization: ["update"] },
-      }),
+      get_member_session({ member_permissions: { organization: ["update"] } }),
     ]);
-    if (!session || !session.session.org_id) {
-      return err({ message: "Unauthorized", status: 401 });
-    }
 
     const [shelter] = await db
       .update(ShelterTable)

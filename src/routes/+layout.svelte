@@ -101,7 +101,7 @@
   <Navbar />
 </header>
 
-<main class="mx-auto my-6 max-w-4xl px-2 sm:px-3 md:px-5">
+<main class="mx-auto mt-1 mb-6 max-w-4xl px-2 sm:px-3 md:px-5">
   <Loading {loading}>
     {@render children?.()}
   </Loading>

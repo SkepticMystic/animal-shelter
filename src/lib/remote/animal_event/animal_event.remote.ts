@@ -1,5 +1,5 @@
 import { command } from "$app/server";
-import { safe_get_session } from "$lib/auth/server";
+import { get_member_session } from "$lib/auth/server";
 import { db } from "$lib/server/db/drizzle.db";
 import { AnimalTable, type Animal } from "$lib/server/db/schema/animal.model";
 import {
@@ -92,12 +92,9 @@ export const create_animal_event_remote = command(
       animal_event: AnimalEvent;
     }>
   > => {
-    const session = await safe_get_session({
+    const session = await get_member_session({
       member_permissions: { animal_event: ["create"] },
     });
-    if (!session || !session.session.org_id || !session.session.member_id) {
-      return err({ message: "Unauthorized" });
-    }
 
     const authorized = await authorize_input(input, session.session.org_id);
     if (!authorized) return authorized;
@@ -130,12 +127,9 @@ export const update_animal_event_remote = command(
       animal_event: AnimalEvent;
     }>
   > => {
-    const session = await safe_get_session({
+    const session = await get_member_session({
       member_permissions: { animal_event: ["update"] },
     });
-    if (!session || !session.session.org_id || !session.session.member_id) {
-      return err({ message: "Unauthorized" });
-    }
 
     const authorized = await authorize_input(
       input.update,
@@ -167,12 +161,9 @@ export const update_animal_event_remote = command(
 export const delete_animal_event_remote = command(
   z.object({ id: z.uuid() }),
   async (input): Promise<APIResult<AnimalEvent>> => {
-    const session = await safe_get_session({
+    const session = await get_member_session({
       member_permissions: { animal_event: ["delete"] },
     });
-    if (!session || !session.session.org_id) {
-      return err({ message: "Unauthorized" });
-    }
 
     const [event] = await db
       .delete(AnimalEventTable)

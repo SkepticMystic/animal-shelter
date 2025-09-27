@@ -1,6 +1,6 @@
 import { command, query } from "$app/server";
 import { BetterAuthClient } from "$lib/auth-client";
-import { safe_get_member_session, safe_get_session } from "$lib/auth/server";
+import { get_member_session } from "$lib/auth/server";
 import type { IOrganization } from "$lib/const/organization.const";
 import { db } from "$lib/server/db/drizzle.db";
 import {
@@ -92,10 +92,7 @@ export const get_shelter_animals_remote = query(
   animal_query_schema,
 
   async (input) => {
-    const session = await safe_get_member_session();
-    if (!session) {
-      return [];
-    }
+    const session = await get_member_session();
 
     try {
       console.log("get_shelter_animals_remote input:", input);
@@ -123,11 +120,8 @@ export const create_animal_remote = command(
 
   async (input): Promise<APIResult<Animal>> => {
     const [session] = await Promise.all([
-      safe_get_member_session({ member_permissions: { animal: ["create"] } }),
+      get_member_session({ member_permissions: { animal: ["create"] } }),
     ]);
-    if (!session) {
-      return err({ message: "Unauthorized", status: 401 });
-    }
 
     const [[animal], microchip_lookup] = await Promise.all([
       db
@@ -180,11 +174,8 @@ export const update_animal_remote = command(
 
   async (input): Promise<APIResult<Animal>> => {
     const [session] = await Promise.all([
-      safe_get_session({ member_permissions: { animal: ["update"] } }),
+      get_member_session({ member_permissions: { animal: ["update"] } }),
     ]);
-    if (!session || !session.session.org_id) {
-      return err({ message: "Unauthorized", status: 401 });
-    }
 
     const [animal] = await db
       .update(AnimalTable)
@@ -210,11 +201,8 @@ export const delete_animal_remote = command(
 
   async (id): Promise<APIResult<null>> => {
     const [session] = await Promise.all([
-      safe_get_session({ member_permissions: { animal: ["delete"] } }),
+      get_member_session({ member_permissions: { animal: ["delete"] } }),
     ]);
-    if (!session || !session.session.org_id) {
-      return err({ message: "Unauthorized", status: 401 });
-    }
 
     const [res] = await Promise.all([
       db

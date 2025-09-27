@@ -9,6 +9,7 @@ const KIND_IDS = [
   "vaccine", //
   "sterilise",
   "microchip",
+  "walk",
   "injury",
   "fostered",
   "adopted",
@@ -31,6 +32,10 @@ const KIND_MAP = {
   microchip: {
     label: "Microchip",
     icon: "lucide/microchip",
+  },
+  walk: {
+    label: "Walk",
+    icon: "lucide/shoe-print",
   },
   injury: {
     label: "Injury",
@@ -79,6 +84,9 @@ export const ANIMAL_EVENTS = {
       microchip: {
         kind: "microchip",
         microchip_number: "" as MicrochipNumber,
+      },
+      walk: {
+        kind: "walk",
       },
       injury: {
         kind: "injury",

@@ -28,7 +28,24 @@ export const animal_event_data_schema = z.discriminatedUnion("kind", [
 
   z.object({
     kind: z.literal("microchip"),
+
     microchip_number: microchip_number_schema,
+  }),
+
+  z.object({
+    kind: z.literal("walk"),
+
+    distance_meters: z
+      .number()
+      .min(1, "Distance must be at least 1 meter")
+      .max(100_000, "Distance must be at most 100,000 meters")
+      .optional(),
+
+    duration_minutes: z
+      .number()
+      .min(1, "Duration must be at least 1 minute")
+      .max(1_440, "Duration must be at most 1,440 minutes (24 hours)")
+      .optional(),
   }),
 
   z.object({
@@ -37,6 +54,7 @@ export const animal_event_data_schema = z.discriminatedUnion("kind", [
 
   z.object({
     kind: z.literal("fostered" satisfies Animal["status"]),
+
     fosterer_name: z
       .string()
       .max(255, "Fosterer name must be at most 255 characters")
@@ -45,6 +63,7 @@ export const animal_event_data_schema = z.discriminatedUnion("kind", [
 
   z.object({
     kind: z.literal("adopted" satisfies Animal["status"]),
+
     adopter_name: z
       .string()
       .max(255, "Adopter name must be at most 255 characters")

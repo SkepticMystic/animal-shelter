@@ -10,18 +10,7 @@ import {
 import { type ZodValidationSchema } from "sveltekit-superforms/adapters";
 import { err } from "./result.util";
 
-export type APIResult<D> = Result<
-  D,
-  /** Optionally pass a message to show at the bottom of the form (instead of in a FormFieldErrors)
-   * This can be used to pass non-validation-error messages, e.g. "Internal server error, please try again later."
-   */
-  | {
-      message: string;
-      /** Defaults to warning */
-      level?: "warning" | "error";
-    }
-  | undefined
->;
+export type APIResult<D> = Result<D, App.Error | undefined>;
 
 export function make_super_form<
   Schema extends ZodValidationSchema,
@@ -36,21 +25,17 @@ export function make_super_form<
     invalidateAll: invalidate,
 
     submit,
+    onSubmit,
 
     on_error,
     on_success,
 
-    onSubmit,
-    onResult,
     ...rest
   }: FormOptions<Out, App.Superforms.Message, In> & {
     submit: (data: Out) => Promise<APIResult<Data>>;
 
     on_success?: (data: Data) => MaybePromise<unknown>;
-
-    on_error?: (
-      result: Extract<APIResult<Data>, { ok: false }>["error"],
-    ) => MaybePromise<void>;
+    on_error?: (result: App.Error | undefined) => MaybePromise<unknown>;
   },
 ) {
   const pending = writable(false);
@@ -71,15 +56,11 @@ export function make_super_form<
       event.cancel();
 
       if (validators) {
-        // Prevent remote submission if the client state isn't even valid
-        // SuperForms doesn't seem to do this by default
+        // Prevent remote submission if the client state isn't valid
         const validated = await super_form.validateForm({ update: true });
         if (!validated.valid) {
           pending.set(false);
           return;
-        } else {
-          super_form.errors.set({});
-          super_form.message.set(undefined);
         }
       }
 
@@ -92,13 +73,13 @@ export function make_super_form<
 
         await on_success?.(result.data);
       } else {
-        super_form.tainted.set(true);
-
-        // NOTE: Only show message if one was explicitly passed.
-        // Otherwise it's probably just a validation failure,
-        if (result.error?.message) {
+        if (result.error?.path) {
+          super_form.errors.set(
+            { [result.error.path.join(".")]: [result.error.message] },
+            { force: true },
+          );
+        } else if (result.error?.message) {
           super_form.message.set(err(result.error.message));
-          super_form.errors.set({ _errors: [result.error.message] });
         }
 
         await on_error?.(result.error);

@@ -37,9 +37,7 @@ const inner_request = async <D>(
     console.log("Client.request error", error);
 
     if (isHttpError(error)) {
-      const message = error.body.message;
-
-      return err({ level: "error", message });
+      return err(error.body);
     } else {
       return err({ level: "error", message: "An unknown error occurred" });
     }

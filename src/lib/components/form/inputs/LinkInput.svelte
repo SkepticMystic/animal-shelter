@@ -1,11 +1,10 @@
 <script lang="ts" generics="T extends Record<string, unknown>">
   import Button from "$lib/components/ui/button/button.svelte";
-  import Icon from "$lib/components/ui/icon/Icon.svelte";
   import { ICONS } from "$lib/const/icon.const";
   import type { ILink } from "$lib/const/link.const";
   import type { Link } from "$lib/schema/link.schema";
   import { LinkUtil } from "$lib/utils/link/link.util";
-  import { cn } from "$lib/utils/shadcn.util";
+  import { untrack } from "svelte";
   import {
     fieldProxy,
     type FieldProxy,
@@ -19,7 +18,6 @@
   import SuperformInput from "./SuperformInput.svelte";
   import TelInput from "./TelInput.svelte";
   import UrlInput from "./URLInput.svelte";
-  import { untrack } from "svelte";
 
   type V = Link;
 
@@ -76,21 +74,15 @@
       {#snippet children(props)}
         <FormControl {...props} label="">
           {#snippet children({ props })}
-            <div class="relative">
-              <!-- I managed to get the fancy expanding label input working, mostly
+            <!-- I managed to get the fancy expanding label input working, mostly
                But it didn't feel good in the end -->
-              <!-- class="not-placeholder-shown:pr-7 placeholder-shown:w-8 placeholder-shown:placeholder-transparent focus:w-full focus:pr-7 focus:placeholder-muted-foreground" -->
-              <SuperformInput
-                {...props}
-                {form}
-                class={cn("pr-7")}
-                placeholder="Label (optional)"
-              />
-              <Icon
-                icon="lucide/tag"
-                class="pointer-events-none absolute top-1/2 right-2 -translate-y-1/2 opacity-60"
-              />
-            </div>
+            <!-- class="not-placeholder-shown:pr-7 placeholder-shown:w-8 placeholder-shown:placeholder-transparent focus:w-full focus:pr-7 focus:placeholder-muted-foreground" -->
+            <SuperformInput
+              {...props}
+              {form}
+              icon="lucide/tag"
+              placeholder="Label (optional)"
+            />
           {/snippet}
         </FormControl>
       {/snippet}

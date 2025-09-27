@@ -14,6 +14,8 @@ export const handleValidationError: HandleValidationError = ({
   issues,
 }) => {
   return {
+    level: "warning",
+    path: issues.at(0)?.path,
     message: issues.at(0)?.message || "Invalid input",
   };
 };

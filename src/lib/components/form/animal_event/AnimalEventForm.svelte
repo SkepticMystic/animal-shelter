@@ -30,6 +30,7 @@
   import FosterEventDataForm from "./FosterEventDataForm.svelte";
   import MicrochipEventForm from "./MicrochipEventDataForm.svelte";
   import VaccinationEventDataForm from "./VaccineEventDataForm.svelte";
+  import WalkEventDataForm from "./WalkEventDataForm.svelte";
   import WeighingEventDataForm from "./WeighEventDataForm.svelte";
 
   type In = AnimalEventSchema.InsertIn;
@@ -80,23 +81,27 @@
     </FormControl>
   </FormField>
 
-  {#if $form_data.data.kind === "weigh"}
-    <WeighingEventDataForm {form} />
-  {:else if $form_data.data.kind === "vaccine"}
-    <VaccinationEventDataForm {form} />
-  {:else if $form_data.data.kind === "sterilise"}
-    <!--  -->
-  {:else if $form_data.data.kind === "microchip"}
-    <MicrochipEventForm {form} />
-  {:else if $form_data.data.kind === "injury"}
-    <!--  -->
-  {:else if $form_data.data.kind === "fostered"}
-    <FosterEventDataForm {form} />
-  {:else if $form_data.data.kind === "adopted"}
-    <AdoptEventDataForm {form} />
-  {:else if $form_data.data.kind === "deceased"}
-    <!--  -->
-  {/if}
+  <section>
+    {#if $form_data.data.kind === "weigh"}
+      <WeighingEventDataForm {form} />
+    {:else if $form_data.data.kind === "vaccine"}
+      <VaccinationEventDataForm {form} />
+    {:else if $form_data.data.kind === "sterilise"}
+      <!--  -->
+    {:else if $form_data.data.kind === "microchip"}
+      <MicrochipEventForm {form} />
+    {:else if $form_data.data.kind === "walk"}
+      <WalkEventDataForm {form} />
+    {:else if $form_data.data.kind === "injury"}
+      <!--  -->
+    {:else if $form_data.data.kind === "fostered"}
+      <FosterEventDataForm {form} />
+    {:else if $form_data.data.kind === "adopted"}
+      <AdoptEventDataForm {form} />
+    {:else if $form_data.data.kind === "deceased"}
+      <!--  -->
+    {/if}
+  </section>
 
   {#if !form_input.data.animal_id}
     <FormField

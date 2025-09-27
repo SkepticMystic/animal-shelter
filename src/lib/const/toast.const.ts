@@ -5,11 +5,15 @@ const TOAST_IDS = {
   USER_DELETED: "user-deleted",
   PASSKEY_ADDED: "passkey-added",
   EMAIL_VERIFIED: "email-verified",
+  EMAIL_UNVERIFIED: "email-unverified",
   PASSWORD_RESET: "password-reset",
 
   ORG_INVITE_ACCEPTED: "org-invite-accepted",
 
   ADMIN_IMPERSONATING_USER: "admin-impersonating-user",
+
+  UNAUTHORIZED: "unauthorized",
+  UNAUTHENTICATED: "unauthenticated",
 } as const;
 
 const TOAST_IDS_REVERSED = Object.fromEntries(
@@ -58,6 +62,10 @@ export const TOAST = {
       type: "success",
       message: "Email verified successfully",
     },
+    EMAIL_UNVERIFIED: {
+      type: "info",
+      message: "You must first verify your email address",
+    },
 
     PASSWORD_RESET: {
       type: "success",
@@ -72,6 +80,15 @@ export const TOAST = {
     ADMIN_IMPERSONATING_USER: {
       type: "info",
       message: "You are now impersonating this user",
+    },
+
+    UNAUTHORIZED: {
+      type: "error",
+      message: "You do not have permission to perform this action",
+    },
+    UNAUTHENTICATED: {
+      type: "warning",
+      message: "You must be signed in first",
     },
   } satisfies Record<IToast.Key, IToast.Input>,
 };

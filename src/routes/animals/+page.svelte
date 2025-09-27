@@ -13,7 +13,7 @@
 
   {#await get_animals}
     <div class="flex flex-wrap gap-3">
-      {#each [1, 2, 3] as _}
+      {#each [1, 2, 3, 4] as _}
         <Skeleton class="mb-4 h-72 w-56" />
       {/each}
     </div>
