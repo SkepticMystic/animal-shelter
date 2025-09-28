@@ -1,5 +1,5 @@
 export const STYLES = {
   CARD: {
-    SIZE: "w-64 h-96",
+    SIZE: "w-[270px] h-[400px]",
   },
 };
