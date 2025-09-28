@@ -5,18 +5,21 @@
   let {
     icon,
     label,
+    title,
     bg = false,
     class: klass = "",
   }: {
     bg?: boolean;
     label?: string;
+    title?: string;
     icon?: ClassValue;
     class?: ClassValue;
   } = $props();
 </script>
 
 {#snippet inner()}
-  <span class={cn(bg ? "icon-bg" : "icon", icon, "size-4", klass)}></span>
+  <span {title} class={cn(bg ? "icon-bg" : "icon", icon, "size-4", klass)}
+  ></span>
 {/snippet}
 
 <!-- These values are configurable in the iconify/tailwind plugin, found in app.css -->

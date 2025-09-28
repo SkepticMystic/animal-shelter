@@ -234,7 +234,7 @@ export const Format = {
   date_distance: (
     date: Date | string | number | undefined | null,
     opts?: Intl.RelativeTimeFormatOptions & {
-      suffix?: boolean;
+      suffix?: boolean | string;
       base?: Date | string | number;
     },
   ) => {
@@ -270,8 +270,11 @@ export const Format = {
           }).format(delta.value, delta.unit)
         : DEFAULT_FORMATTERS.date_distance.format(delta.value, delta.unit);
 
-      if (opts?.suffix === false) {
-        return formatted.replace(/ ago| from now/, "");
+      if (opts?.suffix === false || typeof opts?.suffix === "string") {
+        return formatted.replace(
+          / ago| from now/,
+          opts.suffix ? ` ${opts.suffix}` : "",
+        );
       } else {
         return formatted;
       }

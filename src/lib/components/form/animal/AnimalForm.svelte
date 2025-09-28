@@ -150,7 +150,6 @@
       description={$form_data.intake_date
         ? `${Format.date($form_data.intake_date)} (${Format.date_distance(
             $form_data.intake_date,
-            {},
           )})`
         : "When did they get to the shelter? Approximate date is fine"}
     >
@@ -173,8 +172,8 @@
       description={$form_data.date_of_birth
         ? `Born on ${Format.date($form_data.date_of_birth)} (about ${Format.date_distance(
             $form_data.date_of_birth,
-            { suffix: false },
-          )} old)`
+            { suffix: "old", numeric: "always" },
+          )})`
         : "Roughly when was the animal born?"}
     >
       <FormControl label="Date of Birth">

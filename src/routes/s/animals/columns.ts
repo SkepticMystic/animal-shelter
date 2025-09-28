@@ -85,7 +85,7 @@ export const columns = TanstackTable.make_columns<TData>({
       cell: ({ row }) =>
         renderComponent(Time, {
           date: row.original.intake_date,
-          show: (dt) => Format.date_distance(dt, {}),
+          show: (dt) => Format.date_distance(dt),
         }),
     },
   ],

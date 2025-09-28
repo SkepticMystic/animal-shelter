@@ -1,7 +1,9 @@
 import { command, query } from "$app/server";
 import { BetterAuthClient } from "$lib/auth-client";
 import { get_member_session } from "$lib/auth/server";
+import { ANIMALS } from "$lib/const/animal.const";
 import type { IOrganization } from "$lib/const/organization.const";
+import { field_filter, filter_to_where } from "$lib/schema/query/query.schema";
 import { db } from "$lib/server/db/drizzle.db";
 import {
   AnimalSchema,
@@ -14,13 +16,22 @@ import { MicrochipLookupLive } from "$lib/services/microchip_lookup/microchip_lo
 import type { APIResult } from "$lib/utils/form.util";
 import { MicrochipLookupUtil } from "$lib/utils/microchip_lookup/microchip_lookup.utils";
 import { err, suc } from "$lib/utils/result.util";
-import { and, eq, getOperators } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import z from "zod";
 
 const SMART_FIELDS = ["name", "description"] satisfies (keyof Animal)[];
 
 const animal_query_schema = z.object({
-  ids: z.array(z.uuid()).optional(),
+  where: z
+    .object({
+      id: field_filter(z.uuid(), ["eq", "ne", "in", "nin"]),
+      org_id: field_filter(z.uuid(), ["eq", "in"]),
+
+      gender: field_filter(z.enum(ANIMALS.GENDER.IDS), ["in"]),
+      status: field_filter(z.enum(ANIMALS.STATUS.IDS), ["in", "ne"]),
+      species: field_filter(z.enum(ANIMALS.SPECIES.IDS), ["eq", "in"]),
+    })
+    .optional(),
 
   smart: z
     .object({
@@ -37,29 +48,6 @@ const animal_query_schema = z.object({
     .default({ limit: 100, offset: 0 }),
 });
 
-const build_animal_where_clause = (
-  input: z.infer<typeof animal_query_schema>,
-  org_id?: string,
-) => {
-  const { and, or, inArray, ilike } = getOperators();
-
-  return and(
-    org_id ? eq(AnimalTable.org_id, org_id) : undefined,
-
-    input.ids?.length //
-      ? inArray(AnimalTable.id, input.ids)
-      : undefined,
-
-    input.smart?.query && input.smart.fields.length
-      ? or(
-          ...input.smart.fields.map((field) =>
-            ilike(AnimalTable[field], `%${input.smart!.query}%`),
-          ),
-        )
-      : undefined,
-  );
-};
-
 export const get_animals_remote = query(
   animal_query_schema,
 
@@ -70,7 +58,7 @@ export const get_animals_remote = query(
       return await db.query.animal.findMany({
         ...input.pagination,
 
-        where: build_animal_where_clause(input),
+        where: filter_to_where(AnimalTable, input.where),
 
         with: {
           images: {
@@ -100,7 +88,10 @@ export const get_shelter_animals_remote = query(
       return await db.query.animal.findMany({
         ...input.pagination,
 
-        where: build_animal_where_clause(input, session.session.org_id),
+        where: filter_to_where(AnimalTable, {
+          ...input.where,
+          org_id: { eq: session.session.org_id },
+        }),
 
         with: {
           images: {

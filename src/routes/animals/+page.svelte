@@ -1,9 +1,12 @@
 <script lang="ts">
   import AnimalCard from "$lib/components/cards/AnimalCard.svelte";
   import Skeleton from "$lib/components/ui/skeleton/skeleton.svelte";
+  import { STYLES } from "$lib/const/styles.const";
   import { get_animals_remote } from "$lib/remote/animal.remote";
 
-  const get_animals = get_animals_remote({});
+  const get_animals = get_animals_remote({
+    where: { status: { ne: "deceased" } },
+  });
 </script>
 
 <article>
@@ -14,7 +17,7 @@
   {#await get_animals}
     <div class="flex flex-wrap gap-3">
       {#each [1, 2, 3, 4] as _}
-        <Skeleton class="mb-4 h-72 w-56" />
+        <Skeleton class={STYLES.CARD.SIZE} />
       {/each}
     </div>
   {:then animals}

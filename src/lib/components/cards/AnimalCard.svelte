@@ -1,11 +1,12 @@
 <script lang="ts">
+  import { resolve } from "$app/paths";
   import { ANIMALS } from "$lib/const/animal.const";
-  import { IMAGES } from "$lib/const/image.const";
+  import { ANIMAL_EVENTS } from "$lib/const/animal_event.const";
+  import { ROUTES } from "$lib/const/routes.const";
   import type { Animal } from "$lib/server/db/schema/animal.model";
   import type { Image } from "$lib/server/db/schema/image.model";
   import type { Shelter } from "$lib/server/db/schema/shelter.model";
   import { Format } from "$lib/utils/format.util";
-  import Picture from "../images/Picture.svelte";
   import AnimalLink from "../links/AnimalLink.svelte";
   import ShelterLink from "../links/ShelterLink.svelte";
   import Time from "../Time.svelte";
@@ -25,22 +26,17 @@
   const image = images[0];
 </script>
 
-<Card class="w-56" description={animal.description}>
+<Card
+  description={animal.description}
+  picture={{
+    image,
+    alt: animal.name,
+    fallback: animal.name[0],
+    href: resolve(ROUTES.ANIMALS_VIEW, animal),
+  }}
+>
   {#snippet title()}
-    <div class="flex flex-col gap-3">
-      <AnimalLink {animal}>
-        <Picture
-          {image}
-          class="mx-auto"
-          alt={animal.name}
-          aspectRatio={16 / 9}
-          height={IMAGES.SIZES.THUMBNAIL.height}
-          fallback={animal.name[0]}
-        />
-      </AnimalLink>
-
-      <AnimalLink {animal} class="text-left text-lg" />
-    </div>
+    <AnimalLink {animal} class="text-lg" />
   {/snippet}
 
   {#snippet content()}
@@ -48,20 +44,36 @@
       <dl>
         <div>
           <dt class="sr-only">Shelter</dt>
-          <dd>
-            <ShelterLink {shelter} />
-          </dd>
+          <dd><ShelterLink {shelter} /></dd>
         </div>
       </dl>
 
       <div class="flex items-center justify-between">
-        <Time
-          date={animal.date_of_birth}
-          show={(dt) =>
-            Format.date_distance(dt, { suffix: false, numeric: "always" })}
-        />
+        {#if animal.date_of_birth}
+          <Time
+            date={animal.date_of_birth}
+            show={(dt) =>
+              Format.date_distance(dt, { suffix: "old", numeric: "always" })}
+          />
+        {:else}
+          <span class="text-sm text-muted-foreground">Age unknown</span>
+        {/if}
 
         <div class="flex gap-1">
+          {#if animal.sterilised}
+            <Icon
+              title="Sterilised"
+              icon={ANIMAL_EVENTS.KINDS.MAP["sterilise"].icon}
+            />
+          {/if}
+
+          {#if animal.microchip_number}
+            <Icon
+              title="Microchipped"
+              icon={ANIMAL_EVENTS.KINDS.MAP["microchip"].icon}
+            />
+          {/if}
+
           <Icon icon={ANIMALS.GENDER.MAP[animal.gender].icon} />
           <Icon icon={ANIMALS.SPECIES.MAP[animal.species].icon} />
         </div>

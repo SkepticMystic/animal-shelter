@@ -3,6 +3,7 @@
   import { AccessClient } from "$lib/clients/access_control.client.js";
   import BackButton from "$lib/components/buttons/BackButton.svelte";
   import ShareButton from "$lib/components/buttons/ShareButton.svelte";
+  import AnimalCard from "$lib/components/cards/AnimalCard.svelte";
   import Picture from "$lib/components/images/Picture.svelte";
   import ShelterLink from "$lib/components/links/ShelterLink.svelte";
   import GoogleMap from "$lib/components/map/GoogleMap.svelte";
@@ -11,35 +12,50 @@
   import ItemCarousel from "$lib/components/ui/carousel/ItemCarousel.svelte";
   import Icon from "$lib/components/ui/icon/Icon.svelte";
   import Iconed from "$lib/components/ui/icon/Iconed.svelte";
+  import Separator from "$lib/components/ui/separator/separator.svelte";
+  import Skeleton from "$lib/components/ui/skeleton/skeleton.svelte";
   import { ANIMALS } from "$lib/const/animal.const";
   import { APP } from "$lib/const/app.js";
   import { ICONS } from "$lib/const/icon.const.js";
   import { IMAGES } from "$lib/const/image.const";
   import { ROUTES } from "$lib/const/routes.const.js";
+  import { STYLES } from "$lib/const/styles.const.js";
+  import { get_animals_remote } from "$lib/remote/animal.remote.js";
   import { Format } from "$lib/utils/format.util";
 
   let { data } = $props();
-  let animal = $state(data.animal);
 
   const share_data: ShareData = {
-    title: animal.name,
-    text: `Check out ${animal.name} on ${APP.NAME}`,
+    title: data.animal.name,
+    text: `Check out ${data.animal.name} on ${APP.NAME}`,
   };
+
+  const related_animals = $derived(
+    get_animals_remote({
+      where: {
+        id: { ne: data.animal.id },
+        org_id: { eq: data.animal.org_id },
+        species: { eq: data.animal.species },
+      },
+
+      pagination: { limit: 5 },
+    }),
+  );
 </script>
 
 <article>
   <header class="flex justify-between">
     <div class="flex items-center gap-2">
       <BackButton />
-      <h1>{animal.name}</h1>
+      <h1>{data.animal.name}</h1>
     </div>
 
     <div class="flex items-center gap-2">
-      {#if AccessClient.member_can( { animal: ["update"] }, ) && AccessClient.org_owns(animal)}
+      {#if AccessClient.member_can( { animal: ["update"] }, ) && AccessClient.org_owns(data.animal)}
         <Button
           icon={ICONS.EDIT}
           title="Edit animal"
-          href={resolve(ROUTES.SHELTER_ANIMALS_EDIT, animal)}
+          href={resolve(ROUTES.SHELTER_ANIMALS_EDIT, data.animal)}
         />
       {/if}
 
@@ -58,51 +74,53 @@
 
       <div>
         <dt>Status</dt>
-        <dd>{ANIMALS.STATUS.MAP[animal.status].label}</dd>
+        <dd>{ANIMALS.STATUS.MAP[data.animal.status].label}</dd>
       </div>
 
       <div>
         <dt>Gender</dt>
         <dd>
-          <Icon {...ANIMALS.GENDER.MAP[animal.gender]} />
+          <Icon {...ANIMALS.GENDER.MAP[data.animal.gender]} />
         </dd>
       </div>
 
       <div>
         <dt>Species</dt>
         <dd>
-          <Icon {...ANIMALS.SPECIES.MAP[animal.species]} />
+          <Icon {...ANIMALS.SPECIES.MAP[data.animal.species]} />
         </dd>
       </div>
 
       <div>
         <dt>Breed</dt>
-        <dd>{animal.breed}</dd>
+        <dd>{data.animal.breed}</dd>
       </div>
 
       <div>
         <dt>Sterilized</dt>
-        <dd>{animal.sterilised ? "Yes" : "No"}</dd>
+        <dd>{data.animal.sterilised ? "Yes" : "No"}</dd>
       </div>
 
       <div>
         <dt>Microchipped</dt>
-        <dd>{animal.microchip_number ? "Yes" : "No"}</dd>
+        <dd>{data.animal.microchip_number ? "Yes" : "No"}</dd>
       </div>
 
       <div>
         <dt>Age</dt>
         <dd>
-          {Format.date_distance(animal.date_of_birth, {
-            suffix: false,
-            numeric: "always",
-          }) || "Unknown"}
+          {data.animal.date_of_birth
+            ? Format.date_distance(data.animal.date_of_birth, {
+                suffix: "old",
+                numeric: "always",
+              })
+            : "Unknown"}
         </dd>
       </div>
 
       <div>
         <dt>Intake date</dt>
-        <dd>{Format.date(animal.intake_date)}</dd>
+        <dd>{Format.date(data.animal.intake_date)}</dd>
       </div>
     </dl>
   </section>
@@ -137,7 +155,42 @@
 
   <footer>
     <p class="text-sm text-muted-foreground">
-      Last updated: <em>{Format.datetime(animal.updatedAt)}</em>
+      Last updated: <em>{Format.datetime(data.animal.updatedAt)}</em>
     </p>
   </footer>
+
+  <aside class="space-y-3">
+    <Separator />
+
+    <h3>
+      Other {ANIMALS.SPECIES.MAP[data.animal.species].label}s at {data.animal
+        .shelter.name}
+    </h3>
+
+    {#await related_animals}
+      <div class="flex flex-wrap gap-3">
+        {#each [1, 2, 3, 4] as _}
+          <Skeleton class={STYLES.CARD.SIZE} />
+        {/each}
+      </div>
+    {:then related}
+      {#if related.length}
+        <ItemCarousel items={related}>
+          {#snippet item(animal)}
+            <AnimalCard
+              {animal}
+              images={animal.images}
+              shelter={animal.shelter}
+            />
+          {/snippet}
+        </ItemCarousel>
+      {:else}
+        <p>No other animals found.</p>
+      {/if}
+    {:catch error}
+      <p class="text-warning" {@attach () => console.error(error)}>
+        Error loading related animals
+      </p>
+    {/await}
+  </aside>
 </article>

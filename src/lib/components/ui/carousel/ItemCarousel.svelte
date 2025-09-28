@@ -15,9 +15,9 @@
 
 <Carousel>
   {#snippet content()}
-    <CarouselContent class="-ml-2 md:-ml-3">
+    <CarouselContent class="-ml-3 md:-ml-4">
       {#each items as _, i (i)}
-        <CarouselItem class="basis-auto pl-2 md:pl-3">
+        <CarouselItem class="basis-auto pl-3 md:pl-4">
           {@render item(items[i], i)}
         </CarouselItem>
       {/each}

@@ -28,8 +28,8 @@ export const IMAGES = {
       height: 32,
     },
     THUMBNAIL: {
-      width: 120,
-      height: 120,
+      width: 150,
+      height: 150,
     },
     PREVIEW: {
       width: 300,

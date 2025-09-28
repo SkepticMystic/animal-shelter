@@ -14,14 +14,11 @@
     class?: ClassValue | null;
     fallback?: string | Snippet;
   } = $props();
-
-  const style = `width: ${props.width}px; height: ${props.height}px;`;
 </script>
 
 <!-- NOTE: Tried to use Avatar and AvatarFallback, but could never get it right -->
 <div
   {...props}
-  {style}
   class={cn("flex items-center justify-center rounded-md bg-muted", klass)}
 >
   {#if fallback}

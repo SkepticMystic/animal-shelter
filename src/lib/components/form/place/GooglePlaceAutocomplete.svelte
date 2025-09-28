@@ -85,11 +85,11 @@
         "inline-flex items-center justify-center rounded border border-gray-300 px-1 font-sans text-xs text-gray-500 w-6",
       kbd_down:
         "inline-flex items-center rounded border border-gray-400 px-1 font-sans text-xs text-gray-500 justify-center w-6",
-      kbd_active: "bg-indigo-500 text-white",
+      kbd_active: "bg-accent text-accent-foreground",
 
       ul: "absolute z-50 -mb-2 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm divide-y divide-gray-100",
-      li: "z-50 cursor-default select-none py-2 px-2 lg:px-4 text-gray-900 hover:bg-indigo-500 hover:text-white",
-      li_current: "bg-indigo-500",
+      li: "z-50 cursor-default select-none py-2 px-2 lg:px-4 text-gray-900 hover:bg-accent hover:text-accent-foreground",
+      li_current: "bg-accent",
       li_a: "block w-full flex justify-between",
       li_a_current: "text-white",
       li_div_container: "flex min-w-0 gap-x-4",
