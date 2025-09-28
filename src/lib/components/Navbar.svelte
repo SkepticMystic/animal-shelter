@@ -113,7 +113,7 @@
   </div>
 
   {#if dev}
-    <div>
+    <div class="truncate">
       <span class="font-mono">{page.url.pathname}</span>
     </div>
   {/if}

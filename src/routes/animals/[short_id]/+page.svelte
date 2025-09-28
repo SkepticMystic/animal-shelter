@@ -8,6 +8,7 @@
   import ShelterLink from "$lib/components/links/ShelterLink.svelte";
   import GoogleMap from "$lib/components/map/GoogleMap.svelte";
   import PrerenderedMarkdown from "$lib/components/text/PrerenderedMarkdown.svelte";
+  import Badge from "$lib/components/ui/badge/badge.svelte";
   import Button from "$lib/components/ui/button/button.svelte";
   import ItemCarousel from "$lib/components/ui/carousel/ItemCarousel.svelte";
   import Icon from "$lib/components/ui/icon/Icon.svelte";
@@ -66,15 +67,19 @@
   <section>
     <dl>
       <div>
-        <dt>Shelter</dt>
+        <dt class="sr-only">Status</dt>
         <dd>
-          <ShelterLink shelter={data.animal.shelter} />
+          <Badge variant={ANIMALS.STATUS.MAP[data.animal.status].variant}>
+            {ANIMALS.STATUS.MAP[data.animal.status].label}
+          </Badge>
         </dd>
       </div>
 
       <div>
-        <dt>Status</dt>
-        <dd>{ANIMALS.STATUS.MAP[data.animal.status].label}</dd>
+        <dt>Shelter</dt>
+        <dd>
+          <ShelterLink shelter={data.animal.shelter} />
+        </dd>
       </div>
 
       <div>
@@ -91,10 +96,12 @@
         </dd>
       </div>
 
-      <div>
-        <dt>Breed</dt>
-        <dd>{data.animal.breed}</dd>
-      </div>
+      {#if data.animal.breed}
+        <div>
+          <dt>Breed</dt>
+          <dd>{data.animal.breed}</dd>
+        </div>
+      {/if}
 
       <div>
         <dt>Sterilized</dt>

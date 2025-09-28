@@ -57,7 +57,7 @@
   {#if data.shelter.animals.length}
     <section class="flex flex-wrap gap-3">
       {#each data.shelter.animals as animal}
-        <AnimalCard {animal} images={animal.images} shelter={data.shelter} />
+        <AnimalCard {animal} images={animal.images} />
       {/each}
     </section>
   {/if}

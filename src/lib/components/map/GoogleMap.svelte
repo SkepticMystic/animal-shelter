@@ -14,7 +14,7 @@ Janky dark mode workaround for Google Maps
 SOURCE: https://stackoverflow.com/questions/42457368/google-maps-night-mode-embed-iframe -->
 <iframe
   class={cn("w-full border-0", rest_props.class)}
-  height="400"
+  height="350"
   loading="lazy"
   allowfullscreen
   title={place.formatted_address}

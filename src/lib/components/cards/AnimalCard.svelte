@@ -10,6 +10,7 @@
   import AnimalLink from "../links/AnimalLink.svelte";
   import ShelterLink from "../links/ShelterLink.svelte";
   import Time from "../Time.svelte";
+  import Badge from "../ui/badge/badge.svelte";
   import Card from "../ui/card/Card.svelte";
   import Icon from "../ui/icon/Icon.svelte";
 
@@ -20,7 +21,7 @@
   }: {
     animal: Animal;
     images: Pick<Image, "url" | "thumbhash">[];
-    shelter: Pick<Shelter, "name" | "short_id">;
+    shelter?: Pick<Shelter, "name" | "short_id">;
   } = $props();
 
   const image = images[0];
@@ -36,28 +37,41 @@
   }}
 >
   {#snippet title()}
-    <AnimalLink {animal} class="text-lg" />
+    <div class="flex justify-between">
+      <AnimalLink {animal} class="text-lg" />
+
+      <Badge variant={ANIMALS.STATUS.MAP[animal.status].variant}>
+        {ANIMALS.STATUS.MAP[animal.status].label}
+      </Badge>
+    </div>
+
+    <span class="text-sm font-light text-muted-foreground">
+      {animal.breed ?? "-"}
+    </span>
   {/snippet}
 
   {#snippet content()}
     <div class="space-y-3">
       <dl>
-        <div>
-          <dt class="sr-only">Shelter</dt>
-          <dd><ShelterLink {shelter} /></dd>
-        </div>
+        {#if shelter}
+          <div>
+            <dt class="sr-only">Shelter</dt>
+            <dd>
+              <ShelterLink {shelter} />
+            </dd>
+          </div>
+        {/if}
       </dl>
 
       <div class="flex items-center justify-between">
-        {#if animal.date_of_birth}
-          <Time
-            date={animal.date_of_birth}
-            show={(dt) =>
-              Format.date_distance(dt, { suffix: "old", numeric: "always" })}
-          />
-        {:else}
-          <span class="text-sm text-muted-foreground">Age unknown</span>
-        {/if}
+        <Time
+          class="text-sm text-muted-foreground"
+          date={animal.date_of_birth}
+          show={(dt) =>
+            dt
+              ? Format.date_distance(dt, { suffix: "old", numeric: "always" })
+              : "Age unknown"}
+        />
 
         <div class="flex gap-1">
           {#if animal.sterilised}

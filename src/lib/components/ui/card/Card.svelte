@@ -51,7 +51,7 @@
 
       {#if description}
         <Card.Description>
-          {Strings.ellipsify(description, 150)}
+          {Strings.ellipsify(description, 100)}
         </Card.Description>
       {/if}
     </Card.Header>

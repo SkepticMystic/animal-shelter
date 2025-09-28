@@ -1,3 +1,4 @@
+import type { BadgeVariant } from "$lib/components/ui/badge";
 import type { SelectOption } from "$lib/interfaces";
 import type { ClassValue } from "svelte/elements";
 
@@ -52,15 +53,19 @@ const STATUS_IDS = [
 const STATUS_MAP = {
   available: {
     label: "Available",
+    variant: "default",
   },
   fostered: {
     label: "Fostered",
+    variant: "secondary",
   },
   adopted: {
     label: "Adopted",
+    variant: "outline",
   },
   deceased: {
     label: "Deceased",
+    variant: "destructive",
   },
 } satisfies Record<
   (typeof STATUS_IDS)[number],
@@ -68,6 +73,7 @@ const STATUS_MAP = {
     label: string;
     // NOTE: icons seem a little distasteful here...
     // icon: ClassValue;
+    variant: BadgeVariant;
   }
 >;
 
