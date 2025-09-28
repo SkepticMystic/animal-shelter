@@ -133,7 +133,6 @@
         {#snippet children({ props })}
           <Input
             {...props}
-            required
             placeholder="Border Collie, Domestic Short Hair, etc"
             bind:value={$form_data.breed}
           />

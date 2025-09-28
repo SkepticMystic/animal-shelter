@@ -59,7 +59,7 @@
 
           // "auto" seems fancy, but expensive
           // "fill" seems like a cheaper alternative
-          c: "fill",
+          c: "auto",
           g: "auto",
         },
       }}

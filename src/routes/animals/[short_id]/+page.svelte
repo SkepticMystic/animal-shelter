@@ -185,7 +185,7 @@
           {/snippet}
         </ItemCarousel>
       {:else}
-        <p>No other animals found.</p>
+        <p>No other {ANIMALS.SPECIES.MAP[data.animal.species].label}s found.</p>
       {/if}
     {:catch error}
       <p class="text-warning" {@attach () => console.error(error)}>
