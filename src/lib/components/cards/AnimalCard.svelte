@@ -37,17 +37,18 @@
   }}
 >
   {#snippet title()}
-    <div class="flex justify-between">
-      <AnimalLink {animal} class="text-lg" />
+    <div class="flex items-center justify-between">
+      <div class="flex flex-col">
+        <AnimalLink {animal} class="text-lg" />
+        <span class="text-sm font-light text-muted-foreground italic">
+          {animal.breed ?? "-"}
+        </span>
+      </div>
 
       <Badge variant={ANIMALS.STATUS.MAP[animal.status].variant}>
         {ANIMALS.STATUS.MAP[animal.status].label}
       </Badge>
     </div>
-
-    <span class="text-sm font-light text-muted-foreground">
-      {animal.breed ?? "-"}
-    </span>
   {/snippet}
 
   {#snippet content()}

@@ -11,6 +11,7 @@
   import Button from "$lib/components/ui/button/button.svelte";
   import ItemCarousel from "$lib/components/ui/carousel/ItemCarousel.svelte";
   import Dialog from "$lib/components/ui/dialog/dialog.svelte";
+  import Icon from "$lib/components/ui/icon/Icon.svelte";
   import Iconed from "$lib/components/ui/icon/Iconed.svelte";
   import { APP } from "$lib/const/app.js";
   import { DONATION_METHOD } from "$lib/const/donation_method.const.js";
@@ -82,9 +83,16 @@
 
   {#if data.shelter.donation_methods.length}
     <section>
-      <Iconed reversed icon="lucide/hand-heart" class="size-7">
-        <h2>Donate</h2>
-      </Iconed>
+      <header>
+        <Iconed reversed icon="lucide/hand-heart" class="size-7">
+          <h2>Donate</h2>
+        </Iconed>
+
+        <p class="text-muted-foreground">
+          Your donations help {data.shelter.name} continue their important work.
+          You can choose from the following methods to contribute:
+        </p>
+      </header>
 
       {#if data.shelter.npo_number}
         <span class="flex items-center gap-1">
@@ -98,72 +106,80 @@
         </span>
       {/if}
 
-      <div class="flex flex-col gap-4">
+      <ul class="flex flex-wrap gap-3">
         {#each data.shelter.donation_methods as donation_method}
-          <div class="rounded-lg border p-4">
-            <h3>
-              {donation_method.label ||
-                DONATION_METHOD.KIND.MAP[donation_method.data.kind].label}
-            </h3>
+          {@const label =
+            donation_method.label ||
+            DONATION_METHOD.KIND.MAP[donation_method.data.kind].label}
 
-            {#if donation_method.data.kind === "url"}
-              <ExternalLink
-                link={{ label: "", href: donation_method.data.href }}
-              />
-            {:else if donation_method.data.kind === "bank"}
-              <Dialog
-                title="Bank details"
-                description="Please use the following bank details to make your
-                      donation:"
-              >
-                {#snippet trigger()}
-                  View bank details
-                {/snippet}
+          <li class="w-full max-w-[300px] rounded-lg border p-3 shadow-sm">
+            <div class="flex items-center justify-between">
+              <h4>
+                {label}
+              </h4>
 
-                {#snippet content()}
-                  {@const data = donation_method.data as Extract<
-                    DonationMethod["data"],
-                    { kind: "bank" }
-                  >}
+              {#if donation_method.data.kind === "url"}
+                <ExternalLink
+                  link={{ label: "", href: donation_method.data.href }}
+                />
+              {:else if donation_method.data.kind === "bank"}
+                <Dialog
+                  title="Bank details"
+                  description="Please use the following bank details to make your donation:"
+                >
+                  {#snippet trigger()}
+                    <Icon
+                      icon="lucide/wallet-cards"
+                      title="View bank details"
+                    />
+                    Bank details
+                  {/snippet}
 
-                  <ul>
-                    <li>
-                      <strong> Bank: </strong>
-                      {data.bank_name}
-                    </li>
+                  {#snippet content()}
+                    {@const data = donation_method.data as Extract<
+                      DonationMethod["data"],
+                      { kind: "bank" }
+                    >}
 
-                    {#if data.branch_code}
-                      <li>
-                        <strong> Branch Code: </strong>
-                        {data.branch_code}
-                      </li>
-                    {/if}
+                    <dl>
+                      <div>
+                        <dt>Bank</dt>
+                        <dd>{data.bank_name}</dd>
+                      </div>
 
-                    <li>
-                      <strong> Account Number: </strong>
-                      {data.account_number}
-                    </li>
+                      {#if data.branch_code}
+                        <div>
+                          <dt>Branch Code</dt>
+                          <dd>{data.branch_code}</dd>
+                        </div>
+                      {/if}
 
-                    {#if data.swift_code}
-                      <li>
-                        <strong> Swift Code: </strong>
-                        {data.swift_code}
-                      </li>
-                    {/if}
+                      <div>
+                        <dt>Account Number</dt>
+                        <dd>{data.account_number}</dd>
+                      </div>
 
-                    {#if data.reference}
-                      <li>
-                        <strong> Reference: </strong>
-                        {data.reference}
-                      </li>
-                    {/if}
-                  </ul>
-                {/snippet}
-              </Dialog>
-            {/if}
-          </div>
+                      {#if data.swift_code}
+                        <div>
+                          <dt>Swift Code</dt>
+                          <dd>{data.swift_code}</dd>
+                        </div>
+                      {/if}
+
+                      {#if data.reference}
+                        <div>
+                          <dt>Reference</dt>
+                          <dd>{data.reference}</dd>
+                        </div>
+                      {/if}
+                    </dl>
+                  {/snippet}
+                </Dialog>
+              {/if}
+            </div>
+          </li>
         {/each}
-      </div>
+      </ul>
     </section>
   {/if}
 

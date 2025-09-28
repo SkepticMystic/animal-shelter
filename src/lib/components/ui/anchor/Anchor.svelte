@@ -31,7 +31,7 @@
     // But we don't take the rest cause then it forces the `size` classes on us
     "inline-block underline underline-offset-4",
     // Mine
-    "text-sm font-medium",
+    "font-medium",
     klass,
   )}
   bind:this={ref}

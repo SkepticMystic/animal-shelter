@@ -8,6 +8,7 @@
   import ShelterLink from "$lib/components/links/ShelterLink.svelte";
   import GoogleMap from "$lib/components/map/GoogleMap.svelte";
   import PrerenderedMarkdown from "$lib/components/text/PrerenderedMarkdown.svelte";
+  import Time from "$lib/components/Time.svelte";
   import Badge from "$lib/components/ui/badge/badge.svelte";
   import Button from "$lib/components/ui/button/button.svelte";
   import ItemCarousel from "$lib/components/ui/carousel/ItemCarousel.svelte";
@@ -76,9 +77,19 @@
       </div>
 
       <div>
-        <dt>Shelter</dt>
+        <dt>Age</dt>
         <dd>
-          <ShelterLink shelter={data.animal.shelter} />
+          <Time
+            date={data.animal.date_of_birth}
+            show={(dt) =>
+              dt
+                ? Format.date_distance(dt, {
+                    suffix: "old",
+                    style: "short",
+                    numeric: "always",
+                  })
+                : "Unknown"}
+          />
         </dd>
       </div>
 
@@ -94,14 +105,16 @@
         <dd>
           <Icon {...ANIMALS.SPECIES.MAP[data.animal.species]} />
         </dd>
-      </div>
 
-      {#if data.animal.breed}
-        <div>
-          <dt>Breed</dt>
-          <dd>{data.animal.breed}</dd>
-        </div>
-      {/if}
+        {#if data.animal.breed}
+          <span class="flex">
+            (
+            <dt class="sr-only">Breed</dt>
+            <dd>{data.animal.breed}</dd>
+            )
+          </span>
+        {/if}
+      </div>
 
       <div>
         <dt>Sterilized</dt>
@@ -114,20 +127,18 @@
       </div>
 
       <div>
-        <dt>Age</dt>
+        <dt>Shelter</dt>
         <dd>
-          {data.animal.date_of_birth
-            ? Format.date_distance(data.animal.date_of_birth, {
-                suffix: "old",
-                numeric: "always",
-              })
-            : "Unknown"}
+          <ShelterLink shelter={data.animal.shelter} />
         </dd>
-      </div>
 
-      <div>
-        <dt>Intake date</dt>
-        <dd>{Format.date(data.animal.intake_date)}</dd>
+        {#if data.animal.intake_date}
+          <span class="flex gap-1">
+            since
+            <dt class="sr-only">Intake date</dt>
+            <dd>{Format.date(data.animal.intake_date)}</dd>
+          </span>
+        {/if}
       </div>
     </dl>
   </section>
@@ -170,8 +181,10 @@
     <Separator />
 
     <h3>
-      Other {ANIMALS.SPECIES.MAP[data.animal.species].label}s at {data.animal
-        .shelter.name}
+      Other <span class="lowercase">
+        {ANIMALS.SPECIES.MAP[data.animal.species].label}s
+      </span>
+      at <ShelterLink shelter={data.animal.shelter} />
     </h3>
 
     {#await related_animals}
@@ -184,11 +197,7 @@
       {#if related.length}
         <ItemCarousel items={related}>
           {#snippet item(animal)}
-            <AnimalCard
-              {animal}
-              images={animal.images}
-              shelter={animal.shelter}
-            />
+            <AnimalCard {animal} images={animal.images} />
           {/snippet}
         </ItemCarousel>
       {:else}

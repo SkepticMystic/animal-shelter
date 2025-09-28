@@ -32,7 +32,7 @@
     <Picture
       {...picture}
       aspectRatio={16 / 9}
-      class="w-full rounded-b-none border-b object-cover"
+      class="w-full rounded-b-none border-b"
       height={IMAGES.SIZES.THUMBNAIL.height}
     />
   {/if}
@@ -51,7 +51,7 @@
 
       {#if description}
         <Card.Description>
-          {Strings.ellipsify(description, 100)}
+          {Strings.ellipsify(description, 150)}
         </Card.Description>
       {/if}
     </Card.Header>

@@ -1,5 +1,6 @@
 <script lang="ts">
   import Icon from "$lib/components/ui/icon/Icon.svelte";
+  import { ANIMALS } from "$lib/const/animal.const";
   import { APP } from "$lib/const/app";
   import { ROUTES } from "$lib/const/routes.const";
   import type { Link } from "$lib/schema/link.schema";
@@ -90,9 +91,16 @@
 
     <!-- Copyright -->
     <div class="mt-6 border-t pt-4">
-      <p class="text-center text-sm text-muted-foreground">
+      <p
+        class="flex items-center justify-center gap-1 text-sm text-muted-foreground"
+      >
         © {currentYear}
-        {APP.NAME}. Made with ❤️ for 🐶
+        {APP.NAME}. Made with
+        <Icon icon="lucide/heart" class="inline-block size-4" />
+        for {#each ANIMALS.SPECIES.IDS as species_id}
+          {@const { icon } = ANIMALS.SPECIES.MAP[species_id]}
+          <Icon {icon} class="inline-block size-4" />
+        {/each}
       </p>
     </div>
   </div>
