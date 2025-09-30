@@ -1,18 +1,16 @@
 <script lang="ts">
-  import Icon from "$lib/components/ui/icon/Icon.svelte";
   import type { DonationMethod } from "$lib/schema/donation_method.schema";
   import type { ShelterSchema } from "$lib/server/db/schema/shelter.model";
+  import { untrack } from "svelte";
   import {
     fieldProxy,
     type FormPath,
     type SuperForm,
   } from "sveltekit-superforms";
-  import FormControl from "../controls/FormControl.svelte";
-  import FormField from "../fields/FormField.svelte";
+  import FormFieldControl from "../fields/FormFieldControl.svelte";
   import SuperformInput from "../inputs/SuperformInput.svelte";
   import BankDonationMethodForm from "./BankDonationMethodForm.svelte";
   import UrlDonationMethodForm from "./UrlDonationMethodForm.svelte";
-  import { untrack } from "svelte";
 
   let {
     form,
@@ -58,27 +56,16 @@
     {/snippet}
   </FormField> -->
 
-  <FormField {form} name="{name}.label">
-    {#snippet children(props)}
-      <FormControl {...props} label="Label (optional)">
-        {#snippet children({ props })}
-          <div class="relative">
-            <SuperformInput
-              {...props}
-              {form}
-              class="pr-7"
-              placeholder="Paypal, Bank Transfer, etc."
-            />
-
-            <Icon
-              icon="lucide/tag"
-              class="pointer-events-none absolute top-1/2 right-2 -translate-y-1/2 opacity-60"
-            />
-          </div>
-        {/snippet}
-      </FormControl>
+  <FormFieldControl {form} name="{name}.label" label="Label (optional)">
+    {#snippet children({ props })}
+      <SuperformInput
+        {...props}
+        {form}
+        icon="lucide/tag"
+        placeholder="Paypal, Bank Transfer, etc."
+      />
     {/snippet}
-  </FormField>
+  </FormFieldControl>
 
   {#if $donation_method.data.kind === "bank"}
     <BankDonationMethodForm {form} name="{name}.data" />

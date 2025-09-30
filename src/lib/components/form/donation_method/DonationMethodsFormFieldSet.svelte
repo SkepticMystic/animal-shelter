@@ -37,7 +37,6 @@
       $values = [
         ...$values,
         {
-          label: "",
           id: crypto.randomUUID().split("-")[0],
           data: {
             ...DONATION_METHOD.KIND.DEFAULTS[kind],

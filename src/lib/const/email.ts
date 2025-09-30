@@ -125,5 +125,29 @@ ${COMMON.SIGNATURE.HTML}`.trim();
         subject: `Your ${APP.NAME} account has been deleted`,
       };
     },
+
+    "admin-contact-form": (input: {
+      name: string;
+      email: string;
+      message: string;
+    }): SendEmailOptions => {
+      const html = `
+<p>You have received a new message from the contact form on ${APP.NAME}.</p>
+
+<p><strong>Name:</strong> ${input.name}</p>
+<p><strong>Email:</strong> ${input.email}</p>
+
+<p><strong>Message:</strong></p>
+<p>${input.message.replaceAll(/\n/g, "<br />")}</p>
+
+${COMMON.SIGNATURE.HTML}`.trim();
+
+      return {
+        html,
+        to: "rossk29@pm.me",
+        text: Markdown.from_html(html),
+        subject: `New contact form submission from ${input.name}`,
+      };
+    },
   },
 };

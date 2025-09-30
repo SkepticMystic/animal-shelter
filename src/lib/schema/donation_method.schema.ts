@@ -4,7 +4,7 @@ import { Url } from "../utils/urls";
 
 export const donation_method_schema = z.object({
   id: z.string().min(1),
-  label: z.string().max(100),
+  label: z.string().max(100).optional(),
 
   data: z.discriminatedUnion("kind", [
     z.object({

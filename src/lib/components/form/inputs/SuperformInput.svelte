@@ -6,8 +6,9 @@
   import Input from "$lib/components/ui/input/input.svelte";
   import type { FsSuperForm } from "formsnap";
   import { untrack, type ComponentProps } from "svelte";
+  import type { HTMLInputTypeAttribute } from "svelte/elements";
   import {
-    fieldProxy,
+    formFieldProxy,
     type FormPathLeaves,
     type SuperForm,
   } from "sveltekit-superforms";
@@ -15,8 +16,10 @@
   let {
     form,
     name,
+    value: _value,
     ...rest
-  }: Omit<ComponentProps<typeof Input>, "name" | "form"> & {
+  }: Omit<ComponentProps<typeof Input>, "name" | "form" | "type" | "files"> & {
+    type?: Exclude<HTMLInputTypeAttribute, "file">;
     form: SuperForm<T> | FsSuperForm<T>;
     // Not having `| string` would be nice
     // But in practice, we get the `name` prop from the wrapping Control
@@ -25,13 +28,13 @@
     name: string | FormPathLeaves<T>;
   } = $props();
 
-  const value = $derived(
-    fieldProxy(
+  const { value, constraints } = $derived(
+    formFieldProxy(
       untrack(() => form as SuperForm<T>),
       name as FormPathLeaves<T>,
     ),
   );
-  $inspect(name, $value);
 </script>
 
-<Input {...rest} {name} bind:value={$value} />
+<!-- NOTE: Default required to $constraints, but allow ...rest to override -->
+<Input required={$constraints?.required} {...rest} {name} bind:value={$value} />
