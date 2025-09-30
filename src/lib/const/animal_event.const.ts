@@ -35,7 +35,7 @@ const KIND_MAP = {
   },
   walk: {
     label: "Walk",
-    icon: "lucide/shoe-print",
+    icon: "lucide/footprints",
   },
   injury: {
     label: "Injury",

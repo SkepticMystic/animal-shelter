@@ -42,6 +42,27 @@ export const AnimalEventUtil = {
         return "-";
       }
 
+      case "walk": {
+        return (
+          [
+            event.data.distance_meters
+              ? Format.number(event.data.distance_meters / 1_000, {
+                  style: "unit",
+                  unit: "kilometer",
+                })
+              : null,
+            event.data.duration_minutes
+              ? Format.number(event.data.duration_minutes, {
+                  style: "unit",
+                  unit: "minute",
+                })
+              : null,
+          ]
+            .filter(Boolean)
+            .join(", ") || "-"
+        );
+      }
+
       default: {
         return "UNHANDLED";
       }
