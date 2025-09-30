@@ -85,7 +85,6 @@
               dt
                 ? Format.date_distance(dt, {
                     suffix: "old",
-                    style: "short",
                     numeric: "always",
                   })
                 : "Unknown"}
@@ -100,18 +99,17 @@
         </dd>
       </div>
 
-      <div>
+      <div class="flex flex-wrap items-center">
         <dt>Species</dt>
         <dd>
           <Icon {...ANIMALS.SPECIES.MAP[data.animal.species]} />
         </dd>
 
         {#if data.animal.breed}
-          <span class="flex">
-            (
+          <span class="flex items-center">
+            <span class="mr-1">-</span>
             <dt class="sr-only">Breed</dt>
             <dd>{data.animal.breed}</dd>
-            )
           </span>
         {/if}
       </div>
@@ -126,17 +124,19 @@
         <dd>{data.animal.microchip_number ? "Yes" : "No"}</dd>
       </div>
 
-      <div>
+      <div class="flex flex-wrap items-center">
         <dt>Shelter</dt>
         <dd>
           <ShelterLink shelter={data.animal.shelter} />
         </dd>
 
         {#if data.animal.intake_date}
-          <span class="flex gap-1">
+          <span class="flex items-center gap-x-1">
             since
             <dt class="sr-only">Intake date</dt>
-            <dd>{Format.date(data.animal.intake_date)}</dd>
+            <dd>
+              <Time show="date" date={data.animal.intake_date} />
+            </dd>
           </span>
         {/if}
       </div>

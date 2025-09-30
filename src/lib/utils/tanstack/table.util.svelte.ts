@@ -6,12 +6,12 @@ import { getLocalTimeZone } from "@internationalized/date";
 import type {
   Column,
   ColumnDef,
+  ColumnFiltersState,
   FilterFn,
   Row,
   RowData,
 } from "@tanstack/table-core";
 import {
-  type ColumnFiltersState,
   type PaginationState,
   type RowSelectionState,
   type SortingState,

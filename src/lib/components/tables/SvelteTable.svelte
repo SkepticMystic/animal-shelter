@@ -13,6 +13,9 @@
   } from "@tanstack/table-core";
   import type { Snippet } from "svelte";
 
+  const resolve_updater = <T,>(updater: T | ((old: T) => T), old: T): T =>
+    typeof updater === "function" ? (updater as (old: T) => T)(old) : updater;
+
   /** Rune-y wrapper around createSvelteTable
    * Let's us render different UI around the tanstack functionality
    * Not just a Shad datatable, but could be a grid of cards, for example
@@ -91,39 +94,28 @@
     onSortingChange:
       states.sorting === false
         ? undefined
-        : (updater) =>
-            (sorting =
-              typeof updater === "function" ? updater(sorting!) : updater),
+        : (updater) => (sorting = resolve_updater(updater, sorting!)),
 
     onColumnFiltersChange:
       states.column_filters === false
         ? undefined
         : (updater) =>
-            (column_filters =
-              typeof updater === "function"
-                ? updater(column_filters!)
-                : updater),
+            (column_filters = resolve_updater(updater, column_filters!)),
 
     onPaginationChange:
       states.pagination === false
         ? undefined
-        : (updater) =>
-            (pagination =
-              typeof updater === "function" ? updater(pagination!) : updater),
+        : (updater) => (pagination = resolve_updater(updater, pagination!)),
 
     onRowSelectionChange:
       states.selection === false
         ? undefined
-        : (updater) =>
-            (selection =
-              typeof updater === "function" ? updater(selection!) : updater),
+        : (updater) => (selection = resolve_updater(updater, selection!)),
 
     onColumnVisibilityChange:
       states.visibility === false
         ? undefined
-        : (updater) =>
-            (visibility =
-              typeof updater === "function" ? updater(visibility!) : updater),
+        : (updater) => (visibility = resolve_updater(updater, visibility!)),
   });
 </script>
 
