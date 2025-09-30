@@ -3,6 +3,7 @@
   import { ANIMALS } from "$lib/const/animal.const";
   import { ANIMAL_EVENTS } from "$lib/const/animal_event.const";
   import { ROUTES } from "$lib/const/routes.const";
+  import { STYLES } from "$lib/const/styles.const";
   import type { Animal } from "$lib/server/db/schema/animal.model";
   import type { Image } from "$lib/server/db/schema/image.model";
   import type { Shelter } from "$lib/server/db/schema/shelter.model";
@@ -28,6 +29,7 @@
 </script>
 
 <Card
+  class={STYLES.CARD.SIZE}
   description={animal.description}
   picture={{
     image,

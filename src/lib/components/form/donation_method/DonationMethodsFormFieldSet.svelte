@@ -58,10 +58,10 @@
   legend="Donation methods"
   description="Optional ways to donate to the shelter."
 >
-  <div class="grid gap-3 sm:grid-cols-2">
+  <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
     {#each $values as { id }, i (id)}
       <div class="flex items-center gap-1">
-        <span class="flex-1 truncate rounded-md border px-2 py-1">
+        <span class="max-w-xs flex-1 truncate rounded-md border px-2 py-1">
           <strong>
             {DONATION_METHOD.KIND.MAP[$values[i].data.kind].label}:
           </strong>

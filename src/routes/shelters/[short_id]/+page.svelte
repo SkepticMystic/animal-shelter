@@ -112,7 +112,7 @@
             donation_method.label ||
             DONATION_METHOD.KIND.MAP[donation_method.data.kind].label}
 
-          <li class="w-full max-w-[300px] rounded-lg border p-3 shadow-sm">
+          <li class="w-full max-w-[400px] rounded-lg border p-3 shadow-sm">
             <div class="flex items-center justify-between">
               <h4>
                 {label}

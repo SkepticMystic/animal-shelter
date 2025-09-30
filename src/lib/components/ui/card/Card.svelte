@@ -2,7 +2,6 @@
   import Picture from "$lib/components/images/Picture.svelte";
   import * as Card from "$lib/components/ui/card/index.js";
   import { IMAGES } from "$lib/const/image.const";
-  import { STYLES } from "$lib/const/styles.const";
   import { cn } from "$lib/utils/shadcn.util";
   import { Strings } from "$lib/utils/strings.util";
   import type { ComponentProps, Snippet } from "svelte";
@@ -27,7 +26,7 @@
   } = $props();
 </script>
 
-<Card.Root class={cn(STYLES.CARD.SIZE, klass)}>
+<Card.Root class={cn(picture ? "" : "py-5", klass)}>
   {#if picture}
     <Picture
       {...picture}
