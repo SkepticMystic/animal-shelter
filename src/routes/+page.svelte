@@ -20,6 +20,7 @@
 
     {#if $session.data}
       {#if $session.data.session.activeOrganizationId}
+        <Button href={ROUTES.SHELTER} variant="outline">Dashboard</Button>
         <Button href={ROUTES.AUTH_ORGANIZATION} variant="outline">Team</Button>
       {:else if AccessClient.user_can({ organization: ["create"] })}
         <Button href={ROUTES.AUTH_ORGANIZATION_CREATE} variant="outline">

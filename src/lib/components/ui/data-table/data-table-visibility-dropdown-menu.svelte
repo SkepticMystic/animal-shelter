@@ -1,7 +1,7 @@
 <script lang="ts" generics="TData">
   import Button from "$lib/components/ui/button/button.svelte";
   import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index";
-  import { TanstackTable } from "$lib/utils/tanstack/table.util";
+  import { TanstackTable } from "$lib/utils/tanstack/table.util.svelte";
   import { type Table } from "@tanstack/table-core";
 
   let {

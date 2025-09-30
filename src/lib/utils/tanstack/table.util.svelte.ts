@@ -10,6 +10,13 @@ import type {
   Row,
   RowData,
 } from "@tanstack/table-core";
+import {
+  type ColumnFiltersState,
+  type PaginationState,
+  type RowSelectionState,
+  type SortingState,
+  type VisibilityState,
+} from "@tanstack/table-core";
 import type { DateRange } from "bits-ui";
 import type { ComponentProps } from "svelte";
 import type { Item } from "../items.util";
@@ -99,6 +106,22 @@ const filter_fns = {
 
     return value >= filter.start.toDate(tz) && value <= filter.end.toDate(tz);
   }) satisfies FilterFn<RowData>,
+};
+
+export type SvelteTableInput<TData extends Item, TValue> = {
+  data: TData[];
+  columns: ColumnDef<TData, TValue>[];
+
+  faceting?: boolean;
+
+  // state
+  states?: {
+    sorting?: SortingState | false;
+    pagination?: PaginationState | false;
+    visibility?: VisibilityState | false;
+    selection?: RowSelectionState | false;
+    column_filters?: ColumnFiltersState | false;
+  };
 };
 
 export const TanstackTable = {

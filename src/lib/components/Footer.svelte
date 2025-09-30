@@ -4,6 +4,7 @@
   import { APP } from "$lib/const/app";
   import { ROUTES } from "$lib/const/routes.const";
   import type { Link } from "$lib/schema/link.schema";
+  import { session } from "$lib/stores/session";
   import AppLogo from "./images/AppLogo.svelte";
   import Anchor from "./ui/anchor/Anchor.svelte";
 
@@ -14,15 +15,19 @@
 
   type FooterSection = {
     title: string;
-    links: FooterLink[];
+    links: (FooterLink | null)[];
   };
 
-  const sections: FooterSection[] = [
+  const sections: FooterSection[] = $derived([
     {
       title: "Pages",
       links: [
         { label: "Animals", href: ROUTES.ANIMALS },
         { label: "Shelters", href: ROUTES.SHELTERS },
+
+        $session.data?.session.activeOrganizationId
+          ? { label: "My Shelter", href: ROUTES.SHELTER }
+          : null,
       ],
     },
     {
@@ -41,7 +46,7 @@
         { label: "Terms of Service", href: "/legal/terms" },
       ],
     },
-  ];
+  ]);
 
   const currentYear = new Date().getFullYear();
 </script>
@@ -70,19 +75,21 @@
 
           <nav class="mt-4 flex flex-col gap-y-2">
             {#each section.links as link}
-              <Anchor
-                icon={link.icon}
-                href={link.href}
-                class="text-sm text-muted-foreground no-underline transition-colors hover:text-foreground"
-                target={link.external ? "_blank" : undefined}
-                rel={link.external ? "noopener noreferrer" : undefined}
-              >
-                {link.label}
+              {#if link}
+                <Anchor
+                  icon={link.icon}
+                  href={link.href}
+                  class="text-sm text-muted-foreground no-underline transition-colors hover:text-foreground"
+                  target={link.external ? "_blank" : undefined}
+                  rel={link.external ? "noopener noreferrer" : undefined}
+                >
+                  {link.label}
 
-                {#if link.external}
-                  <Icon icon="lucide/external-link" class="size-3" />
-                {/if}
-              </Anchor>
+                  {#if link.external}
+                    <Icon icon="lucide/external-link" class="size-3" />
+                  {/if}
+                </Anchor>
+              {/if}
             {/each}
           </nav>
         </div>

@@ -1,6 +1,5 @@
 <script lang="ts">
   import { InvitationClient } from "$lib/clients/invitation.client";
-  import { OrganizationClient } from "$lib/clients/organizations.client";
   import Time from "$lib/components/Time.svelte";
   import { renderComponent } from "$lib/components/ui/data-table";
   import DataTable from "$lib/components/ui/data-table/data-table.svelte";
@@ -11,7 +10,7 @@
     ORGANIZATION,
   } from "$lib/const/organization.const";
   import { Items } from "$lib/utils/items.util";
-  import { TanstackTable } from "$lib/utils/tanstack/table.util";
+  import { TanstackTable } from "$lib/utils/tanstack/table.util.svelte";
   import type { Invitation } from "better-auth/plugins";
 
   let {

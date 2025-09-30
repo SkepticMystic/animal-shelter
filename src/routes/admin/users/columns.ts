@@ -5,7 +5,7 @@ import { renderComponent } from "$lib/components/ui/data-table";
 import SingleSelect from "$lib/components/ui/select/SingleSelect.svelte";
 import { ADMIN, type IAdmin } from "$lib/const/admin.const";
 import type { User } from "$lib/server/db/schema/auth.model";
-import { TanstackTable } from "$lib/utils/tanstack/table.util";
+import { TanstackTable } from "$lib/utils/tanstack/table.util.svelte";
 
 export const columns = TanstackTable.make_columns<User>({
   columns: [

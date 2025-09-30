@@ -11,7 +11,7 @@
   import { Items } from "$lib/utils/items.util";
   import { Markdown } from "$lib/utils/markdown";
   import { Strings } from "$lib/utils/strings.util";
-  import { TanstackTable } from "$lib/utils/tanstack/table.util";
+  import { TanstackTable } from "$lib/utils/tanstack/table.util.svelte";
   import type { DateRange } from "bits-ui";
   import { type ComponentProps } from "svelte";
   import AnimalLink from "../links/AnimalLink.svelte";

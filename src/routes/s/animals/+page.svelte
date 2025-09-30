@@ -1,4 +1,5 @@
 <script lang="ts">
+  import BackButton from "$lib/components/buttons/BackButton.svelte";
   import Button from "$lib/components/ui/button/button.svelte";
   import DataTable from "$lib/components/ui/data-table/data-table.svelte";
   import DateRangePicker from "$lib/components/ui/date-picker/DateRangePicker.svelte";
@@ -10,7 +11,6 @@
   import { get_shelter_animals_remote } from "$lib/remote/animal.remote";
   import type { DateRange } from "bits-ui";
   import { columns } from "./columns";
-  import BackButton from "$lib/components/buttons/BackButton.svelte";
 
   const get_animals = get_shelter_animals_remote({});
 </script>

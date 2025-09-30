@@ -12,7 +12,7 @@ import { IMAGES } from "$lib/const/image.const";
 import { ROUTES } from "$lib/const/routes.const";
 import type { get_shelter_animals_remote } from "$lib/remote/animal.remote";
 import { Format } from "$lib/utils/format.util";
-import { TanstackTable } from "$lib/utils/tanstack/table.util";
+import { TanstackTable } from "$lib/utils/tanstack/table.util.svelte";
 
 type TData = Awaited<ReturnType<typeof get_shelter_animals_remote>>[number];
 

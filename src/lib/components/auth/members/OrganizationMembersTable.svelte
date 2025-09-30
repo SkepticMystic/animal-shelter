@@ -11,7 +11,7 @@
   } from "$lib/const/organization.const";
   import type { Member, User } from "$lib/server/db/schema/auth.model";
   import { Items } from "$lib/utils/items.util";
-  import { TanstackTable } from "$lib/utils/tanstack/table.util";
+  import { TanstackTable } from "$lib/utils/tanstack/table.util.svelte";
 
   let {
     members = $bindable(),
