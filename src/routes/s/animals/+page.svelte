@@ -1,5 +1,6 @@
 <script lang="ts">
   import BackButton from "$lib/components/buttons/BackButton.svelte";
+  import TanTableResetColumnFiltersButton from "$lib/components/tables/TanTableResetColumnFiltersButton.svelte";
   import Button from "$lib/components/ui/button/button.svelte";
   import DataTable from "$lib/components/ui/data-table/data-table.svelte";
   import DateRangePicker from "$lib/components/ui/date-picker/DateRangePicker.svelte";
@@ -69,13 +70,7 @@
             }
           />
 
-          {#if table.getState().columnFilters.length}
-            <Button
-              icon="lucide/x"
-              variant="ghost"
-              onclick={() => table.resetColumnFilters()}
-            />
-          {/if}
+          <TanTableResetColumnFiltersButton {table} />
         </div>
       {/snippet}
     </DataTable>

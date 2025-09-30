@@ -16,11 +16,11 @@
   import { type ComponentProps } from "svelte";
   import AnimalLink from "../links/AnimalLink.svelte";
   import Time from "../Time.svelte";
-  import Button from "../ui/button/button.svelte";
   import { renderComponent } from "../ui/data-table";
   import DateRangePicker from "../ui/date-picker/DateRangePicker.svelte";
   import Icon from "../ui/icon/Icon.svelte";
   import MultiSelect from "../ui/select/MultiSelect.svelte";
+  import TanTableResetColumnFiltersButton from "./TanTableResetColumnFiltersButton.svelte";
 
   type TData = Pick<
     AnimalEvent,
@@ -161,13 +161,7 @@
         }
       />
 
-      {#if table.getState().columnFilters.length}
-        <Button
-          icon="lucide/x"
-          variant="ghost"
-          onclick={() => table.resetColumnFilters()}
-        />
-      {/if}
+      <TanTableResetColumnFiltersButton {table} />
     </div>
   {/snippet}
 </DataTable>

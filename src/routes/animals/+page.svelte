@@ -1,7 +1,7 @@
 <script lang="ts">
   import AnimalCard from "$lib/components/cards/AnimalCard.svelte";
   import SvelteTable from "$lib/components/tables/SvelteTable.svelte";
-  import Button from "$lib/components/ui/button/button.svelte";
+  import TanTableResetColumnFiltersButton from "$lib/components/tables/TanTableResetColumnFiltersButton.svelte";
   import DateRangePicker from "$lib/components/ui/date-picker/DateRangePicker.svelte";
   import Input from "$lib/components/ui/input/input.svelte";
   import MultiSelect from "$lib/components/ui/select/MultiSelect.svelte";
@@ -67,13 +67,7 @@
             }
           />
 
-          {#if table.getState().columnFilters.length}
-            <Button
-              icon="lucide/x"
-              variant="ghost"
-              onclick={() => table.resetColumnFilters()}
-            />
-          {/if}
+          <TanTableResetColumnFiltersButton {table} />
         </div>
 
         <div class="flex flex-wrap gap-3">

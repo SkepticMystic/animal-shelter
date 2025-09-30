@@ -1,5 +1,5 @@
 <script lang="ts">
-  import Button from "$lib/components/ui/button/button.svelte";
+  import TanTableResetColumnFiltersButton from "$lib/components/tables/TanTableResetColumnFiltersButton.svelte";
   import DataTable from "$lib/components/ui/data-table/data-table.svelte";
   import Input from "$lib/components/ui/input/input.svelte";
   import Loading from "$lib/components/ui/loading/Loading.svelte";
@@ -33,13 +33,7 @@
             }
           />
 
-          {#if table.getState().columnFilters.length}
-            <Button
-              icon="lucide/x"
-              variant="ghost"
-              onclick={() => table.resetColumnFilters()}
-            />
-          {/if}
+          <TanTableResetColumnFiltersButton {table} />
         </div>
       {/snippet}
     </DataTable>
