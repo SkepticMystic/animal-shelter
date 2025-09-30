@@ -229,6 +229,9 @@ button.loading > .icon:not(:first-child) {
   --text-color: var(--text-color-dark);
 }
 
+.carta-theme__default .carta-wrapper {
+  @apply pr-0;
+}
 .carta-theme__default .carta-container > * {
   @apply mt-1.5 mb-0;
 }
