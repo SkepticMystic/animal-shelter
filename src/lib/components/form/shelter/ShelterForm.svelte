@@ -8,9 +8,8 @@
   } from "$lib/server/db/schema/shelter.model";
   import { make_super_form, type APIResult } from "$lib/utils/form.util";
   import type { SuperValidated } from "sveltekit-superforms";
-  import FormControl from "../controls/FormControl.svelte";
   import DonationMethodsFormFieldSet from "../donation_method/DonationMethodsFormFieldSet.svelte";
-  import FormField from "../fields/FormField.svelte";
+  import FormFieldControl from "../fields/FormFieldControl.svelte";
   import FormMessage from "../FormMessage.svelte";
   import SuperformInput from "../inputs/SuperformInput.svelte";
   import LinksFormFieldSet from "../links/LinksFormFieldSet.svelte";
@@ -44,48 +43,40 @@
 <form class="space-y-7" method="POST" use:form.enhance>
   <section>
     <div class="grid gap-3 md:grid-cols-3">
-      <FormField {form} name="name" description="The name of the shelter">
-        {#snippet children(props)}
-          <FormControl {...props} label="Name">
-            {#snippet children({ props })}
-              <SuperformInput {...props} {form} required placeholder="Name" />
-            {/snippet}
-          </FormControl>
+      <FormFieldControl
+        {form}
+        name="name"
+        description="The name of the shelter"
+        label="Name"
+      >
+        {#snippet children({ props })}
+          <SuperformInput {...props} {form} required placeholder="Name" />
         {/snippet}
-      </FormField>
+      </FormFieldControl>
 
-      <FormField
+      <FormFieldControl
         {form}
         name="place"
         class="md:col-span-2"
         description="Where is the shelter located?"
+        label="Location"
       >
-        {#snippet children(props)}
-          <FormControl {...props} label="Location">
-            {#snippet children({ props })}
-              <GooglePlaceAutocomplete
-                {...props}
-                bind:place={$form_data.place}
-              />
-            {/snippet}
-          </FormControl>
+        {#snippet children({ props })}
+          <GooglePlaceAutocomplete {...props} bind:place={$form_data.place} />
         {/snippet}
-      </FormField>
+      </FormFieldControl>
     </div>
 
-    <FormField
+    <FormFieldControl
       {form}
       name="description"
       description="Tell us about the shelter"
+      label="Description"
     >
-      {#snippet children(props)}
-        <FormControl {...props} label="Description">
-          {#snippet children({ props })}
-            <MarkdownTextarea {...props} bind:value={$form_data.description} />
-          {/snippet}
-        </FormControl>
+      {#snippet children({ props })}
+        <MarkdownTextarea {...props} bind:value={$form_data.description} />
       {/snippet}
-    </FormField>
+    </FormFieldControl>
   </section>
 
   <section>
@@ -117,20 +108,17 @@
   <section>
     <h4>Donations</h4>
 
-    <FormField
+    <FormFieldControl
       {form}
       class="w-fit"
       name="npo_number"
       description="Non-Profit Organization registration number"
+      label="NPO Number"
     >
-      {#snippet children(props)}
-        <FormControl {...props} label="NPO Number">
-          {#snippet children({ props })}
-            <SuperformInput {...props} {form} placeholder="123-456 NPO" />
-          {/snippet}
-        </FormControl>
+      {#snippet children({ props })}
+        <SuperformInput {...props} {form} placeholder="123-456 NPO" />
       {/snippet}
-    </FormField>
+    </FormFieldControl>
 
     <DonationMethodsFormFieldSet {form} name="donation_methods" />
   </section>

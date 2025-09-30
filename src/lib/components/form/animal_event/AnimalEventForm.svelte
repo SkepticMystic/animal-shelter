@@ -4,7 +4,6 @@
   import SingleCombobox from "$lib/components/ui/combobox/SingleCombobox.svelte";
   import NaturalLanguageDatePicker from "$lib/components/ui/date-picker/NaturalLanguageDatePicker.svelte";
   import FormButton from "$lib/components/ui/form/form-button.svelte";
-  import Input from "$lib/components/ui/input/input.svelte";
   import Loading from "$lib/components/ui/loading/Loading.svelte";
   import SingleSelect from "$lib/components/ui/select/SingleSelect.svelte";
   import {
@@ -22,9 +21,9 @@
   import { make_super_form, type APIResult } from "$lib/utils/form.util";
   import { Format } from "$lib/utils/format.util";
   import type { SuperValidated } from "sveltekit-superforms";
-  import FormControl from "../controls/FormControl.svelte";
-  import FormField from "../fields/FormField.svelte";
+  import FormFieldControl from "../fields/FormFieldControl.svelte";
   import FormMessage from "../FormMessage.svelte";
+  import SuperformInput from "../inputs/SuperformInput.svelte";
   import MarkdownTextarea from "../textarea/MarkdownTextarea.svelte";
   import AdoptEventDataForm from "./AdoptEventDataForm.svelte";
   import FosterEventDataForm from "./FosterEventDataForm.svelte";
@@ -59,27 +58,26 @@
 </script>
 
 <form class="space-y-5" method="POST" use:form.enhance>
-  <FormField
+  <FormFieldControl
     {form}
     name="data.kind"
     description={mode === "update"
       ? "Cannot update event type. Rather create a new event"
       : ""}
+    label="Event type"
   >
-    <FormControl label="Event type">
-      {#snippet children({ props })}
-        <SingleSelect
-          {...props}
-          required
-          disabled={mode === "update"}
-          options={ANIMAL_EVENTS.KINDS.OPTIONS}
-          bind:value={
-            () => $form_data.data.kind, (value) => on_event_kind_change(value)
-          }
-        />
-      {/snippet}
-    </FormControl>
-  </FormField>
+    {#snippet children({ props })}
+      <SingleSelect
+        {...props}
+        required
+        disabled={mode === "update"}
+        options={ANIMAL_EVENTS.KINDS.OPTIONS}
+        bind:value={
+          () => $form_data.data.kind, (value) => on_event_kind_change(value)
+        }
+      />
+    {/snippet}
+  </FormFieldControl>
 
   <section>
     {#if $form_data.data.kind === "weigh"}
@@ -104,100 +102,98 @@
   </section>
 
   {#if !form_input.data.animal_id}
-    <FormField
+    <FormFieldControl
       {form}
       name="animal_id"
       description="The animal this event is for"
+      label="Animal"
     >
-      <FormControl label="Animal">
-        {#snippet children({ props })}
-          <!-- NOTE: Huh, something weird about remote functions here...
+      {#snippet children({ props })}
+        <!-- NOTE: Huh, something weird about remote functions here...
                Usually I'd just inline all this with a .then to map the result
                But then the remote seems to return undefined... -->
-          <AsyncSingleComboxbox
-            {...props}
-            search={async (query) => {
-              const r = await get_shelter_animals_remote({ smart: { query } });
-              return r.map((a) => ({ value: a.id, label: a.name }));
-            }}
-            bind:value={$form_data.animal_id}
-          />
-        {/snippet}
-      </FormControl>
-    </FormField>
+        <AsyncSingleComboxbox
+          {...props}
+          search={async (query) => {
+            const r = await get_shelter_animals_remote({ smart: { query } });
+            return r.map((a) => ({ value: a.id, label: a.name }));
+          }}
+          bind:value={$form_data.animal_id}
+        />
+      {/snippet}
+    </FormFieldControl>
   {/if}
 
   <div class="flex flex-col gap-2 md:flex-row">
-    <FormField
+    <FormFieldControl
       {form}
       name="administered_by_member_id"
       description="The member who noticed/administered the event"
+      label="Linked member (optional)"
     >
-      <FormControl label="Linked member (optional)">
-        {#snippet children({ props })}
-          {#await BetterAuthClient.organization.listMembers()}
-            <Loading loading title="Loading members..." />
-          {:then members}
-            {@const options = members.data
-              ? members.data.members.map((m) => ({
-                  value: m.id,
-                  label:
-                    m.user.name +
-                    (m.id === $session.data?.session.member_id ? " (you)" : ""),
-                }))
-              : []}
+      {#snippet children({ props })}
+        {#await BetterAuthClient.organization.listMembers()}
+          <Loading loading title="Loading members..." />
+        {:then members}
+          {@const options = members.data
+            ? members.data.members.map((m) => ({
+                value: m.id,
+                label:
+                  m.user.name +
+                  (m.id === $session.data?.session.member_id ? " (you)" : ""),
+              }))
+            : []}
 
-            <SingleCombobox
-              {...props}
-              {options}
-              bind:value={$form_data.administered_by_member_id}
-            />
-          {/await}
-        {/snippet}
-      </FormControl>
-    </FormField>
+          <SingleCombobox
+            {...props}
+            {options}
+            bind:value={$form_data.administered_by_member_id}
+          />
+        {/await}
+      {/snippet}
+    </FormFieldControl>
 
-    <FormField
+    <FormFieldControl
       {form}
       name="administered_by_name"
       description="Or, if not a member, the name of the person"
+      label="Linked name (optional)"
     >
-      <FormControl label="Linked name (optional)">
-        {#snippet children({ props })}
-          <Input {...props} bind:value={$form_data.administered_by_name} />
-        {/snippet}
-      </FormControl>
-    </FormField>
+      {#snippet children({ props })}
+        <SuperformInput {...props} {form} />
+      {/snippet}
+    </FormFieldControl>
   </div>
 
-  <FormField
+  <FormFieldControl
     {form}
     name="timestamp"
     description={$form_data.timestamp
       ? Format.date($form_data.timestamp)
       : "Approximate date is fine"}
+    label="Date"
   >
-    <FormControl label="Date">
-      {#snippet children({ props })}
-        <NaturalLanguageDatePicker
-          {...props}
-          bind:value={
-            () =>
-              $form_data.timestamp ? new Date($form_data.timestamp) : null,
-            (date) => ($form_data.timestamp = date)
-          }
-        />
-      {/snippet}
-    </FormControl>
-  </FormField>
+    {#snippet children({ props })}
+      <NaturalLanguageDatePicker
+        {...props}
+        bind:value={
+          () => ($form_data.timestamp ? new Date($form_data.timestamp) : null),
+          (date) => ($form_data.timestamp = date)
+        }
+      />
+    {/snippet}
+  </FormFieldControl>
 
-  <FormField {form} name="notes" description="Any notes about the event">
-    <FormControl label="Notes">
-      {#snippet children({ props })}
-        <MarkdownTextarea {...props} bind:value={$form_data.notes} />
-      {/snippet}
-    </FormControl>
-  </FormField>
+  <FormFieldControl
+    {form}
+    name="notes"
+    description="Any notes about the event"
+    label="Notes"
+  >
+    {#snippet children({ props })}
+      <MarkdownTextarea {...props} bind:value={$form_data.notes} />
+    {/snippet}
+  </FormFieldControl>
 
   <FormButton {form} class="w-full" icon="lucide/send">
     {mode === "insert" ? "Add event" : "Update event"}

@@ -1,8 +1,7 @@
 <script lang="ts">
   import type { AnimalEventSchema } from "$lib/server/db/schema/animal_event.model";
   import type { FsSuperForm } from "formsnap";
-  import FormControl from "../controls/FormControl.svelte";
-  import FormField from "../fields/FormField.svelte";
+  import FormFieldControl from "../fields/FormFieldControl.svelte";
   import SuperformInput from "../inputs/SuperformInput.svelte";
 
   type In = AnimalEventSchema.InsertIn;
@@ -14,12 +13,13 @@
   } = $props();
 </script>
 
-<FormField {form} name="data.vaccine_name" description="Name of the vaccine">
-  {#snippet children(props)}
-    <FormControl {...props} label="Vaccine name">
-      {#snippet children({ props })}
-        <SuperformInput {...props} {form} />
-      {/snippet}
-    </FormControl>
+<FormFieldControl
+  {form}
+  name="data.vaccine_name"
+  description="Name of the vaccine"
+  label="Vaccine name"
+>
+  {#snippet children({ props })}
+    <SuperformInput {...props} {form} />
   {/snippet}
-</FormField>
+</FormFieldControl>

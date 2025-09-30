@@ -1,14 +1,13 @@
 <script lang="ts">
   import FormButton from "$lib/components/ui/form/form-button.svelte";
-  import Input from "$lib/components/ui/input/input.svelte";
   import type { MaybePromise } from "$lib/interfaces";
   import type { OrganizationSchema } from "$lib/server/db/schema/auth.model";
   import { make_super_form, type APIResult } from "$lib/utils/form.util";
   import type { Organization } from "better-auth/plugins";
   import type { SuperValidated } from "sveltekit-superforms";
-  import FormControl from "../controls/FormControl.svelte";
-  import FormField from "../fields/FormField.svelte";
+  import FormFieldControl from "../fields/FormFieldControl.svelte";
   import FormMessage from "../FormMessage.svelte";
+  import SuperformInput from "../inputs/SuperformInput.svelte";
 
   type In = OrganizationSchema.Insert;
   type Out = Organization;
@@ -32,31 +31,16 @@
 </script>
 
 <form class="flex flex-col gap-2" method="POST" use:form.enhance>
-  <FormField {form} name="name" description="The name of the shelter">
-    <FormControl label="Name">
-      {#snippet children({ props })}
-        <Input
-          {...props}
-          required
-          placeholder="Name"
-          bind:value={$form_data.name}
-        />
-      {/snippet}
-    </FormControl>
-  </FormField>
-
-  <!-- NOTE: We use ImageTable instead -->
-  <!-- <FormField {form} name="logo" description="A link to the logo of the shelter">
-    <FormControl label="Logo (optional)">
-      {#snippet children({ props })}
-        <Input
-          {...props}
-          placeholder="https://example.com/logo.png"
-          bind:value={$form_data.logo}
-        />
-      {/snippet}
-    </FormControl>
-  </FormField> -->
+  <FormFieldControl
+    {form}
+    name="name"
+    description="The name of the shelter"
+    label="Name"
+  >
+    {#snippet children({ props })}
+      <SuperformInput {...props} {form} placeholder="Name" />
+    {/snippet}
+  </FormFieldControl>
 
   <FormButton {form} class="w-full" icon="lucide/send">Submit</FormButton>
 

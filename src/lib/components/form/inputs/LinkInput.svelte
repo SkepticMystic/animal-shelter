@@ -12,8 +12,7 @@
     type FormPathLeaves,
     type SuperForm,
   } from "sveltekit-superforms";
-  import FormControl from "../controls/FormControl.svelte";
-  import FormField from "../fields/FormField.svelte";
+  import FormFieldControl from "../fields/FormFieldControl.svelte";
   import EmailInput from "./EmailInput.svelte";
   import SuperformInput from "./SuperformInput.svelte";
   import TelInput from "./TelInput.svelte";
@@ -39,7 +38,6 @@
       name,
     ) satisfies FieldProxy<V>,
   );
-  $inspect(name, $link);
 
   const get_leaf_name = <F extends keyof V>(field: F) =>
     `${name}.${field}` as FormPathLeaves<T, V[F]>;
@@ -51,42 +49,39 @@
 <div class="flex flex-col gap-0.5 sm:flex-row">
   <!-- If the superForm has type: 'json', the name field doesn't matter
    As long as the input is manipulating the right field -->
-  <FormField {form} name={get_leaf_name("href")}>
-    {#snippet children(props)}
-      <FormControl {...props} label="">
-        {#snippet children({ props })}
-          {#if kind === "https"}
-            <!-- NOTE: Don't add type="url"
+  <FormFieldControl {form} name={get_leaf_name("href")} label="">
+    {#snippet children({ props })}
+      {#if kind === "https"}
+        <!-- NOTE: Don't add type="url"
             We are more lenient on input than it allows -->
-            <UrlInput {...props} bind:value={get_href, set_href} />
-          {:else if kind === "tel"}
-            <TelInput {...props} bind:value={get_href, set_href} />
-          {:else if kind === "mailto"}
-            <EmailInput {...props} bind:value={get_href, set_href} />
-          {/if}
-        {/snippet}
-      </FormControl>
+        <UrlInput {...props} bind:value={get_href, set_href} />
+      {:else if kind === "tel"}
+        <TelInput {...props} bind:value={get_href, set_href} />
+      {:else if kind === "mailto"}
+        <EmailInput {...props} bind:value={get_href, set_href} />
+      {/if}
     {/snippet}
-  </FormField>
+  </FormFieldControl>
 
   <div class="flex gap-0.5">
-    <FormField {form} name={get_leaf_name("label")} class="flex-1">
-      {#snippet children(props)}
-        <FormControl {...props} label="">
-          {#snippet children({ props })}
-            <!-- I managed to get the fancy expanding label input working, mostly
+    <FormFieldControl
+      {form}
+      name={get_leaf_name("label")}
+      class="flex-1"
+      label=""
+    >
+      {#snippet children({ props })}
+        <!-- I managed to get the fancy expanding label input working, mostly
                But it didn't feel good in the end -->
-            <!-- class="not-placeholder-shown:pr-7 placeholder-shown:w-8 placeholder-shown:placeholder-transparent focus:w-full focus:pr-7 focus:placeholder-muted-foreground" -->
-            <SuperformInput
-              {...props}
-              {form}
-              icon="lucide/tag"
-              placeholder="Label (optional)"
-            />
-          {/snippet}
-        </FormControl>
+        <!-- class="not-placeholder-shown:pr-7 placeholder-shown:w-8 placeholder-shown:placeholder-transparent focus:w-full focus:pr-7 focus:placeholder-muted-foreground" -->
+        <SuperformInput
+          {...props}
+          {form}
+          icon="lucide/tag"
+          placeholder="Label (optional)"
+        />
       {/snippet}
-    </FormField>
+    </FormFieldControl>
 
     <Button
       type="button"

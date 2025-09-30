@@ -1,8 +1,7 @@
 <script lang="ts">
   import { InvitationClient } from "$lib/clients/invitation.client";
-  import FormControl from "$lib/components/form/controls/FormControl.svelte";
   import EmailFormField from "$lib/components/form/fields/EmailFormField.svelte";
-  import FormField from "$lib/components/form/fields/FormField.svelte";
+  import FormFieldControl from "$lib/components/form/fields/FormFieldControl.svelte";
   import FormMessage from "$lib/components/form/FormMessage.svelte";
   import FormButton from "$lib/components/ui/form/form-button.svelte";
   import SingleSelect from "$lib/components/ui/select/SingleSelect.svelte";
@@ -36,17 +35,15 @@
   <div class="flex gap-3">
     <EmailFormField {form} bind:value={$form_data.email} />
 
-    <FormField {form} name="role">
-      <FormControl label="Role">
-        {#snippet children({ props })}
-          <SingleSelect
-            {...props}
-            options={ORGANIZATION.ROLES.OPTIONS}
-            bind:value={$form_data.role}
-          />
-        {/snippet}
-      </FormControl>
-    </FormField>
+    <FormFieldControl {form} name="role" label="Role">
+      {#snippet children({ props })}
+        <SingleSelect
+          {...props}
+          options={ORGANIZATION.ROLES.OPTIONS}
+          bind:value={$form_data.role}
+        />
+      {/snippet}
+    </FormFieldControl>
   </div>
 
   <FormButton {form} icon="lucide/user-plus">Invite Member</FormButton>

@@ -14,9 +14,9 @@
   import { Format } from "$lib/utils/format.util";
   import { toast } from "svelte-sonner";
   import type { SuperValidated } from "sveltekit-superforms";
-  import FormControl from "../controls/FormControl.svelte";
-  import FormField from "../fields/FormField.svelte";
+  import FormFieldControl from "../fields/FormFieldControl.svelte";
   import FormMessage from "../FormMessage.svelte";
+  import SuperformInput from "../inputs/SuperformInput.svelte";
   import MicrochipLookupInput from "../microchip_lookup/MicrochipLookupInput.svelte";
 
   type In = AnimalSchema.InsertIn;
@@ -43,106 +43,92 @@
   $inspect($form_data);
 </script>
 
-<form class="flex flex-col gap-2" method="POST" use:form.enhance>
-  <FormField
+<form class="space-y-3" method="POST" use:form.enhance>
+  <FormFieldControl
     {form}
     name="microchip_number"
     description="Their microchip number, if known. Can be used to look up more info"
+    label="Microchip Number"
   >
-    <FormControl label="Microchip Number">
-      {#snippet children({ props })}
-        <MicrochipLookupInput
-          {...props}
-          on_success={({ merged }) => {
-            if (
-              !merged.found ||
-              !confirm(
-                "Microchip data found. Do you want to fill in the form with this data? This may overwrite existing data in the form.",
-              )
-            ) {
-              return;
-            }
+    {#snippet children({ props })}
+      <MicrochipLookupInput
+        {...props}
+        on_success={({ merged }) => {
+          if (
+            !merged.found ||
+            !confirm(
+              "Microchip data found. Do you want to fill in the form with this data? This may overwrite existing data in the form.",
+            )
+          ) {
+            return;
+          }
 
-            $form_data = { ...$form_data, ...merged.animal };
-            toast.success("Microchip data found and filled in");
-          }}
-          bind:microchip_number={$form_data.microchip_number}
-        />
-      {/snippet}
-    </FormControl>
-  </FormField>
+          $form_data = { ...$form_data, ...merged.animal };
+          toast.success("Microchip data found and filled in");
+        }}
+        bind:microchip_number={$form_data.microchip_number}
+      />
+    {/snippet}
+  </FormFieldControl>
 
-  <FormField {form} name="name" description="Can change later">
-    <FormControl label="Name">
-      {#snippet children({ props })}
-        <Input
-          {...props}
-          required
-          placeholder="Name"
-          bind:value={$form_data.name}
-        />
-      {/snippet}
-    </FormControl>
-  </FormField>
+  <FormFieldControl
+    {form}
+    name="name"
+    description="Can change later"
+    label="Name"
+  >
+    {#snippet children({ props })}
+      <SuperformInput {...props} {form} placeholder="Name" />
+    {/snippet}
+  </FormFieldControl>
 
   <div class="flex flex-wrap gap-3">
-    <FormField {form} name="status" description="">
-      <FormControl label="Status">
-        {#snippet children({ props })}
-          <SingleSelect
-            {...props}
-            required
-            placeholder="Select status"
-            options={ANIMALS.STATUS.OPTIONS}
-            bind:value={$form_data.status}
-          />
-        {/snippet}
-      </FormControl>
-    </FormField>
+    <FormFieldControl {form} name="status" label="Status">
+      {#snippet children({ props })}
+        <SingleSelect
+          {...props}
+          placeholder="Select status"
+          options={ANIMALS.STATUS.OPTIONS}
+          bind:value={$form_data.status}
+        />
+      {/snippet}
+    </FormFieldControl>
 
-    <FormField {form} name="gender" description="">
-      <FormControl label="Gender">
-        {#snippet children({ props })}
-          <SingleSelect
-            {...props}
-            required
-            placeholder="Select gender"
-            options={ANIMALS.GENDER.OPTIONS}
-            bind:value={$form_data.gender}
-          />
-        {/snippet}
-      </FormControl>
-    </FormField>
+    <FormFieldControl {form} name="gender" label="Gender">
+      {#snippet children({ props })}
+        <SingleSelect
+          {...props}
+          placeholder="Select gender"
+          options={ANIMALS.GENDER.OPTIONS}
+          bind:value={$form_data.gender}
+        />
+      {/snippet}
+    </FormFieldControl>
 
-    <FormField {form} name="species" description="">
-      <FormControl label="Species">
-        {#snippet children({ props })}
-          <SingleSelect
-            {...props}
-            required
-            placeholder="Select species"
-            options={ANIMALS.SPECIES.OPTIONS}
-            bind:value={$form_data.species}
-          />
-        {/snippet}
-      </FormControl>
-    </FormField>
+    <FormFieldControl {form} name="species" label="Species">
+      {#snippet children({ props })}
+        <SingleSelect
+          {...props}
+          placeholder="Select species"
+          options={ANIMALS.SPECIES.OPTIONS}
+          bind:value={$form_data.species}
+        />
+      {/snippet}
+    </FormFieldControl>
 
-    <FormField {form} name="breed" class="grow" description="">
-      <FormControl label="Breed">
-        {#snippet children({ props })}
-          <Input
-            {...props}
-            placeholder="Border Collie, Domestic Short Hair, etc"
-            bind:value={$form_data.breed}
-          />
-        {/snippet}
-      </FormControl>
-    </FormField>
+    <FormFieldControl {form} name="breed" class="grow" label="Breed">
+      {#snippet children({ props })}
+        <SuperformInput
+          {...props}
+          {form}
+          placeholder="Border Collie, Domestic Short Hair, etc"
+        />
+      {/snippet}
+    </FormFieldControl>
   </div>
 
   <div class="flex flex-col gap-3 sm:flex-row">
-    <FormField
+    <FormFieldControl
       {form}
       class="grow"
       name="intake_date"
@@ -151,20 +137,19 @@
             $form_data.intake_date,
           )})`
         : "When did they get to the shelter? Approximate date is fine"}
+      label="Intake Date"
     >
-      <FormControl label="Intake Date">
-        {#snippet children({ props })}
-          <NaturalLanguageDatePicker
-            {...props}
-            placeholder="Today, or 2 weeks ago"
-            parsing_options={{ forwardDate: false }}
-            bind:value={$form_data.intake_date}
-          />
-        {/snippet}
-      </FormControl>
-    </FormField>
+      {#snippet children({ props })}
+        <NaturalLanguageDatePicker
+          {...props}
+          placeholder="Today, or 2 weeks ago"
+          parsing_options={{ forwardDate: false }}
+          bind:value={$form_data.intake_date}
+        />
+      {/snippet}
+    </FormFieldControl>
 
-    <FormField
+    <FormFieldControl
       {form}
       class="grow"
       name="date_of_birth"
@@ -174,31 +159,33 @@
             { suffix: "old", numeric: "always" },
           )})`
         : "Roughly when was the animal born?"}
+      label="Date of Birth"
     >
-      <FormControl label="Date of Birth">
-        {#snippet children({ props })}
-          <NaturalLanguageDatePicker
-            {...props}
-            placeholder="5 years ago, or 16 June 2020"
-            parsing_options={{ forwardDate: false }}
-            bind:value={$form_data.date_of_birth}
-          />
-        {/snippet}
-      </FormControl>
-    </FormField>
-  </div>
-
-  <FormField {form} name="description" description="A short bio of the animal">
-    <FormControl label="Bio">
       {#snippet children({ props })}
-        <Textarea
+        <NaturalLanguageDatePicker
           {...props}
-          placeholder="Bio"
-          bind:value={$form_data.description}
+          placeholder="5 years ago, or 16 June 2020"
+          parsing_options={{ forwardDate: false }}
+          bind:value={$form_data.date_of_birth}
         />
       {/snippet}
-    </FormControl>
-  </FormField>
+    </FormFieldControl>
+  </div>
+
+  <FormFieldControl
+    {form}
+    name="description"
+    description="A short bio of the animal"
+    label="Bio"
+  >
+    {#snippet children({ props })}
+      <Textarea
+        {...props}
+        placeholder="Bio"
+        bind:value={$form_data.description}
+      />
+    {/snippet}
+  </FormFieldControl>
 
   <FormButton {form} class="w-full" icon="lucide/send">Submit</FormButton>
 

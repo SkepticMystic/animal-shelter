@@ -161,7 +161,7 @@ body {
 }
 
 article {
-  @apply mx-auto space-y-5;
+  @apply mx-auto space-y-5 sm:container;
 }
 
 section {
