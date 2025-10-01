@@ -77,6 +77,50 @@ const STATUS_MAP = {
   }
 >;
 
+const TRAIT_IDS = [
+  "friendly",
+  "kids:good",
+  "dogs:good",
+  "cats:good",
+  "house_trained",
+  "energy:low",
+  "energy:high",
+] as const;
+
+const TRAIT_MAP = {
+  friendly: {
+    label: "Friendly",
+    icon: "lucide/smile-plus",
+  },
+  "kids:good": {
+    label: "Good with kids",
+    icon: "lucide/baby",
+  },
+  "dogs:good": {
+    label: "Good with dogs",
+    icon: "lucide/dog-bowl",
+  },
+  "cats:good": {
+    label: "Good with cats",
+    icon: "lucide/cat",
+  },
+  house_trained: {
+    label: "House trained",
+    icon: "lucide/home",
+  },
+  "energy:low": {
+    label: "Low energy",
+    icon: "lucide/sleep",
+  },
+  "energy:high": {
+    label: "High energy",
+    icon: "lucide/flash",
+  },
+} satisfies Record<
+  (typeof TRAIT_IDS)[number],
+  { label: string; icon: ClassValue }
+>;
+
 export const ANIMALS = {
   SPECIES: {
     IDS: SPECIES_IDS,
@@ -102,6 +146,15 @@ export const ANIMALS = {
     OPTIONS: STATUS_IDS.map((id) => ({
       value: id,
       label: STATUS_MAP[id].label,
+    })) satisfies SelectOption[],
+  },
+
+  TRAITS: {
+    IDS: TRAIT_IDS,
+    MAP: TRAIT_MAP,
+    OPTIONS: TRAIT_IDS.map((id) => ({
+      value: id,
+      label: TRAIT_MAP[id].label,
     })) satisfies SelectOption[],
   },
 };

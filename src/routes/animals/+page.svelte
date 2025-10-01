@@ -23,16 +23,22 @@
   </header>
 
   {#await get_animals}
-    <div class="flex flex-wrap gap-3">
-      {#each [1, 2, 3, 4] as _}
-        <Skeleton class={STYLES.CARD.SIZE} />
-      {/each}
+    <div class="space-y-3">
+      <Skeleton class="h-9 w-full" />
+      <div class="flex flex-wrap gap-3">
+        {#each [1, 2, 3, 4] as _}
+          <Skeleton class={STYLES.CARD.SIZE} />
+        {/each}
+      </div>
     </div>
   {:then animals}
     <SvelteTable
       {columns}
       data={animals}
-      states={{ sorting: [{ id: "intake_date", desc: true }] }}
+      states={{
+        sorting: [{ id: "intake_date", desc: true }],
+        column_filters: [{ id: "status", value: ["available"] }],
+      }}
     >
       {#snippet children(table)}
         <div class="flex flex-wrap gap-1">
@@ -46,6 +52,18 @@
           />
 
           <MultiSelect
+            placeholder="Status"
+            options={ANIMALS.STATUS.OPTIONS.filter(
+              (s) => s.value !== "deceased",
+            )}
+            bind:value={
+              () =>
+                (table.getColumn("status")?.getFilterValue() ?? []) as string[],
+              (value) => table.getColumn("status")?.setFilterValue(value)
+            }
+          />
+
+          <MultiSelect
             placeholder="Species"
             options={ANIMALS.SPECIES.OPTIONS}
             bind:value={
@@ -53,6 +71,16 @@
                 (table.getColumn("species")?.getFilterValue() ??
                   []) as string[],
               (value) => table.getColumn("species")?.setFilterValue(value)
+            }
+          />
+
+          <MultiSelect
+            placeholder="Traits"
+            options={ANIMALS.TRAITS.OPTIONS}
+            bind:value={
+              () =>
+                (table.getColumn("traits")?.getFilterValue() ?? []) as string[],
+              (value) => table.getColumn("traits")?.setFilterValue(value)
             }
           />
 

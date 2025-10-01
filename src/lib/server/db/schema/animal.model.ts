@@ -1,8 +1,8 @@
-import { HTMLUtil, type IHTML } from "../../../utils/html/html.util";
 import { relations } from "drizzle-orm";
 import {
   boolean,
   index,
+  jsonb,
   pgEnum,
   pgTable,
   text,
@@ -18,6 +18,7 @@ import {
   type MicrochipNumber,
 } from "../../../schema/microchip_lookup.schema";
 import { Dates } from "../../../utils/dates";
+import { HTMLUtil, type IHTML } from "../../../utils/html/html.util";
 import { AnimalEventTable } from "./animal_event.model";
 import { OrganizationTable } from "./auth.model";
 import { DynamicSchema } from "./common/dynamic.schema";
@@ -62,6 +63,11 @@ export const AnimalTable = pgTable(
     species: animal_species_enum().notNull(),
     gender: animal_gender_enum().default("u").notNull(),
     // color: varchar({ length: 255 }),
+
+    traits: jsonb()
+      .$type<(typeof ANIMALS.TRAITS.IDS)[number][]>()
+      .default([])
+      .notNull(),
 
     ...StaticSchema.timestamps,
   },
@@ -112,12 +118,40 @@ const refinements = {
       .min(Dates.add_ms(-65 * TIME.YEAR)) //
       .max(new Date())
       .optional(),
+
+  traits: z
+    .enum(ANIMALS.TRAITS.IDS)
+    .array()
+    .refine((traits) => new Set(traits).size === traits.length, {
+      message: "Traits must be unique",
+    })
+    .refine(
+      (traits) => {
+        for (const trait of traits) {
+          const [group, value] = trait.split(":");
+          if (!value) continue;
+
+          const has_other_in_group = traits.some(
+            (t) => t !== trait && t.startsWith(group + ":"),
+          );
+          if (has_other_in_group) return false;
+        }
+
+        return true;
+      },
+      {
+        message:
+          "Cannot have multiple traits from the same group (e.g. High energy & Low energy)",
+      },
+    )
+    .default([]),
 };
 
 const pick = {
   name: true,
   breed: true,
   status: true,
+  traits: true,
   gender: true,
   species: true,
   sterilised: true,

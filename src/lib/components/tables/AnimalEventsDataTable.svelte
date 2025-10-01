@@ -37,96 +37,91 @@
     visibility?: Partial<Record<keyof TData, boolean>> | false;
   } = $props();
 
-  const columns = TanstackTable.make_columns<TData>({
-    columns: [
-      {
-        accessorKey: "timestamp",
-        meta: { label: "Date" },
+  const columns = TanstackTable.make_columns<TData>(
+    ({ accessor, display }) => ({
+      columns: [
+        accessor("timestamp", {
+          meta: { label: "Date" },
 
-        filterFn: TanstackTable.filter_fns.date_range,
+          filterFn: TanstackTable.filter_fns.date_range,
+          cell: ({ getValue }) => renderComponent(Time, { date: getValue() }),
+        }),
 
-        cell: ({ row }) =>
-          renderComponent(Time, { date: row.original.timestamp }),
-      },
+        accessor("animal.name", {
+          // NOTE: id is different from nested accessorKey
+          // so that the type is simpler on `visibility` prop
+          id: "animal",
+          meta: { label: "Animal" },
 
-      {
-        // NOTE: id is different from nested accessorKey
-        // so that the type is simpler on `visibility` prop
-        id: "animal",
-        accessorKey: "animal.name",
-        meta: { label: "Animal" },
+          cell: ({ row }) =>
+            renderComponent(AnimalLink, { animal: row.original.animal }),
+        }),
 
-        cell: ({ row }) =>
-          renderComponent(AnimalLink, { animal: row.original.animal }),
-      },
+        accessor("data.kind", {
+          // CURSED: If the accessorKey has a . in it, Tanstack replaces it with _ in the column.id
+          // So we set it explicitly here to avoid confusion
+          id: "data.kind",
+          meta: { label: "Type" },
+          filterFn: "arrIncludesSome",
 
-      {
-        // CURSED: If the accessorKey has a . in it, Tanstack replaces it with _ in the column.id
-        // So we set it explicitly here to avoid confusion
-        id: "data.kind",
-        accessorKey: "data.kind",
-        meta: { label: "Type" },
+          cell: ({ getValue }) =>
+            renderComponent(Icon, ANIMAL_EVENTS.KINDS.MAP[getValue()]),
+        }),
 
-        filterFn: "arrIncludesSome",
+        display({
+          id: "summary",
+          meta: { label: "Info" },
 
-        cell: ({ row }) =>
-          renderComponent(Icon, {
-            icon: ANIMAL_EVENTS.KINDS.MAP[row.original.data.kind].icon,
-            label: ANIMAL_EVENTS.KINDS.MAP[row.original.data.kind].label,
-          }),
-      },
+          cell: ({ row }) => AnimalEventUtil.summarise_data(row.original),
+        }),
 
-      {
-        id: "summary",
-        meta: { label: "Info" },
+        accessor("notes", {
+          meta: { label: "Notes" },
 
-        cell: ({ row }) => AnimalEventUtil.summarise_data(row.original),
-      },
+          cell: ({ getValue }) => {
+            const value = getValue();
+            return value ? Strings.ellipsify(Markdown.strip(value), 50) : "-";
+          },
+        }),
+      ],
 
-      {
-        accessorKey: "notes",
-        meta: { label: "Notes" },
+      actions: [
+        {
+          kind: "item",
+          icon: ICONS.VIEW,
+          title: "View event",
 
-        cell: ({ row }) =>
-          row.original.notes
-            ? Strings.ellipsify(Markdown.strip(row.original.notes), 50)
-            : "-",
-      },
-    ],
+          href: (row) =>
+            resolve(ROUTES.SHELTER_ANIMAL_EVENTS_VIEW, row.original),
+        },
+        {
+          kind: "item",
+          icon: ICONS.EDIT,
+          title: "Edit event",
 
-    actions: [
-      {
-        kind: "item",
-        icon: ICONS.VIEW,
-        title: "View event",
+          disabled: () =>
+            !AccessClient.member_can({ animal_event: ["update"] }),
 
-        href: (row) => resolve(ROUTES.SHELTER_ANIMAL_EVENTS_VIEW, row.original),
-      },
-      {
-        kind: "item",
-        icon: ICONS.EDIT,
-        title: "Edit event",
+          href: (row) =>
+            resolve(ROUTES.SHELTER_ANIMAL_EVENTS_EDIT, row.original),
+        },
+        {
+          kind: "item",
+          icon: ICONS.DELETE,
+          title: "Delete event",
+          variant: "destructive",
 
-        disabled: () => !AccessClient.member_can({ animal_event: ["update"] }),
+          disabled: (_row) =>
+            !AccessClient.member_can({ animal_event: ["delete"] }),
 
-        href: (row) => resolve(ROUTES.SHELTER_ANIMAL_EVENTS_EDIT, row.original),
-      },
-      {
-        kind: "item",
-        icon: ICONS.DELETE,
-        title: "Delete event",
-        variant: "destructive",
-
-        disabled: (_row) =>
-          !AccessClient.member_can({ animal_event: ["delete"] }),
-
-        onselect: (row) =>
-          AnimalEventClient.delete(row.original.id).then(
-            (res) => res.ok && (rows = Items.remove(rows, row.original.id)),
-          ),
-      },
-    ],
-  });
+          onselect: (row) =>
+            AnimalEventClient.delete(row.original.id).then(
+              (res) => res.ok && (rows = Items.remove(rows, row.original.id)),
+            ),
+        },
+      ],
+    }),
+  );
 </script>
 
 <DataTable

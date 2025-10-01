@@ -12,57 +12,56 @@ import { TanstackTable } from "$lib/utils/tanstack/table.util.svelte";
 
 type TData = Awaited<ReturnType<typeof get_shelters_remote>>[number];
 
-export const columns = TanstackTable.make_columns<TData>({
-  columns: [
-    {
-      id: "avatar",
-      enableHiding: false,
-      enableSorting: false,
+export const columns = TanstackTable.make_columns<TData>(
+  ({ display, accessor }) => ({
+    columns: [
+      display({
+        id: "avatar",
+        enableHiding: false,
+        enableSorting: false,
 
-      cell: ({ row }) =>
-        renderComponent(Picture, {
-          ...IMAGES.SIZES.AVATAR,
-          image: row.original.images.at(0),
-        }),
-    },
+        cell: ({ row }) =>
+          renderComponent(Picture, {
+            ...IMAGES.SIZES.AVATAR,
+            image: row.original.images.at(0),
+          }),
+      }),
 
-    {
-      accessorKey: "name",
-      meta: { label: "Name" },
+      accessor("name", {
+        meta: { label: "Name" },
 
-      cell: ({ row }) =>
-        renderComponent(ShelterLink, { shelter: row.original }),
-    },
+        cell: ({ row }) =>
+          renderComponent(ShelterLink, { shelter: row.original }),
+      }),
 
-    {
-      id: "animal_count",
-      meta: { label: "Animals" },
+      display({
+        id: "animal_count",
+        meta: { label: "Animals" },
 
-      cell: ({ row }) => Format.number(row.original.animals.length),
-    },
+        cell: ({ row }) => Format.number(row.original.animals.length),
+      }),
 
-    {
-      accessorKey: "createdAt",
-      meta: { label: "Created" },
+      accessor("createdAt", {
+        meta: { label: "Created" },
 
-      cell: ({ row }) =>
-        renderComponent(Time, { date: row.original.createdAt }),
-    },
-  ],
+        cell: ({ getValue }) => renderComponent(Time, { date: getValue() }),
+      }),
+    ],
 
-  actions: [
-    {
-      kind: "group",
-      label: "Shelter",
-      actions: [
-        {
-          kind: "item",
-          title: "View",
-          icon: ICONS.VIEW,
+    actions: [
+      {
+        kind: "group",
+        label: "Shelter",
+        actions: [
+          {
+            kind: "item",
+            title: "View",
+            icon: ICONS.VIEW,
 
-          href: (row) => resolve(ROUTES.SHELTERS_VIEW, row.original),
-        },
-      ],
-    },
-  ],
-});
+            href: (row) => resolve(ROUTES.SHELTERS_VIEW, row.original),
+          },
+        ],
+      },
+    ],
+  }),
+);

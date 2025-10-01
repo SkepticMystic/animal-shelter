@@ -10,7 +10,7 @@
 </script>
 
 <article>
-  <header class="flex items-center justify-between">
+  <header>
     <h1>Shelters</h1>
   </header>
 

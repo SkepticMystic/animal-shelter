@@ -58,6 +58,8 @@
       return data;
     },
 
+    getRowId: (original) => original.id,
+
     getCoreRowModel: getCoreRowModel(),
 
     getSortedRowModel:

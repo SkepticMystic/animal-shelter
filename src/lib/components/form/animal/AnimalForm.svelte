@@ -1,23 +1,26 @@
 <script lang="ts">
+  import Checkbox from "$lib/components/ui/checkbox/checkbox.svelte";
   import NaturalLanguageDatePicker from "$lib/components/ui/date-picker/NaturalLanguageDatePicker.svelte";
   import FormButton from "$lib/components/ui/form/form-button.svelte";
-  import Input from "$lib/components/ui/input/input.svelte";
   import SingleSelect from "$lib/components/ui/select/SingleSelect.svelte";
-  import Textarea from "$lib/components/ui/textarea/textarea.svelte";
   import { ANIMALS } from "$lib/const/animal.const";
   import type { MaybePromise } from "$lib/interfaces";
   import type {
     Animal,
     AnimalSchema,
   } from "$lib/server/db/schema/animal.model";
+  import { Arrays } from "$lib/utils/arrays";
   import { make_super_form, type APIResult } from "$lib/utils/form.util";
   import { Format } from "$lib/utils/format.util";
   import { toast } from "svelte-sonner";
   import type { SuperValidated } from "sveltekit-superforms";
+  import FormControl from "../controls/FormControl.svelte";
   import FormFieldControl from "../fields/FormFieldControl.svelte";
+  import FormFieldSet from "../fieldset/FormFieldSet.svelte";
   import FormMessage from "../FormMessage.svelte";
   import SuperformInput from "../inputs/SuperformInput.svelte";
   import MicrochipLookupInput from "../microchip_lookup/MicrochipLookupInput.svelte";
+  import MarkdownTextarea from "../textarea/MarkdownTextarea.svelte";
 
   type In = AnimalSchema.InsertIn;
   type Parsed = AnimalSchema.InsertOut;
@@ -127,6 +130,35 @@
     </FormFieldControl>
   </div>
 
+  <FormFieldSet
+    {form}
+    name="traits"
+    legend="Traits"
+    description="Select all that apply. This helps people find the right animal for them."
+  >
+    <div class="flex flex-wrap gap-3">
+      {#each ANIMALS.TRAITS.OPTIONS as { label, value } (value)}
+        <div class="w-36">
+          <FormControl {label} horizontal>
+            {#snippet children({ props })}
+              <Checkbox
+                {...props}
+                {value}
+                checked={$form_data.traits.includes(value)}
+                onCheckedChange={(_) => {
+                  $form_data = {
+                    ...$form_data,
+                    traits: Arrays.toggle($form_data.traits, value),
+                  };
+                }}
+              />
+            {/snippet}
+          </FormControl>
+        </div>
+      {/each}
+    </div>
+  </FormFieldSet>
+
   <div class="flex flex-col gap-3 sm:flex-row">
     <FormFieldControl
       {form}
@@ -179,9 +211,9 @@
     label="Bio"
   >
     {#snippet children({ props })}
-      <Textarea
+      <MarkdownTextarea
         {...props}
-        placeholder="Bio"
+        placeholder="Fluffy is a sweet dog who loves to play fetch and cuddle."
         bind:value={$form_data.description}
       />
     {/snippet}

@@ -1,20 +1,32 @@
 <script lang="ts">
   import { HTMLUtil } from "$lib/utils/html/html.util";
+  import { emoji } from "@cartamd/plugin-emoji";
   import { Carta, MarkdownEditor } from "carta-md";
+  import type { ComponentProps } from "svelte";
 
   let {
     value = $bindable(),
-  }: {
+    ...rest
+  }: Omit<ComponentProps<typeof MarkdownEditor>, "carta" | "value"> & {
     value: string | undefined | null;
   } = $props();
-  if (!value) value = "";
+  // The editor doesn't allow null
+  if (value === null) {
+    value = undefined;
+  }
 
   const carta = new Carta({
+    extensions: [emoji()],
     sanitizer: HTMLUtil.sanitize,
   });
 </script>
 
-<!-- The editor doesn't allow null. TS doesn't see that we handle it above -->
 {#if value !== null}
-  <MarkdownEditor {carta} mode="tabs" selectedTab="write" bind:value />
+  <MarkdownEditor
+    {carta}
+    mode="tabs"
+    selectedTab="write"
+    {...rest}
+    bind:value
+  />
 {/if}

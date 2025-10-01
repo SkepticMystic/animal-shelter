@@ -35,7 +35,9 @@
       {columns}
       faceting
       data={animals}
-      states={{ sorting: [{ id: "intake_date", desc: true }] }}
+      states={{
+        sorting: [{ id: "intake_date", desc: true }],
+      }}
     >
       {#snippet filters(table)}
         <div class="flex flex-wrap gap-1">
@@ -45,6 +47,16 @@
             bind:value={
               () => table.getColumn("name")?.getFilterValue() ?? "",
               (value) => table.getColumn("name")?.setFilterValue(value)
+            }
+          />
+
+          <MultiSelect
+            placeholder="Status"
+            options={ANIMALS.STATUS.OPTIONS}
+            bind:value={
+              () =>
+                (table.getColumn("status")?.getFilterValue() ?? []) as string[],
+              (value) => table.getColumn("status")?.setFilterValue(value)
             }
           />
 

@@ -30,11 +30,13 @@
   let {
     ref = $bindable(null),
     href,
+    label,
     class: className,
     variant = "default",
     children,
     ...restProps
   }: WithElementRef<HTMLAnchorAttributes> & {
+    label?: string;
     variant?: BadgeVariant;
   } = $props();
 </script>
@@ -47,5 +49,9 @@
   bind:this={ref}
   {...restProps}
 >
-  {@render children?.()}
+  {#if children}
+    {@render children()}
+  {:else if label}
+    {label}
+  {/if}
 </svelte:element>

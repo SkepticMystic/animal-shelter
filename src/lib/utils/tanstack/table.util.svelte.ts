@@ -7,11 +7,13 @@ import type {
   Column,
   ColumnDef,
   ColumnFiltersState,
+  ColumnHelper,
   FilterFn,
   Row,
   RowData,
 } from "@tanstack/table-core";
 import {
+  createColumnHelper,
   type PaginationState,
   type RowSelectionState,
   type SortingState,
@@ -24,40 +26,52 @@ import type { Item } from "../items.util";
 const get_column_label = <TData>(column: Column<TData>) =>
   column.columnDef.meta?.label ?? column.id;
 
-const make_columns = <TData extends Item>(input: {
-  selectable?: boolean;
-  columns: ColumnDef<TData>[];
-  actions?: ComponentProps<DataTableRowActions<TData>>["actions"];
-}) => {
+const make_columns = <TData extends Item>(
+  cb: (
+    // NOTE: Specifically _don't_ wrap the helper
+    // If we want to add more fields to utils, just `& { fields: ... }` them
+    utils: ColumnHelper<TData>,
+  ) => {
+    selectable?: boolean;
+    columns: ColumnDef<TData>[];
+    actions?: ComponentProps<DataTableRowActions<TData>>["actions"];
+  },
+) => {
   const columns: ColumnDef<TData>[] = [];
+  const col_helper = createColumnHelper<TData>();
+
+  const input = cb(col_helper);
 
   if (input.selectable !== false) {
-    columns.push({
-      id: "select",
+    columns.push(
+      col_helper.display({
+        id: "select",
 
-      enableHiding: false,
-      enableSorting: false,
+        enableHiding: false,
+        enableSorting: false,
 
-      header: ({ table }) =>
-        renderComponent(Checkbox, {
-          "aria-label": "Select all",
+        header: ({ table }) =>
+          renderComponent(Checkbox, {
+            "aria-label": "Select all",
 
-          checked: table.getIsAllPageRowsSelected(),
-          indeterminate:
-            table.getIsSomePageRowsSelected() &&
-            !table.getIsAllPageRowsSelected(),
+            checked: table.getIsAllPageRowsSelected(),
+            indeterminate:
+              table.getIsSomePageRowsSelected() &&
+              !table.getIsAllPageRowsSelected(),
 
-          onCheckedChange: (value) => table.toggleAllPageRowsSelected(!!value),
-        }),
+            onCheckedChange: (value) =>
+              table.toggleAllPageRowsSelected(!!value),
+          }),
 
-      cell: ({ row }) =>
-        renderComponent(Checkbox, {
-          "aria-label": "Select row",
+        cell: ({ row }) =>
+          renderComponent(Checkbox, {
+            "aria-label": "Select row",
 
-          checked: row.getIsSelected(),
-          onCheckedChange: (value) => row.toggleSelected(!!value),
-        }),
-    });
+            checked: row.getIsSelected(),
+            onCheckedChange: (value) => row.toggleSelected(!!value),
+          }),
+      }),
+    );
   }
 
   columns.push(
@@ -73,18 +87,20 @@ const make_columns = <TData extends Item>(input: {
   );
 
   if (input.actions) {
-    columns.push({
-      id: "actions",
+    columns.push(
+      col_helper.display({
+        id: "actions",
 
-      enableHiding: false,
-      enableSorting: false,
+        enableHiding: false,
+        enableSorting: false,
 
-      cell: ({ row }) =>
-        renderComponent(DataTableRowActions<TData>, {
-          row,
-          actions: input.actions!,
-        }),
-    });
+        cell: ({ row }) =>
+          renderComponent(DataTableRowActions<TData>, {
+            row,
+            actions: input.actions!,
+          }),
+      }),
+    );
   }
 
   return columns;

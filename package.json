@@ -67,6 +67,7 @@
     "vite-plugin-devtools-json": "^1.0.0"
   },
   "dependencies": {
+    "@cartamd/plugin-emoji": "^4.3.0",
     "@neondatabase/serverless": "^1.0.1",
     "@qwik.dev/partytown": "^0.11.2",
     "@unpic/svelte": "^1.0.0",

@@ -27,7 +27,7 @@
 <FormFieldset
   {form}
   {name}
-  class={cn("space-y-3 rounded-md border px-3 pb-2", klass)}
+  class={cn("rounded-md border px-3 pb-2", klass)}
   {...rest_props}
 >
   {#snippet children(control_props)}
@@ -36,7 +36,7 @@
     {/if}
 
     {#if description}
-      <FormDescription>{description}</FormDescription>
+      <FormDescription class="mb-3">{description}</FormDescription>
     {/if}
 
     {@render control_children?.(control_props)}

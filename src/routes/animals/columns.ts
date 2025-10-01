@@ -3,32 +3,32 @@ import { TanstackTable } from "$lib/utils/tanstack/table.util.svelte";
 
 type TData = Awaited<ReturnType<typeof get_animals_remote>>[number];
 
-export const columns = TanstackTable.make_columns<TData>({
+export const columns = TanstackTable.make_columns<TData>(({ accessor }) => ({
   columns: [
-    {
-      accessorKey: "name",
-    },
-    {
-      accessorKey: "species",
-      filterFn: "arrIncludesSome",
-    },
+    accessor("name", {}),
 
-    {
-      accessorKey: "gender",
+    accessor("status", {
       filterFn: "arrIncludesSome",
-    },
+    }),
+    accessor("species", {
+      filterFn: "arrIncludesSome",
+    }),
 
-    {
-      accessorKey: "date_of_birth",
+    accessor("traits", {
+      filterFn: "arrIncludesSome",
+    }),
+
+    accessor("gender", {
+      filterFn: "arrIncludesSome",
+    }),
+
+    accessor("date_of_birth", {
       filterFn: TanstackTable.filter_fns.date_range,
-    },
-    {
-      accessorKey: "intake_date",
-    },
+    }),
+    accessor("intake_date", {}),
 
-    {
-      accessorKey: "shelter.name",
+    accessor("shelter.name", {
       filterFn: "arrIncludesSome",
-    },
+    }),
   ],
-});
+}));

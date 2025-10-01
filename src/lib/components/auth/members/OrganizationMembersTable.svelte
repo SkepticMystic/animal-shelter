@@ -45,54 +45,51 @@
 
 <DataTable
   data={members}
-  columns={TanstackTable.make_columns<(typeof members)[number]>({
-    columns: [
-      {
-        id: "avatar",
-        enableHiding: false,
-        enableSorting: false,
+  columns={TanstackTable.make_columns<(typeof members)[number]>(
+    ({ display, accessor }) => ({
+      columns: [
+        display({
+          id: "avatar",
+          enableHiding: false,
+          enableSorting: false,
 
-        cell: ({ row }) =>
-          renderComponent(UserAvatar, { user: row.original.user }),
-      },
+          cell: ({ row }) =>
+            renderComponent(UserAvatar, { user: row.original.user }),
+        }),
 
-      {
-        accessorKey: "user.name",
-        meta: { label: "Name" },
-      },
-      {
-        accessorKey: "user.email",
-        meta: { label: "Email" },
-      },
-      {
-        accessorKey: "role",
-        meta: { label: "Role" },
+        accessor("user.name", {
+          meta: { label: "Name" },
+        }),
+        accessor("user.email", {
+          meta: { label: "Email" },
+        }),
+        accessor("role", {
+          meta: { label: "Role" },
 
-        cell: ({ row }) =>
-          renderComponent(SingleSelect, {
-            value: row.original.role,
-            options: ORGANIZATION.ROLES.OPTIONS,
-            on_value_select: (value) =>
-              update_member_role(row.original, value as IOrganization.RoleId),
-          }),
-      },
+          cell: ({ getValue, row }) =>
+            renderComponent(SingleSelect, {
+              value: getValue(),
+              options: ORGANIZATION.ROLES.OPTIONS,
+              on_value_select: (value) =>
+                update_member_role(row.original, value as IOrganization.RoleId),
+            }),
+        }),
 
-      {
-        accessorKey: "createdAt",
-        meta: { label: "Join date" },
+        accessor("createdAt", {
+          meta: { label: "Join date" },
 
-        cell: ({ row }) =>
-          renderComponent(Time, { date: row.original.createdAt }),
-      },
-    ],
+          cell: ({ getValue }) => renderComponent(Time, { date: getValue() }),
+        }),
+      ],
 
-    actions: [
-      {
-        kind: "item",
-        icon: "lucide/x",
-        title: "Remove member",
-        onselect: (row) => remove_member(row.original.id),
-      },
-    ],
-  })}
+      actions: [
+        {
+          kind: "item",
+          icon: "lucide/x",
+          title: "Remove member",
+          onselect: (row) => remove_member(row.original.id),
+        },
+      ],
+    }),
+  )}
 ></DataTable>
