@@ -10,7 +10,7 @@ export async function handle({ event, resolve }) {
 
 // Used by remote function zod schemas
 export const handleValidationError: HandleValidationError = ({
-  event,
+  // event,
   issues,
 }) => {
   return {

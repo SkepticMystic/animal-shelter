@@ -93,7 +93,7 @@ const of_cloudinary: Context.Tag.Service<ImageHostingService> = {
   delete: (external_id) =>
     Effect.tryPromise({
       try: async () => {
-        const res = await cloudinary.uploader
+        await cloudinary.uploader
           .destroy(external_id, { resource_type: "image" })
           .then((result) => {
             if (result?.result !== "ok" && result?.result !== "not found") {

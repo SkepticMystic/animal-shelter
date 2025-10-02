@@ -44,7 +44,7 @@ const format_href = (
 
       try {
         return parsePhoneNumber(tel).formatNational();
-      } catch (error) {
+      } catch (_) {
         return tel;
       }
     }

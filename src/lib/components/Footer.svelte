@@ -15,7 +15,7 @@
 
   type FooterSection = {
     title: string;
-    links: (FooterLink | null)[];
+    links: FooterLink[];
   };
 
   const sections: FooterSection[] = $derived([
@@ -28,7 +28,7 @@
         $session.data?.session.activeOrganizationId
           ? { label: "My Shelter", href: ROUTES.SHELTER }
           : null,
-      ],
+      ].flatMap((x) => (x ? [x] : [])),
     },
     {
       title: "About",
@@ -69,27 +69,25 @@
       </div>
 
       <!-- Link Sections -->
-      {#each sections as section}
+      {#each sections as section (section.title)}
         <div>
           <h4>{section.title}</h4>
 
           <nav class="mt-4 flex flex-col gap-y-2">
-            {#each section.links as link}
-              {#if link}
-                <Anchor
-                  icon={link.icon}
-                  href={link.href}
-                  class="text-sm text-muted-foreground no-underline transition-colors hover:text-foreground"
-                  target={link.external ? "_blank" : undefined}
-                  rel={link.external ? "noopener noreferrer" : undefined}
-                >
-                  {link.label}
+            {#each section.links as link (link.href)}
+              <Anchor
+                icon={link.icon}
+                href={link.href}
+                class="text-sm text-muted-foreground no-underline transition-colors hover:text-foreground"
+                target={link.external ? "_blank" : undefined}
+                rel={link.external ? "noopener noreferrer" : undefined}
+              >
+                {link.label}
 
-                  {#if link.external}
-                    <Icon icon="lucide/external-link" class="size-3" />
-                  {/if}
-                </Anchor>
-              {/if}
+                {#if link.external}
+                  <Icon icon="lucide/external-link" class="size-3" />
+                {/if}
+              </Anchor>
             {/each}
           </nav>
         </div>
@@ -104,7 +102,7 @@
         © {currentYear}
         {APP.NAME}. Made with
         <Icon icon="lucide/heart" class="inline-block size-4" />
-        for {#each ANIMALS.SPECIES.IDS as species_id}
+        for {#each ANIMALS.SPECIES.IDS as species_id (species_id)}
           {@const { icon } = ANIMALS.SPECIES.MAP[species_id]}
           <Icon {icon} class="inline-block size-4" />
         {/each}

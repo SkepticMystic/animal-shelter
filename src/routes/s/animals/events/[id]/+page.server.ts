@@ -1,4 +1,4 @@
-import { get_member_session, get_session } from "$lib/auth/server";
+import { get_member_session } from "$lib/auth/server";
 import { db } from "$lib/server/db/drizzle.db";
 import { AnimalEventTable } from "$lib/server/db/schema/animal_event.model";
 import { error } from "@sveltejs/kit";

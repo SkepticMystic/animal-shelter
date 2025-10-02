@@ -26,7 +26,7 @@
     <div class="space-y-3">
       <Skeleton class="h-9 w-full" />
       <div class="flex flex-wrap gap-3">
-        {#each [1, 2, 3, 4] as _}
+        {#each [1, 2, 3, 4] as _ (_)}
           <Skeleton class={STYLES.CARD.SIZE} />
         {/each}
       </div>

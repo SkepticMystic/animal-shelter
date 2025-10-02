@@ -6,9 +6,11 @@ const deep_merge_nullish = <T extends Record<string, unknown>>(
 ): T => {
   const output = { ...target } as T;
 
-  for (const key in source) {
+  for (const _key in source) {
+    const key = _key as keyof T;
+
     const new_value = source[key];
-    const current_value = (target as any)[key];
+    const current_value = target[key];
     if (
       typeof current_value === "object" &&
       current_value !== null &&

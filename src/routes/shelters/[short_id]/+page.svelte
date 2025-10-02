@@ -50,14 +50,14 @@
   </header>
 
   <address class="flex flex-wrap gap-4">
-    {#each [...data.shelter.urls, ...data.shelter.emails, ...data.shelter.phones] as link}
+    {#each [...data.shelter.urls, ...data.shelter.emails, ...data.shelter.phones] as link (link.id)}
       <LinkLink {link} />
     {/each}
   </address>
 
   {#if data.shelter.animals.length}
     <section class="flex flex-wrap gap-3">
-      {#each data.shelter.animals as animal}
+      {#each data.shelter.animals as animal (animal.id)}
         <AnimalCard {animal} images={animal.images} />
       {/each}
     </section>
@@ -107,7 +107,7 @@
       {/if}
 
       <ul class="flex flex-wrap gap-3">
-        {#each data.shelter.donation_methods as donation_method}
+        {#each data.shelter.donation_methods as donation_method (donation_method.id)}
           {@const label =
             donation_method.label ||
             DONATION_METHOD.KIND.MAP[donation_method.data.kind].label}

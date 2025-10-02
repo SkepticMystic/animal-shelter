@@ -8,7 +8,6 @@
   import type { SelectOption } from "$lib/interfaces";
   import { Arrays } from "$lib/utils/arrays";
   import { cn } from "$lib/utils/shadcn.util";
-  import { tick } from "svelte";
   import type { ClassValue } from "svelte/elements";
   import Icon from "../icon/Icon.svelte";
 
@@ -27,13 +26,13 @@
   let selected = $derived(options.filter((f) => value.includes(f.value)));
 
   let trigger_ref = $state<HTMLButtonElement>(null!);
-  // We want to refocus the trigger button when the user selects
-  // an item from the list so users can continue navigating the
-  // rest of the form with the keyboard.
-  function close_and_focus_trigger() {
-    open = false;
-    tick().then(() => trigger_ref.focus());
-  }
+  // // We want to refocus the trigger button when the user selects
+  // // an item from the list so users can continue navigating the
+  // // rest of the form with the keyboard.
+  // function close_and_focus_trigger() {
+  //   open = false;
+  //   tick().then(() => trigger_ref.focus());
+  // }
 </script>
 
 <Popover.Root bind:open>
@@ -66,13 +65,13 @@
         <Command.Empty>No options found</Command.Empty>
 
         <Command.Group>
-          {#each options as option}
+          {#each options as option (option.value)}
             <Command.Item
               value={option.value}
               onSelect={() => {
                 value = Arrays.toggle(value, option.value);
 
-                close_and_focus_trigger();
+                // close_and_focus_trigger();
               }}
             >
               <Icon

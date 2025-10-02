@@ -35,7 +35,7 @@ const build = (
 const safe = (url: string | URL) => {
   try {
     return new URL(url);
-  } catch (error) {
+  } catch (_error) {
     return null;
   }
 };
@@ -120,7 +120,7 @@ const schema = (kind: ILink.KindId) => {
     .transform((href, ctx) => {
       try {
         return z.url({ normalize: true }).parse(href);
-      } catch (error) {
+      } catch (_) {
         ctx.addIssue({
           continue: false,
           code: "custom",

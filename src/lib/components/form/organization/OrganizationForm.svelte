@@ -26,8 +26,6 @@
     submit,
     on_success,
   });
-
-  const { form: form_data } = form;
 </script>
 
 <form class="flex flex-col gap-2" method="POST" use:form.enhance>

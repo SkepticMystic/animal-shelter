@@ -37,7 +37,7 @@
 
     {#snippet content()}
       <div class="grid grid-cols-1 gap-1 sm:grid-cols-2 md:grid-cols-3">
-        {#each SHARE.SOCIAL.IDS as social_id}
+        {#each SHARE.SOCIAL.IDS as social_id (social_id)}
           {@const platform = SHARE.SOCIAL.MAP[social_id]}
 
           <Button

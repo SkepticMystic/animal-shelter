@@ -6,24 +6,23 @@ import type { APIResult } from "$lib/utils/form.util";
 import { err } from "$lib/utils/result.util";
 import { Toast, type ToastPromiseOptions } from "$lib/utils/toast/toast.util";
 import { isHttpError } from "@sveltejs/kit";
-import { Effect, pipe, Schedule } from "effect";
 import { toast } from "svelte-sonner";
 import { get } from "svelte/store";
 
-const effect_request = async <D>(cb: () => Promise<APIResult<D>>) =>
-  Effect.runPromise(
-    pipe(
-      Effect.tryPromise({
-        try: () => cb(),
-        catch: (error) => {
-          console.error("Failed to create task:", error);
-          throw error;
-        },
-      }),
-      Effect.timeout("10 seconds"),
-      Effect.retry({ times: 3, schedule: Schedule.exponential(1_000) }),
-    ),
-  );
+// const effect_request = async <D>(cb: () => Promise<APIResult<D>>) =>
+//   Effect.runPromise(
+//     pipe(
+//       Effect.tryPromise({
+//         try: () => cb(),
+//         catch: (error) => {
+//           console.error("Failed to create task:", error);
+//           throw error;
+//         },
+//       }),
+//       Effect.timeout("10 seconds"),
+//       Effect.retry({ times: 3, schedule: Schedule.exponential(1_000) }),
+//     ),
+//   );
 
 // Run a cb, and catch any errors into a Result with a level
 const inner_request = async <D>(
@@ -44,16 +43,16 @@ const inner_request = async <D>(
   }
 };
 
-type ClientRequestOptions = {
+type ClientRequestOptions<D> = {
   confirm?: string;
   validate_session?: boolean;
-  toast?: ToastPromiseOptions<any>;
+  toast?: ToastPromiseOptions<D>;
 };
 
 /** Handles toast before n after an http request */
 const request = async <D>(
   cb: () => Promise<APIResult<D>>,
-  options?: ClientRequestOptions,
+  options?: ClientRequestOptions<D>,
 ): Promise<APIResult<D>> => {
   toast.dismiss();
 
@@ -77,7 +76,10 @@ const request = async <D>(
 
 const better_auth = async <D>(
   cb: () => Promise<BetterAuthResult<D>>,
-  { fallback, ...options }: ClientRequestOptions & { fallback?: string } = {},
+  {
+    fallback,
+    ...options
+  }: ClientRequestOptions<D> & { fallback?: string } = {},
 ): Promise<APIResult<D>> =>
   request(() => BetterAuth.to_result(cb(), { fallback }), options);
 

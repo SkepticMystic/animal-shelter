@@ -17,7 +17,6 @@
   import MarkdownTextarea from "../textarea/MarkdownTextarea.svelte";
 
   type In = ShelterSchema.InsertIn;
-  type Out = ShelterSchema.InsertOut;
   type Data = Shelter;
 
   let {
@@ -36,8 +35,6 @@
   });
 
   const form_data = form.form;
-
-  $inspect("$form_data", $form_data);
 </script>
 
 <form class="space-y-7" method="POST" use:form.enhance>

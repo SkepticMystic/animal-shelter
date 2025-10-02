@@ -104,7 +104,7 @@
     <DropdownMenu.Group>
       <DropdownMenu.Label>{action.label}</DropdownMenu.Label>
 
-      {#each action.actions as subaction}
+      {#each action.actions as subaction, i (i)}
         {@render action_snippet(subaction, row)}
       {/each}
     </DropdownMenu.Group>
@@ -125,7 +125,7 @@
   </DropdownMenu.Trigger>
 
   <DropdownMenu.Content align="end">
-    {#each actions as action}
+    {#each actions as action, i (i)}
       {@render action_snippet(action, row)}
     {/each}
   </DropdownMenu.Content>

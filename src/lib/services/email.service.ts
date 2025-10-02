@@ -7,7 +7,6 @@ import {
 } from "$env/static/private";
 import { Log } from "$lib/utils/logger.util";
 import { Context, Effect } from "effect";
-import { SMTPClient } from "emailjs";
 import { Resend } from "resend";
 import z from "zod";
 
@@ -36,44 +35,45 @@ export class EmailService extends Context.Tag("EmailService")<
 
 const config = z
   .object({
+    EMAIL_FROM: z.email(),
     SMTP_HOST: z.string(),
     SMTP_USERNAME: z.string(),
     SMTP_PASSWORD: z.string(),
     SMTP_PORT: z.coerce.number().default(465),
   })
-  .parse({ SMTP_HOST, SMTP_USERNAME, SMTP_PASSWORD, SMTP_PORT });
+  .parse({ EMAIL_FROM, SMTP_HOST, SMTP_USERNAME, SMTP_PASSWORD, SMTP_PORT });
 
-const client = new SMTPClient({
-  port: config.SMTP_PORT,
-  host: config.SMTP_HOST,
-  user: config.SMTP_USERNAME,
-  password: config.SMTP_PASSWORD,
-  ssl: config.SMTP_PORT === 465,
-});
+// const client = new SMTPClient({
+//   port: config.SMTP_PORT,
+//   host: config.SMTP_HOST,
+//   user: config.SMTP_USERNAME,
+//   password: config.SMTP_PASSWORD,
+//   ssl: config.SMTP_PORT === 465,
+// });
 
-const of_emailjs: Context.Tag.Service<EmailService> = {
-  send: (input) =>
-    Effect.tryPromise({
-      try: () =>
-        client.sendAsync({
-          to: input.to,
-          subject: input.subject,
-          from: input.from ?? EMAIL_FROM,
+// const of_emailjs: Context.Tag.Service<EmailService> = {
+//   send: (input) =>
+//     Effect.tryPromise({
+//       try: () =>
+//         client.sendAsync({
+//           to: input.to,
+//           subject: input.subject,
+//           from: input.from ?? EMAIL_FROM,
 
-          text: input.text ?? null,
-          attachment: input.html
-            ? [{ data: input.html, alternative: true }]
-            : undefined,
-        }),
+//           text: input.text ?? null,
+//           attachment: input.html
+//             ? [{ data: input.html, alternative: true }]
+//             : undefined,
+//         }),
 
-      catch: (error) => {
-        console.error("Failed to send email:", error);
-        return { message: "Failed to send email" };
-      },
-    }),
-};
+//       catch: (error) => {
+//         console.error("Failed to send email:", error);
+//         return { message: "Failed to send email" };
+//       },
+//     }),
+// };
 
-const resend = new Resend(SMTP_PASSWORD);
+const resend = new Resend(config.SMTP_PASSWORD);
 const of_resend: Context.Tag.Service<EmailService> = {
   send: (input) =>
     Effect.tryPromise({
@@ -82,7 +82,7 @@ const of_resend: Context.Tag.Service<EmailService> = {
           .send({
             html: input.html,
             subject: input.subject,
-            from: input.from ?? EMAIL_FROM,
+            from: input.from ?? config.EMAIL_FROM,
             to: Array.isArray(input.to) ? input.to : [input.to],
           })
           .then((r) => {

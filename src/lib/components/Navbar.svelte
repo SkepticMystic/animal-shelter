@@ -1,7 +1,6 @@
 <script lang="ts">
   import { dev } from "$app/environment";
   import { goto } from "$app/navigation";
-  import { asset } from "$app/paths";
   import { page } from "$app/state";
   import { BetterAuthClient } from "$lib/auth-client";
   import { AdminClient } from "$lib/clients/admin.client";
@@ -13,9 +12,9 @@
   import type { ClassValue } from "svelte/elements";
   import ThemeSelector from "./ThemeSelector.svelte";
   import OrganizationSelector from "./auth/organizations/OrganizationSelector.svelte";
+  import AppLogo from "./images/AppLogo.svelte";
   import Button from "./ui/button/button.svelte";
   import Icon from "./ui/icon/Icon.svelte";
-  import AppLogo from "./images/AppLogo.svelte";
 
   interface Route {
     side: "center" | "right";

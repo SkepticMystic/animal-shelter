@@ -5,10 +5,9 @@
   import { AUTH, type IAuth } from "$lib/const/auth.const";
   import { ROUTES } from "$lib/const/routes.const";
   import { TOAST } from "$lib/const/toast.const";
-  import { App } from "$lib/utils/app";
-  import type { z } from "zod";
-  import Button from "../ui/button/button.svelte";
   import type { Branded } from "$lib/interfaces";
+  import { App } from "$lib/utils/app";
+  import Button from "../ui/button/button.svelte";
 
   let {
     provider_id,

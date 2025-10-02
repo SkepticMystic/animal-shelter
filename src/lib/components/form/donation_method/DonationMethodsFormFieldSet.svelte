@@ -91,7 +91,7 @@
     {/each}
 
     <div class="flex gap-1">
-      {#each DONATION_METHOD.KIND.IDS as kind}
+      {#each DONATION_METHOD.KIND.IDS as kind (kind)}
         <Button
           type="button"
           variant="outline"
