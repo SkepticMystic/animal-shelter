@@ -1,9 +1,10 @@
 import type { RouteId } from "$app/types";
+import { APP } from "$lib/const/app";
 import { db } from "$lib/server/db/drizzle.db";
 import type { RequestHandler } from "@sveltejs/kit";
 import * as sitemap from "super-sitemap";
 
-// export const prerender = true;
+export const prerender = true;
 
 export const GET: RequestHandler = async ({ url }) => {
   const [animals, shelters] = await Promise.all([
@@ -17,7 +18,7 @@ export const GET: RequestHandler = async ({ url }) => {
   ]);
 
   return await sitemap.response({
-    origin: url.origin,
+    origin: APP.URL,
 
     excludeRoutePatterns: ["^/admin", "^/s$", "^/s/"],
 
