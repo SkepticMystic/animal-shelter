@@ -25,12 +25,12 @@ export const GET: RequestHandler = async ({ url }) => {
     paramValues: {
       "/animals/[short_id]": animals.map((animal) => ({
         values: [animal.short_id],
-        lastmod: animal.updatedAt?.toISOString(),
+        lastmod: animal.updatedAt?.toISOString().split("T")[0],
       })),
 
       "/shelters/[short_id]": shelters.map((shelter) => ({
         values: [shelter.short_id],
-        lastmod: shelter.updatedAt?.toISOString(),
+        lastmod: shelter.updatedAt?.toISOString().split("T")[0],
       })),
     } satisfies Partial<Record<RouteId, sitemap.ParamValues[string]>>,
   });
