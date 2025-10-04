@@ -54,7 +54,7 @@ const transform = (
     ? Markdown.strip(input.description).slice(0, 160)
     : undefined;
 
-  return {
+  return Object.freeze({
     title,
     description,
 
@@ -70,7 +70,7 @@ const transform = (
       images,
       description,
     },
-  };
+  });
 };
 
 export const SEOUtil = {
