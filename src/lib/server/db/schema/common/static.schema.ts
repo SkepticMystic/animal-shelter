@@ -21,6 +21,9 @@ export const StaticSchema = {
   // I'm sure I can remap them, but not bothered rn
   timestamps: {
     createdAt: timestamp({ mode: "date" }).notNull().defaultNow(),
-    updatedAt: timestamp({ mode: "date" }).notNull().defaultNow(),
+    updatedAt: timestamp({ mode: "date" })
+      .notNull()
+      .defaultNow()
+      .$onUpdate(() => /* @__PURE__ */ new Date()),
   },
 };

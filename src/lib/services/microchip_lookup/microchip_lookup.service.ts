@@ -71,7 +71,6 @@ export const MicrochipLookupLive = {
                   MicrochipLookupTable.database_id,
                 ],
                 set: {
-                  updatedAt: new Date(),
                   data: sql.raw(`excluded.${MicrochipLookupTable.data.name}`),
                   response: sql.raw(
                     `excluded.${MicrochipLookupTable.response.name}`,

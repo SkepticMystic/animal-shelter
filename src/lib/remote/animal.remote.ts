@@ -170,7 +170,7 @@ export const update_animal_remote = command(
 
     const [animal] = await db
       .update(AnimalTable)
-      .set({ ...input.update, updatedAt: new Date() })
+      .set(input.update)
       .where(
         and(
           eq(AnimalTable.id, input.id),

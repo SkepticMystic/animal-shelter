@@ -49,7 +49,7 @@ const update_animal = async (
   event: AnimalEventSchema.InsertOut,
 ): Promise<Animal | undefined> => {
   const clause = eq(AnimalTable.id, event.animal_id);
-  const update: Partial<Animal> = { updatedAt: new Date() };
+  const update: Partial<Animal> = {};
 
   switch (event.data.kind) {
     case "fostered":
@@ -140,7 +140,7 @@ export const update_animal_event_remote = command(
     const [[animal_event], animal] = await Promise.all([
       db
         .update(AnimalEventTable)
-        .set({ ...input.update, updatedAt: new Date() })
+        .set(input.update)
         .where(
           and(
             eq(AnimalEventTable.id, input.id),
