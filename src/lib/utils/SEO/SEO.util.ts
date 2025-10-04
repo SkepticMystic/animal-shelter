@@ -55,12 +55,18 @@ const transform = (
     : undefined;
 
   const images = input.openGraph?.images?.map((img) => ({
+    width: 1200,
+    height: 630,
+
     ...img,
+
     url:
       transformUrl({
         url: img.url,
         format: "auto",
         quality: "auto",
+        width: img.width || 1200,
+        height: img.height || 630,
       }) || img.url,
   }));
 
