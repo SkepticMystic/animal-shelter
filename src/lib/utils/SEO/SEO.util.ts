@@ -1,4 +1,5 @@
 import { APP } from "$lib/const/app";
+import { transformUrl } from "unpic";
 import { Markdown } from "../markdown";
 import { Url } from "../urls";
 
@@ -48,11 +49,20 @@ const transform = (
   input: NonNullable<App.PageData["seo"]>,
 ): NonNullable<App.PageData["seo"]> => {
   const title = input.title?.trim();
-  const images = input.openGraph?.images;
 
   const description = input.description
     ? Markdown.strip(input.description).slice(0, 160)
     : undefined;
+
+  const images = input.openGraph?.images?.map((img) => ({
+    ...img,
+    url:
+      transformUrl({
+        url: img.url,
+        format: "auto",
+        quality: "auto",
+      }) || img.url,
+  }));
 
   return Object.freeze({
     title,
