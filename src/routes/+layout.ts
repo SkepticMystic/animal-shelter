@@ -1,7 +1,8 @@
 import { APP } from "$lib/const/app";
+import { ROUTE_MAP } from "$lib/const/routes.const";
 import type { LayoutLoad } from "./$types";
 
-export const load = (({ url }) => {
+export const load = (({ url, route }) => {
   const href = new URL(url.pathname, url.origin).href;
 
   const image = {
@@ -13,26 +14,28 @@ export const load = (({ url }) => {
     secureUrl: APP.URL + APP.LOGO,
   };
 
+  const title = ROUTE_MAP[route.id || "/"]?.label || APP.NAME;
+
   const base_seo = Object.freeze({
-    title: APP.NAME,
+    title,
     titleTemplate: "%s | " + APP.NAME,
     description: APP.DESCRIPTION,
 
     canonical: href,
 
     openGraph: {
+      title,
       url: href,
       type: "website", // ?
 
       locale: "en_ZA",
       images: [image],
-      title: APP.NAME,
       siteName: APP.NAME, // ?
       description: APP.DESCRIPTION,
     },
 
     twitter: {
-      title: APP.NAME,
+      title,
       image: APP.LOGO,
       description: APP.DESCRIPTION,
       cardType: "summary_large_image" as const,
