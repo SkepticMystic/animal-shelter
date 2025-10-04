@@ -5,12 +5,12 @@ export const load = (({ url }) => {
   const href = new URL(url.pathname, url.origin).href;
 
   const image = {
-    url: APP.LOGO,
-    //   width: 800,
-    //   height: 600,
-    secureUrl: APP.LOGO,
+    // width: 800,
+    // height: 600,
     type: "image/svg+xml",
     alt: APP.NAME + " Logo",
+    url: APP.URL + "/" + APP.LOGO,
+    secureUrl: APP.URL + "/" + APP.LOGO,
   };
 
   const base_seo = Object.freeze({
