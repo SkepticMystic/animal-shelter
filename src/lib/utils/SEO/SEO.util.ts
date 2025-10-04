@@ -44,16 +44,36 @@ const utmify = (href: string, params: UTMData) => {
   return Url.add_search(url, resolved).toString();
 };
 
-const transform_page = (
-  seo: NonNullable<App.PageData["seo"]>,
-): NonNullable<App.PageData["seo"]> => ({
-  ...seo,
-  description: seo.description
-    ? Markdown.strip(seo.description).slice(0, 160)
-    : undefined,
-});
+const transform = (
+  input: NonNullable<App.PageData["seo"]>,
+): NonNullable<App.PageData["seo"]> => {
+  const title = input.title?.trim();
+  const images = input.openGraph?.images;
+
+  const description = input.description
+    ? Markdown.strip(input.description).slice(0, 160)
+    : undefined;
+
+  return {
+    title,
+    description,
+
+    twitter: {
+      title,
+      description,
+
+      image: input.twitter?.image || images?.at(0)?.url,
+    },
+
+    openGraph: {
+      title,
+      images,
+      description,
+    },
+  };
+};
 
 export const SEOUtil = {
   utmify,
-  transform_page,
+  transform,
 };

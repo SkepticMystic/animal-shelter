@@ -5,10 +5,10 @@ import type { PageLoad } from "./$types";
 export const load = (async ({ data }) => {
   return {
     ...data,
-    seo: SEOUtil.transform_page({
-      description: data.animal.description,
-      image: data.animal.images.at(0)?.url,
+    seo: SEOUtil.transform({
+      description: data.animal.description ?? undefined,
       title: `${ANIMALS.SPECIES.MAP[data.animal.species]?.label ?? data.animal.species}: ${data.animal.name}`,
+      openGraph: { images: data.animal.images },
     }),
   };
 }) satisfies PageLoad;

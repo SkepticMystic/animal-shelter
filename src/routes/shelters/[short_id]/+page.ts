@@ -4,10 +4,12 @@ import type { PageLoad } from "./$types";
 export const load = (async ({ data }) => {
   return {
     ...data,
-    seo: SEOUtil.transform_page({
+    seo: SEOUtil.transform({
       title: data.shelter.name,
-      image: data.shelter.images[0]?.url,
-      description: data.shelter.description,
+      description: data.shelter.description ?? undefined,
+      openGraph: {
+        images: data.shelter.images,
+      },
     }),
   };
 }) satisfies PageLoad;
