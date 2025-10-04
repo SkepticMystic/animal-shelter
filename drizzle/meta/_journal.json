@@ -50,6 +50,13 @@
       "when": 1758793093671,
       "tag": "0006_eager_lockjaw",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1759580581760,
+      "tag": "0007_simple_blob",
+      "breakpoints": true
     }
   ]
 }

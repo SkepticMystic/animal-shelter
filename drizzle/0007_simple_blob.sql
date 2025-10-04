@@ -1,0 +1,1 @@
+ALTER TABLE "animal" ADD COLUMN "traits" jsonb DEFAULT '[]'::jsonb NOT NULL;
