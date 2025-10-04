@@ -3,7 +3,7 @@ import { db } from "$lib/server/db/drizzle.db";
 import type { RequestHandler } from "@sveltejs/kit";
 import * as sitemap from "super-sitemap";
 
-export const prerender = true;
+// export const prerender = true;
 
 export const GET: RequestHandler = async ({ url }) => {
   const [animals, shelters] = await Promise.all([
