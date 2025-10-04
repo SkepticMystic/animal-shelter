@@ -196,8 +196,13 @@
     {:then related}
       {#if related.length}
         <ItemCarousel items={related}>
-          {#snippet item(animal)}
-            <AnimalCard {animal} images={animal.images} />
+          {#snippet item(animal, i)}
+            {@const image = animal.images.at(0)}
+
+            <AnimalCard
+              {animal}
+              picture={image ? { image, prioritize: i < 2 } : undefined}
+            />
           {/snippet}
         </ItemCarousel>
       {:else}

@@ -57,8 +57,13 @@
 
   {#if data.shelter.animals.length}
     <section class="flex flex-wrap gap-3">
-      {#each data.shelter.animals as animal (animal.id)}
-        <AnimalCard {animal} images={animal.images} />
+      {#each data.shelter.animals as animal, i (animal.id)}
+        {@const image = animal.images.at(0)}
+
+        <AnimalCard
+          {animal}
+          picture={image ? { image, prioritize: i < 2 } : undefined}
+        />
       {/each}
     </section>
   {/if}

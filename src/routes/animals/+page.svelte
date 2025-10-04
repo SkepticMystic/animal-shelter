@@ -99,11 +99,13 @@
         </div>
 
         <div class="flex flex-wrap gap-3">
-          {#each table.getRowModel().rows as { original: animal } (animal.id)}
+          {#each table.getRowModel().rows as { original: animal }, i (animal.id)}
+            {@const image = animal.images.at(0)}
+
             <AnimalCard
               {animal}
-              images={animal.images}
               shelter={animal.shelter}
+              picture={image ? { image, prioritize: i < 2 } : undefined}
             />
           {/each}
         </div>

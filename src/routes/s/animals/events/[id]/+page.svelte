@@ -46,8 +46,8 @@
   {#if data.animal_event.images.length}
     <section>
       <ItemCarousel items={data.animal_event.images}>
-        {#snippet item(image)}
-          <Picture {image} {...IMAGES.SIZES.THUMBNAIL} />
+        {#snippet item(image, i)}
+          <Picture {image} {...IMAGES.SIZES.THUMBNAIL} prioritize={i < 2} />
         {/snippet}
       </ItemCarousel>
     </section>

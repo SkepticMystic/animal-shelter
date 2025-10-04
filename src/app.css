@@ -154,6 +154,7 @@
    SOURCE: https://css-tricks.com/snippets/css/system-font-stack
 */
 body {
+  font-display: swap;
   font-family:
     system-ui, "Segoe UI", Roboto, Helvetica, Arial, sans-serif,
     "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";

@@ -5,9 +5,10 @@
   import { ROUTES } from "$lib/const/routes.const";
   import { STYLES } from "$lib/const/styles.const";
   import type { Animal } from "$lib/server/db/schema/animal.model";
-  import type { Image } from "$lib/server/db/schema/image.model";
   import type { Shelter } from "$lib/server/db/schema/shelter.model";
   import { Format } from "$lib/utils/format.util";
+  import type { ComponentProps } from "svelte";
+  import Picture from "../images/Picture.svelte";
   import AnimalLink from "../links/AnimalLink.svelte";
   import ShelterLink from "../links/ShelterLink.svelte";
   import Time from "../Time.svelte";
@@ -17,25 +18,23 @@
 
   let {
     animal,
-    images,
+    picture,
     shelter,
   }: {
     animal: Animal;
-    images: Pick<Image, "url" | "thumbhash">[];
+    picture?: ComponentProps<typeof Picture>;
     shelter?: Pick<Shelter, "name" | "short_id">;
   } = $props();
-
-  const image = images[0];
 </script>
 
 <Card
   class={STYLES.CARD.SIZE}
   description={animal.description}
   picture={{
-    image,
     alt: animal.name,
     fallback: animal.name[0],
     href: resolve(ROUTES.ANIMALS_VIEW, animal),
+    ...picture,
   }}
 >
   {#snippet title()}
