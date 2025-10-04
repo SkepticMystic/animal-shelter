@@ -9,8 +9,8 @@ export const load = (({ url }) => {
     // height: 600,
     type: "image/svg+xml",
     alt: APP.NAME + " Logo",
-    url: APP.URL + "/" + APP.LOGO,
-    secureUrl: APP.URL + "/" + APP.LOGO,
+    url: APP.URL + APP.LOGO,
+    secureUrl: APP.URL + APP.LOGO,
   };
 
   const base_seo = Object.freeze({
