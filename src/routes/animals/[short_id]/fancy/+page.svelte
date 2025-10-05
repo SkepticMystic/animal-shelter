@@ -5,11 +5,9 @@
   import Badge from "$lib/components/ui/badge/badge.svelte";
   import Button from "$lib/components/ui/button/button.svelte";
   import Card from "$lib/components/ui/card/Card.svelte";
-  import ItemCarousel from "$lib/components/ui/carousel/ItemCarousel.svelte";
   import Icon from "$lib/components/ui/icon/Icon.svelte";
   import Iconed from "$lib/components/ui/icon/Iconed.svelte";
   import { ANIMALS } from "$lib/const/animal.const.js";
-  import { IMAGES } from "$lib/const/image.const";
   import type { Image } from "$lib/server/db/schema/image.model.js";
   import { Format } from "$lib/utils/format.util";
 
