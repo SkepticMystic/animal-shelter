@@ -4,13 +4,12 @@
   import { page } from "$app/state";
   import {
       PUBLIC_UMAMI_BASE_URL,
-      PUBLIC_UMAMI_WEBSITE_ID
+      PUBLIC_UMAMI_WEBSITE_ID,
   } from "$env/static/public";
   import Footer from "$lib/components/Footer.svelte";
   import Navbar from "$lib/components/Navbar.svelte";
   import SEO from "$lib/components/SEO.svelte";
   import Icon from "$lib/components/ui/icon/Icon.svelte";
-  import Loading from "$lib/components/ui/loading/Loading.svelte";
   import { TOAST, type IToast } from "$lib/const/toast.const";
   import { session } from "$lib/stores/session";
   import { partytownSnippet } from "@qwik.dev/partytown/integration";
@@ -25,13 +24,10 @@
 
   let { children }: Props = $props();
 
-  let loading = $state(true);
-
   session.subscribe(($session) => {
     if ($session.isRefetching || $session.isPending) {
       return;
     } else {
-      loading = false;
       console.log("$session loaded", $session.data);
 
       if (browser && umami && $session.data?.user) {
@@ -98,15 +94,15 @@
 
 <ModeWatcher />
 
-<div class="min-h-screen flex flex-col">
+<div class="flex min-h-screen flex-col">
   <header>
     <Navbar />
   </header>
 
-  <main class="mx-auto w-full flex-grow mt-1 mb-12 max-w-4xl px-2 sm:px-3 md:px-5">
-    <Loading {loading}>
-      {@render children?.()}
-    </Loading>
+  <main
+    class="mx-auto mt-1 mb-12 w-full max-w-4xl flex-grow px-2 sm:px-3 md:px-5"
+  >
+    {@render children?.()}
   </main>
 
   <Footer />
