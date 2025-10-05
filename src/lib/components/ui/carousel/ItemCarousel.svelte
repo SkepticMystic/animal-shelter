@@ -7,13 +7,15 @@
   let {
     item,
     items,
+    class: klass,
   }: {
     items: T[];
     item: Snippet<[T, number]>;
+    class?: string;
   } = $props();
 </script>
 
-<Carousel>
+<Carousel class={klass}>
   {#snippet content()}
     <CarouselContent class="-ml-3 md:-ml-4">
       {#each items as _, i (i)}

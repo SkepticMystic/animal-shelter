@@ -25,11 +25,13 @@
 
 <script lang="ts">
   import { cn, type WithElementRef } from "$lib/utils/shadcn.util.js";
-  import type { HTMLAnchorAttributes } from "svelte/elements";
+  import type { ClassValue, HTMLAnchorAttributes } from "svelte/elements";
+  import Icon from "../icon/Icon.svelte";
 
   let {
     ref = $bindable(null),
     href,
+    icon,
     label,
     class: className,
     variant = "default",
@@ -37,6 +39,7 @@
     ...restProps
   }: WithElementRef<HTMLAnchorAttributes> & {
     label?: string;
+    icon?: ClassValue;
     variant?: BadgeVariant;
   } = $props();
 </script>
@@ -45,10 +48,16 @@
   this={href ? "a" : "span"}
   {href}
   data-slot="badge"
-  class={cn(badgeVariants({ variant }), className)}
+  class={cn(
+    badgeVariants({ variant }),
+    icon && "flex items-center gap-2",
+    className,
+  )}
   bind:this={ref}
   {...restProps}
 >
+  <Icon {icon} />
+
   {#if children}
     {@render children()}
   {:else if label}

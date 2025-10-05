@@ -2,7 +2,7 @@ declare global {
   namespace App {
     interface PageData {
       seo?: import("svelte-meta-tags").MetaTagsProps;
-      base_seo: import("svelte-meta-tags").MetaTagsProps;
+      base_seo?: import("svelte-meta-tags").MetaTagsProps;
     }
 
     interface Error {
