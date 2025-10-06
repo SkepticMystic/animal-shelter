@@ -57,7 +57,13 @@
 
 <article class="min-h-screen">
   <div class="relative h-[500px] w-full overflow-hidden">
-    <Picture prioritize alt={animal.name} image={banner_image} />
+    <Picture
+      prioritize
+      height={500}
+      aspectRatio={16 / 9}
+      alt={animal.name}
+      image={banner_image}
+    />
 
     <div
       class="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent"
@@ -107,19 +113,21 @@
         </section>
       {/if}
 
-      <section>
-        <h2 class="font-serif">Traits</h2>
+      {#if animal.traits.length}
+        <section>
+          <h2 class="font-serif">Traits</h2>
 
-        <div class="flex flex-wrap gap-2">
-          {#each animal.traits as trait (trait)}
-            <Badge
-              variant="secondary"
-              class="px-4 py-2 text-base"
-              {...ANIMALS.TRAITS.MAP[trait]}
-            />
-          {/each}
-        </div>
-      </section>
+          <div class="flex flex-wrap gap-2">
+            {#each animal.traits as trait (trait)}
+              <Badge
+                variant="secondary"
+                class="px-4 py-2 text-base"
+                {...ANIMALS.TRAITS.MAP[trait]}
+              />
+            {/each}
+          </div>
+        </section>
+      {/if}
 
       <!-- {#if other_images.length}
         <section>
