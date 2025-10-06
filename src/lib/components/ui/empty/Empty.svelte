@@ -1,24 +1,23 @@
-<script lang="ts">
+<script lang="ts" module>
   import * as Empty from "$lib/components/ui/empty/index.js";
-  import ExtractSnippet from "$lib/components/util/ExtractSnippet.svelte";
   import type { MaybeSnippet } from "$lib/interfaces/svelte.types";
   import type { ComponentProps, Snippet } from "svelte";
-  import Icon from "../icon/Icon.svelte";
 
-  let {
-    icon,
-    title,
-    media,
-    content,
-    description,
-    ...props
-  }: ComponentProps<typeof Empty.Root> & {
+  export type EmptyProps = ComponentProps<typeof Empty.Root> & {
     media?: Snippet;
     icon?: string;
     title?: MaybeSnippet;
     content?: MaybeSnippet;
     description?: MaybeSnippet;
-  } = $props();
+  };
+</script>
+
+<script lang="ts">
+  import ExtractSnippet from "$lib/components/util/ExtractSnippet.svelte";
+  import Icon from "../icon/Icon.svelte";
+
+  let { icon, title, media, content, description, ...props }: EmptyProps =
+    $props();
 </script>
 
 <Empty.Root {...props}>

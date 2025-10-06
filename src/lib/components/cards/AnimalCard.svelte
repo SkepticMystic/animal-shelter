@@ -15,6 +15,7 @@
   import Badge from "../ui/badge/badge.svelte";
   import Card from "../ui/card/Card.svelte";
   import Icon from "../ui/icon/Icon.svelte";
+  import { Markdown } from "$lib/utils/markdown";
 
   let {
     animal,
@@ -29,7 +30,9 @@
 
 <Card
   class={STYLES.CARD.SIZE}
-  description={animal.description}
+  description={animal.description
+    ? Markdown.strip(animal.description)
+    : undefined}
   picture={{
     alt: animal.name,
     fallback: animal.name[0],

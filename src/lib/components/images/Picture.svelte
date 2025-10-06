@@ -49,7 +49,7 @@
       {style}
       {loading}
       {fetchpriority}
-      src={image?.url}
+      src={image?.url ?? props.src}
       class={cn("h-full w-full rounded-md", klass)}
       background={thumbhash_url}
       operations={{

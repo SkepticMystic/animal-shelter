@@ -30,7 +30,9 @@
     children,
     variant = "default",
     ...restProps
-  }: HTMLAttributes<HTMLDivElement> & { variant?: ItemMediaVariant } = $props();
+  }: HTMLAttributes<HTMLDivElement> & {
+    variant?: ItemMediaVariant;
+  } = $props();
 </script>
 
 <div

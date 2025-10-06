@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { page } from "$app/state";
   import { ICONS } from "$lib/const/icon.const";
   import { SHARE } from "$lib/const/share.const";
   import { Share } from "$lib/utils/share/share.util";
@@ -8,31 +9,35 @@
 
   let {
     data,
+    label,
   }: {
+    label?: string;
     data: ShareData;
   } = $props();
 
   // NOTE: This allows passing `undefined` to leave out the property
   if (!Object.hasOwn(data, "url")) {
-    data.url = window.location.href;
+    data.url = page.url.href;
   }
 </script>
 
-{#if window?.navigator.canShare?.(data)}
+{#if navigator.canShare?.(data)}
   <Button
+    {label}
     variant="outline"
     icon={ICONS.SHARE}
     onclick={() => Share.native(data)}
   />
 {:else}
   <Dialog
-    size="icon"
     title="Share"
     variant="outline"
+    size={label ? "default" : "icon"}
     description="Share {data.title || 'this page'} on"
   >
     {#snippet trigger()}
       <Icon icon={ICONS.SHARE} />
+      {label}
     {/snippet}
 
     {#snippet content()}

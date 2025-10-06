@@ -1,31 +1,41 @@
 <script lang="ts">
   import { resolve } from "$app/paths";
   import { AccessClient } from "$lib/clients/access_control.client.js";
-  import BackButton from "$lib/components/buttons/BackButton.svelte";
   import ShareButton from "$lib/components/buttons/ShareButton.svelte";
   import AnimalCard from "$lib/components/cards/AnimalCard.svelte";
   import Picture from "$lib/components/images/Picture.svelte";
   import ShelterLink from "$lib/components/links/ShelterLink.svelte";
   import GoogleMap from "$lib/components/map/GoogleMap.svelte";
   import PrerenderedMarkdown from "$lib/components/text/PrerenderedMarkdown.svelte";
-  import Time from "$lib/components/Time.svelte";
   import Badge from "$lib/components/ui/badge/badge.svelte";
   import Button from "$lib/components/ui/button/button.svelte";
+  import Card from "$lib/components/ui/card/Card.svelte";
   import ItemCarousel from "$lib/components/ui/carousel/ItemCarousel.svelte";
-  import Icon from "$lib/components/ui/icon/Icon.svelte";
   import Iconed from "$lib/components/ui/icon/Iconed.svelte";
+  import ItemGroup from "$lib/components/ui/item/item-group.svelte";
+  import Item from "$lib/components/ui/item/Item.svelte";
   import Separator from "$lib/components/ui/separator/separator.svelte";
   import Skeleton from "$lib/components/ui/skeleton/skeleton.svelte";
-  import { ANIMALS } from "$lib/const/animal.const";
+  import { ANIMALS } from "$lib/const/animal.const.js";
   import { APP } from "$lib/const/app.js";
   import { ICONS } from "$lib/const/icon.const.js";
-  import { IMAGES } from "$lib/const/image.const";
   import { ROUTES } from "$lib/const/routes.const.js";
   import { STYLES } from "$lib/const/styles.const.js";
   import { get_animals_remote } from "$lib/remote/animal.remote.js";
+  import type { Image } from "$lib/server/db/schema/image.model.js";
   import { Format } from "$lib/utils/format.util";
 
   let { data } = $props();
+
+  const animal = $derived.by(() => {
+    const _ = $state(data.animal);
+    return _;
+  });
+
+  // TODO: Show other images in a carousel
+  const [banner_image, ...other_images] = $derived(
+    animal.images as [Image | undefined, ...Image[]],
+  );
 
   const share_data: ShareData = {
     title: data.animal.name,
@@ -40,136 +50,185 @@
         species: { eq: data.animal.species },
       },
 
-      pagination: { limit: 5 },
+      pagination: { limit: 10 },
     }),
   );
 </script>
 
-<article>
-  <header class="flex justify-between">
-    <div class="flex items-center gap-2">
-      <BackButton />
-      <h1>{data.animal.name}</h1>
-    </div>
+<article class="min-h-screen">
+  <div class="relative h-[500px] w-full overflow-hidden">
+    <Picture prioritize alt={animal.name} image={banner_image} />
 
-    <div class="flex items-center gap-2">
-      {#if AccessClient.member_can( { animal: ["update"] }, ) && AccessClient.org_owns(data.animal)}
-        <Button
-          icon={ICONS.EDIT}
-          title="Edit animal"
-          href={resolve(ROUTES.SHELTER_ANIMALS_EDIT, data.animal)}
-        />
+    <div
+      class="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent"
+    ></div>
+
+    <div class="absolute right-0 bottom-0 left-0 p-4 sm:p-8">
+      <header
+        class="flex flex-col justify-between gap-2 sm:flex-row sm:items-end"
+      >
+        <div>
+          <h1 class="font-serif">
+            {animal.name}
+          </h1>
+
+          <p class="text-xl text-muted-foreground">
+            {animal.breed} • {ANIMALS.GENDER.MAP[animal.gender].label}
+          </p>
+        </div>
+
+        <div class="flex items-center gap-1.5">
+          <ShareButton data={share_data} />
+
+          {#if AccessClient.member_can( { animal: ["update"] }, ) && AccessClient.org_owns(data.animal)}
+            <Button
+              variant="outline"
+              icon={ICONS.EDIT}
+              title="Edit animal"
+              href={resolve(ROUTES.SHELTER_ANIMALS_EDIT, data.animal)}
+            />
+          {/if}
+
+          <Badge {...ANIMALS.STATUS.MAP[animal.status]} class="text-lg" />
+        </div>
+      </header>
+    </div>
+  </div>
+
+  <div class="grid gap-8 pt-6 pb-3 md:pt-12 lg:grid-cols-3">
+    <div class="space-y-8 lg:col-span-2">
+      {#if data.prerendered.description}
+        <section>
+          <h2 class="font-serif">
+            About {animal.name}
+          </h2>
+
+          <PrerenderedMarkdown html={data.prerendered.description} />
+        </section>
       {/if}
 
-      <ShareButton data={share_data} />
+      <section>
+        <h2 class="font-serif">Traits</h2>
+
+        <div class="flex flex-wrap gap-2">
+          {#each animal.traits as trait (trait)}
+            <Badge
+              variant="secondary"
+              class="px-4 py-2 text-base"
+              {...ANIMALS.TRAITS.MAP[trait]}
+            />
+          {/each}
+        </div>
+      </section>
+
+      <!-- {#if other_images.length}
+        <section>
+          <h2 class="font-serif">More Photos</h2>
+
+          <ItemCarousel items={other_images}>
+            {#snippet item(image, i)}
+              <Picture {image} {...IMAGES.SIZES.PREVIEW} prioritize={i < 2} />
+            {/snippet}
+          </ItemCarousel>
+        </section>
+      {/if} -->
+
+      {#if data.animal.shelter.place}
+        <section>
+          <h2 class="font-serif">Shelter</h2>
+
+          <GoogleMap place={data.animal.shelter.place} />
+        </section>
+      {/if}
     </div>
-  </header>
 
-  <section>
-    <dl>
-      <div>
-        <dt class="sr-only">Status</dt>
-        <dd>
-          <Badge variant={ANIMALS.STATUS.MAP[data.animal.status].variant}>
-            {ANIMALS.STATUS.MAP[data.animal.status].label}
-          </Badge>
-        </dd>
-      </div>
+    <div class="space-y-4">
+      <section>
+        <Card>
+          {#snippet title()}
+            <Iconed icon="lucide/info" class="h-6 w-6">
+              <h3 class="font-serif">Quick Info</h3>
+            </Iconed>
+          {/snippet}
 
-      <div>
-        <dt>Age</dt>
-        <dd>
-          <Time
-            date={data.animal.date_of_birth}
-            show={(dt) =>
-              dt
-                ? Format.date_distance(dt, {
-                    suffix: "old",
-                    numeric: "always",
-                  })
-                : "Unknown"}
-          />
-        </dd>
-      </div>
+          {#snippet content()}
+            <ItemGroup>
+              <Item
+                title="Age"
+                class="px-0 py-1.5"
+                icon="lucide/calendar text-primary"
+                description={animal.date_of_birth
+                  ? Format.date_distance(animal.date_of_birth, {
+                      suffix: "old",
+                      numeric: "always",
+                    })
+                  : "Unknown"}
+              ></Item>
 
-      <div>
-        <dt>Gender</dt>
-        <dd>
-          <Icon {...ANIMALS.GENDER.MAP[data.animal.gender]} />
-        </dd>
-      </div>
+              <Item
+                title="Species"
+                class="px-0 py-1.5"
+                icon="lucide/ruler text-primary"
+                description={ANIMALS.SPECIES.MAP[animal.species].label}
+              ></Item>
 
-      <div class="flex flex-wrap items-center">
-        <dt>Species</dt>
-        <dd>
-          <Icon {...ANIMALS.SPECIES.MAP[data.animal.species]} />
-        </dd>
+              <Item
+                title="Sterilised"
+                class="px-0 py-1.5"
+                icon="lucide/stethoscope text-primary"
+                description={animal.sterilised ? "Yes" : "No"}
+              ></Item>
 
-        {#if data.animal.breed}
-          <span class="flex items-center">
-            <span class="mr-1">-</span>
-            <dt class="sr-only">Breed</dt>
-            <dd>{data.animal.breed}</dd>
-          </span>
-        {/if}
-      </div>
+              <Item
+                title="Shelter"
+                class="px-0 py-1.5"
+                icon="lucide/home text-primary"
+              >
+                {#snippet description()}
+                  <ShelterLink shelter={animal.shelter} />
+                {/snippet}
+              </Item>
 
-      <div>
-        <dt>Sterilized</dt>
-        <dd>{data.animal.sterilised ? "Yes" : "No"}</dd>
-      </div>
+              <Item
+                title="Intake Date"
+                class="px-0 py-1.5"
+                icon="lucide/map-pin text-primary"
+                description={animal.intake_date
+                  ? Format.date(animal.intake_date)
+                  : "Unknown"}
+              ></Item>
+            </ItemGroup>
+          {/snippet}
+        </Card>
+      </section>
 
-      <div>
-        <dt>Microchipped</dt>
-        <dd>{data.animal.microchip_number ? "Yes" : "No"}</dd>
-      </div>
-
-      <div class="flex flex-wrap items-center">
-        <dt>Shelter</dt>
-        <dd>
-          <ShelterLink shelter={data.animal.shelter} />
-        </dd>
-
-        {#if data.animal.intake_date}
-          <span class="flex items-center gap-x-1">
-            since
-            <dt class="sr-only">Intake date</dt>
-            <dd>
-              <Time show="date" date={data.animal.intake_date} />
-            </dd>
-          </span>
-        {/if}
-      </div>
-    </dl>
-  </section>
-
-  {#if data.prerendered.description}
-    <section>
-      <blockquote>
-        <PrerenderedMarkdown html={data.prerendered.description} />
-      </blockquote>
-    </section>
-  {/if}
-
-  {#if data.animal.images.length}
-    <section>
-      <ItemCarousel items={data.animal.images}>
-        {#snippet item(image, i)}
-          <Picture {image} {...IMAGES.SIZES.PREVIEW} prioritize={i < 2} />
+      <Card
+        description="{animal.name} is waiting for a loving home. Contact us today to learn more about the adoption process."
+      >
+        {#snippet title()}
+          <Iconed icon="lucide/heart" class="h-6 w-6">
+            <h3 class="font-serif">Ready to Adopt?</h3>
+          </Iconed>
         {/snippet}
-      </ItemCarousel>
-    </section>
-  {/if}
 
-  {#if data.animal.shelter.place}
-    <section>
-      <Iconed reversed icon="lucide/map-pin">
-        <h2>Shelter</h2>
-      </Iconed>
+        {#snippet content()}
+          <Button size="lg" class="w-full">Start Adoption Process</Button>
+        {/snippet}
+      </Card>
 
-      <GoogleMap place={data.animal.shelter.place} />
-    </section>
-  {/if}
+      <Card
+        description="Have questions about {animal.name}? We're here to help!"
+      >
+        {#snippet title()}
+          <h3 class="font-serif">Contact Shelter</h3>
+        {/snippet}
+
+        {#snippet content()}
+          <Button variant="outline" class="w-full">Get in Touch</Button>
+        {/snippet}
+      </Card>
+    </div>
+  </div>
 
   <footer>
     <p class="text-sm text-muted-foreground">
@@ -193,21 +252,24 @@
           <Skeleton class={STYLES.CARD.SIZE} />
         {/each}
       </div>
-    {:then related}
-      {#if related.length}
-        <ItemCarousel items={related}>
-          {#snippet item(animal, i)}
-            {@const image = animal.images.at(0)}
-
-            <AnimalCard
-              {animal}
-              picture={image ? { image, prioritize: i < 2 } : undefined}
-            />
-          {/snippet}
-        </ItemCarousel>
-      {:else}
-        <p>No other {ANIMALS.SPECIES.MAP[data.animal.species].label}s found.</p>
-      {/if}
+    {:then items}
+      <ItemCarousel
+        {items}
+        empty={{
+          title: "No other animals found",
+          description: `There are no other ${ANIMALS.SPECIES.MAP[data.animal.species].label}s at this shelter.`,
+        }}
+      >
+        {#snippet item(animal, i)}
+          <AnimalCard
+            {animal}
+            picture={{
+              prioritize: i < 2,
+              image: animal.images.at(0),
+            }}
+          />
+        {/snippet}
+      </ItemCarousel>
     {:catch error}
       <p class="text-warning" {@attach () => console.error(error)}>
         Error loading related animals
