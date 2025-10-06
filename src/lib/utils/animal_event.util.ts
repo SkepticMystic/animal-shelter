@@ -2,16 +2,16 @@ import type { AnimalEvent } from "$lib/server/db/schema/animal_event.model";
 import { Format } from "./format.util";
 
 export const AnimalEventUtil = {
-  summarise_data: (event: Pick<AnimalEvent, "data">) => {
-    switch (event.data.kind) {
+  summarise_data: ({ data }: Pick<AnimalEvent, "data">) => {
+    switch (data.kind) {
       case "weigh": {
-        return `Weighed ${Format.number(event.data.grams / 1_000, {
+        return `Weighed ${Format.number(data.grams / 1_000, {
           style: "unit",
           unit: "kilogram",
         })}`;
       }
       case "vaccine": {
-        return `Received "${event.data.vaccine_name}"`;
+        return `Received "${data.vaccine_name}"`;
       }
 
       case "sterilise": {
@@ -19,7 +19,7 @@ export const AnimalEventUtil = {
       }
 
       case "microchip": {
-        return `No: ${event.data.microchip_number}`;
+        return `No: ${data.microchip_number}`;
       }
 
       case "injury": {
@@ -27,14 +27,12 @@ export const AnimalEventUtil = {
       }
 
       case "fostered": {
-        return event.data.fosterer_name
-          ? `By ${event.data.fosterer_name}`
-          : "-";
+        return data.fosterer_name ? `By ${data.fosterer_name}` : "-";
       }
 
       case "adopted": {
-        return event.data.adopter_name //
-          ? `By ${event.data.adopter_name}`
+        return data.adopter_name //
+          ? `By ${data.adopter_name}`
           : "-";
       }
 
@@ -45,14 +43,14 @@ export const AnimalEventUtil = {
       case "walk": {
         return (
           [
-            event.data.distance_meters
-              ? Format.number(event.data.distance_meters / 1_000, {
+            data.distance_meters
+              ? Format.number(data.distance_meters / 1_000, {
                   style: "unit",
                   unit: "kilometer",
                 })
               : null,
-            event.data.duration_minutes
-              ? Format.number(event.data.duration_minutes, {
+            data.duration_minutes
+              ? Format.number(data.duration_minutes, {
                   style: "unit",
                   unit: "minute",
                 })

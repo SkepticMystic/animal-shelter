@@ -7,8 +7,8 @@
   import { type Resource } from "$lib/utils/items.util";
   import type { SvelteTableInput } from "$lib/utils/tanstack/table.util.svelte";
   import type { Table } from "@tanstack/table-core";
-  import type { ComponentProps, Snippet } from "svelte";
-  import Empty from "../empty/Empty.svelte";
+  import type { Snippet } from "svelte";
+  import Empty, { type EmptyProps } from "../empty/Empty.svelte";
   import DataTableVisibilityDropdownMenu from "./data-table-visibility-dropdown-menu.svelte";
 
   let {
@@ -16,8 +16,8 @@
     filters,
     ...input
   }: SvelteTableInput<TData, TValue> & {
+    empty?: EmptyProps;
     filters?: Snippet<[Table<TData>]>;
-    empty?: ComponentProps<typeof Empty>;
   } = $props();
 </script>
 

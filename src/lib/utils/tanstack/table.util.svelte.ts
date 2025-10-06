@@ -26,18 +26,18 @@ import type { Resource } from "../items.util";
 const get_column_label = <TData>(column: Column<TData>) =>
   column.columnDef.meta?.label ?? column.id;
 
-const make_columns = <TData extends Resource, TValue = unknown>(
+const make_columns = <TData extends Resource>(
   cb: (
     // NOTE: Specifically _don't_ wrap the helper
     // If we want to add more fields to utils, just `& { fields: ... }` them
     utils: ColumnHelper<TData>,
   ) => {
     selectable?: boolean;
-    columns: ColumnDef<TData, TValue>[];
+    columns: ColumnDef<TData>[];
     actions?: ComponentProps<DataTableRowActions<TData>>["actions"];
   },
 ) => {
-  const columns: ColumnDef<TData, TValue>[] = [];
+  const columns: ColumnDef<TData>[] = [];
   const col_helper = createColumnHelper<TData>();
 
   const input = cb(col_helper);

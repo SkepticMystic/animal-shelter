@@ -132,6 +132,10 @@
     visibility,
     sorting: [{ id: "timestamp", desc: true }],
   }}
+  empty={{
+    title: "No events",
+    description: "No events found for this animal.",
+  }}
 >
   {#snippet filters(table)}
     <div class="flex gap-1.5">
