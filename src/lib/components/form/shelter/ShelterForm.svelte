@@ -1,5 +1,7 @@
 <script lang="ts">
   import FormButton from "$lib/components/ui/form/form-button.svelte";
+  import InputGroupText from "$lib/components/ui/input-group/input-group-text.svelte";
+  import Input from "$lib/components/ui/input/input.svelte";
   import { ICONS } from "$lib/const/icon.const";
   import type { MaybePromise } from "$lib/interfaces";
   import type {
@@ -107,13 +109,22 @@
 
     <FormFieldControl
       {form}
-      class="w-fit"
       name="npo_number"
-      description="Non-Profit Organization registration number"
+      class="w-72"
+      description="Non-profit organization registration number"
       label="NPO Number"
     >
       {#snippet children({ props })}
-        <SuperformInput {...props} {form} placeholder="123-456 NPO" />
+        <Input
+          {...props}
+          maxlength={7}
+          placeholder="123-456"
+          bind:value={$form_data.npo_number}
+        >
+          {#snippet addon()}
+            <InputGroupText>NPO</InputGroupText>
+          {/snippet}
+        </Input>
       {/snippet}
     </FormFieldControl>
 

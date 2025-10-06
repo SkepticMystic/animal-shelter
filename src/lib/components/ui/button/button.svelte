@@ -50,6 +50,7 @@
       variant?: ButtonVariant;
     } & {
       // NOTE: Mine
+      label?: string;
       loading?: boolean;
       icon?: ClassValue;
       href?: ResolvedPathname | ".";
@@ -69,12 +70,13 @@
     disabled,
     loading,
     icon,
+    label,
 
     children,
     ...restProps
   }: ButtonProps = $props();
 
-  if (size === "default" && icon && !children) {
+  if (size === "default" && icon && !children && !label) {
     size = "icon";
   }
 </script>
@@ -109,6 +111,10 @@
     <Loading {loading} />
     <Icon {icon} />
 
-    {@render children?.()}
+    {#if children}
+      {@render children()}
+    {:else if label}
+      {label}
+    {/if}
   </button>
 {/if}

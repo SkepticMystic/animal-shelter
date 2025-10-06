@@ -18,6 +18,8 @@
     type SuperForm,
   } from "sveltekit-superforms";
   import DonationMethodForm from "./DonationMethodForm.svelte";
+  import ButtonGroup from "$lib/components/ui/button-group/button-group.svelte";
+  import Item from "$lib/components/ui/item/Item.svelte";
 
   let {
     form,
@@ -32,7 +34,7 @@
     name,
   ) satisfies ArrayProxy<DonationMethod>;
 
-  const actions = {
+  const crud = {
     add: (kind: IDonationMethod.KindId) => {
       $values = [
         ...$values,
@@ -57,50 +59,48 @@
   legend="Donation methods"
   description="Optional ways to donate to the shelter."
 >
-  <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+  <div class="flex flex-wrap gap-2">
     {#each $values as { id }, i (id)}
-      <div class="flex items-center gap-1">
-        <span class="max-w-xs flex-1 truncate rounded-md border px-2 py-1">
-          <strong>
-            {DONATION_METHOD.KIND.MAP[$values[i].data.kind].label}:
-          </strong>
-          {DonationMethodUtil.format($values[i])}
-        </span>
+      <Item
+        size="sm"
+        variant="outline"
+        title={DONATION_METHOD.KIND.MAP[$values[i].data.kind].label}
+        description={DonationMethodUtil.format($values[i])}
+      >
+        {#snippet actions()}
+          <Dialog
+            icon={ICONS.EDIT}
+            variant="outline"
+            title="Edit donation method"
+          >
+            {#snippet content()}
+              <DonationMethodForm {form} name="{name}[{i}]" />
+            {/snippet}
 
-        <Button
-          type="button"
-          variant="outline"
-          icon={ICONS.CLOSE}
-          onclick={() => actions.remove(id)}
-        />
+            {#snippet actions({ close })}
+              <Button variant="outline" onclick={close}>Close</Button>
+            {/snippet}
+          </Dialog>
 
-        <Dialog size="icon" title="Edit donation method">
-          {#snippet trigger()}
-            <Icon icon={ICONS.EDIT} />
-          {/snippet}
-
-          {#snippet content()}
-            <DonationMethodForm {form} name="{name}[{i}]" />
-          {/snippet}
-
-          {#snippet actions({ close })}
-            <Button variant="outline" onclick={close}>Close</Button>
-          {/snippet}
-        </Dialog>
-      </div>
+          <Button
+            type="button"
+            variant="outline"
+            icon={ICONS.CLOSE}
+            onclick={() => crud.remove(id)}
+          />
+        {/snippet}
+      </Item>
     {/each}
 
-    <div class="flex gap-1">
+    <ButtonGroup orientation="vertical">
       {#each DONATION_METHOD.KIND.IDS as kind (kind)}
         <Button
           type="button"
           variant="outline"
-          icon="lucide/hand-heart"
-          onclick={() => actions.add(kind)}
-        >
-          Add {DONATION_METHOD.KIND.MAP[kind].label}
-        </Button>
+          onclick={() => crud.add(kind)}
+          {...DONATION_METHOD.KIND.MAP[kind]}
+        ></Button>
       {/each}
-    </div>
+    </ButtonGroup>
   </div>
 </FormFieldset>

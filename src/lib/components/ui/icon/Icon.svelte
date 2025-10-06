@@ -1,6 +1,6 @@
 <script lang="ts">
   import { cn } from "$lib/utils/shadcn.util";
-  import type { ClassValue } from "svelte/elements";
+  import type { ClassValue, HTMLAttributes } from "svelte/elements";
 
   let {
     icon,
@@ -8,17 +8,20 @@
     title,
     bg = false,
     class: klass = "",
-  }: {
+    ...rest
+  }: HTMLAttributes<HTMLSpanElement> & {
     bg?: boolean;
     label?: string;
-    title?: string;
     icon?: ClassValue;
     class?: ClassValue;
   } = $props();
 </script>
 
 {#snippet inner()}
-  <span {title} class={cn(bg ? "icon-bg" : "icon", icon, "size-4", klass)}
+  <span
+    {title}
+    class={cn(bg ? "icon-bg" : "icon", icon, "size-4", klass)}
+    {...rest}
   ></span>
 {/snippet}
 

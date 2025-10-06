@@ -66,7 +66,7 @@
     classes: {
       section: "grow",
       container: "relative z-10 transform rounded-md",
-      // icon_container:
+      icon_container: "hidden",
       //   "pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3",
       // icon: '<span class="icon lucide/search"></span>',
 

@@ -21,12 +21,12 @@ import {
 } from "@tanstack/table-core";
 import type { DateRange } from "bits-ui";
 import type { ComponentProps } from "svelte";
-import type { Item } from "../items.util";
+import type { Resource } from "../items.util";
 
 const get_column_label = <TData>(column: Column<TData>) =>
   column.columnDef.meta?.label ?? column.id;
 
-const make_columns = <TData extends Item, TValue = unknown>(
+const make_columns = <TData extends Resource, TValue = unknown>(
   cb: (
     // NOTE: Specifically _don't_ wrap the helper
     // If we want to add more fields to utils, just `& { fields: ... }` them
@@ -124,7 +124,7 @@ const filter_fns = {
   }) satisfies FilterFn<RowData>,
 };
 
-export type SvelteTableInput<TData extends Item, TValue> = {
+export type SvelteTableInput<TData extends Resource, TValue> = {
   data: TData[];
   columns: ColumnDef<TData, TValue>[];
 

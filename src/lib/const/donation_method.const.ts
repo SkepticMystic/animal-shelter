@@ -8,7 +8,7 @@ const KIND_IDS = ["bank", "url"] as const;
 const KIND_MAP = {
   bank: {
     label: "Bank Details",
-    icon: "lucide/bank",
+    icon: "lucide/building",
   },
   url: {
     label: "Website",

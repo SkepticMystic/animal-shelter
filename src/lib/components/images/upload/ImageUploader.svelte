@@ -1,4 +1,5 @@
 <script lang="ts">
+  import ButtonGroup from "$lib/components/ui/button-group/button-group.svelte";
   import Button from "$lib/components/ui/button/button.svelte";
   import Input from "$lib/components/ui/input/input.svelte";
   import type { MaybePromise } from "$lib/interfaces";
@@ -45,7 +46,7 @@
     value={resource_kind}
   />
 
-  <div class="flex gap-1">
+  <ButtonGroup>
     <Input
       required
       type="file"
@@ -63,5 +64,5 @@
       icon="lucide/upload"
       loading={Boolean(upload_image_remote.pending)}
     ></Button>
-  </div>
+  </ButtonGroup>
 </form>

@@ -18,7 +18,7 @@
   }
 </script>
 
-{#if navigator.canShare?.(data)}
+{#if window?.navigator.canShare?.(data)}
   <Button
     variant="outline"
     icon={ICONS.SHARE}

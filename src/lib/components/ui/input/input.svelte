@@ -1,42 +1,41 @@
 <script lang="ts">
   import { cn } from "$lib/utils/shadcn.util.js";
-  import type { ComponentProps } from "svelte";
+  import type { ComponentProps, Snippet } from "svelte";
   import Icon from "../icon/Icon.svelte";
+  import InputGroupAddon, {
+    type InputGroupAddonAlign,
+  } from "../input-group/input-group-addon.svelte";
+  import InputGroupInput from "../input-group/input-group-input.svelte";
+  import InputGroup from "../input-group/input-group.svelte";
   import InputRoot from "./input-root.svelte";
 
   let {
     icon,
+    addon,
     ref = $bindable(null),
     value = $bindable(),
     class: klass,
+    align = "inline-end",
     ...restProps
   }: ComponentProps<typeof InputRoot> & {
     icon?: string;
+    addon?: Snippet;
+    align?: InputGroupAddonAlign;
   } = $props();
 </script>
 
-{#snippet input(snippet_class?: string)}
-  <InputRoot
-    bind:ref
-    bind:value
-    class={cn(klass, snippet_class)}
-    {...restProps}
-  />
-{/snippet}
+{#if icon || addon}
+  <InputGroup>
+    <InputGroupInput bind:value class={cn(klass)} {...restProps} />
 
-{#if icon}
-  <div class="relative">
-    {@render input("peer pe-9")}
-
-    <!-- SOURCE: https://github.com/EpicAlbin03/shadcn-studio-svelte/blob/main/src/lib/components/shadcn-studio/input/input-15.svelte -->
-    <div
-      class="pointer-events-none absolute inset-y-0 end-0 flex items-center justify-center pe-3 text-muted-foreground peer-disabled:opacity-50"
-    >
-      <Icon {icon} class="size-4" />
-
-      <span class="sr-only">{icon.split("/").at(-1)}</span>
-    </div>
-  </div>
+    <InputGroupAddon {align}>
+      {#if icon}
+        <Icon {icon} />
+      {:else if addon}
+        {@render addon()}
+      {/if}
+    </InputGroupAddon>
+  </InputGroup>
 {:else}
-  {@render input()}
+  <InputRoot bind:ref bind:value class={cn(klass)} {...restProps} />
 {/if}

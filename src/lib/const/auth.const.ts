@@ -11,7 +11,7 @@ const PROVIDER_MAP: Record<
   IAuth.ProviderId,
   {
     name: string;
-    icon: ClassValue;
+    icon: string;
 
     is_oidc: boolean;
     is_social: boolean;

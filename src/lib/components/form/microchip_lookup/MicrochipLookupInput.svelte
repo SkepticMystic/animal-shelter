@@ -1,5 +1,6 @@
 <script lang="ts">
   import { MicrochipLookupClient } from "$lib/clients/microchip_lookup.client";
+  import ButtonGroup from "$lib/components/ui/button-group/button-group.svelte";
   import Button from "$lib/components/ui/button/button.svelte";
   import Input from "$lib/components/ui/input/input.svelte";
   import type { MaybePromise } from "$lib/interfaces";
@@ -47,12 +48,13 @@
   };
 </script>
 
-<div class="flex gap-1">
+<ButtonGroup>
   <Input {...rest_props} bind:value={microchip_number} />
 
   <Button
     icon="lucide/search"
     disabled={!microchip_number}
     onclick={() => lookup()}
+    variant="secondary"
   ></Button>
-</div>
+</ButtonGroup>

@@ -6,16 +6,18 @@
   import * as Dialog from "$lib/components/ui/dialog/index.js";
   import type { DialogRootProps } from "bits-ui";
   import type { Snippet } from "svelte";
+  import type { ClassValue } from "svelte/elements";
+  import Icon from "../icon/Icon.svelte";
   import ScrollArea from "../scroll-area/scroll-area.svelte";
 
   let {
     open,
+    size,
+    icon,
     title,
     disabled,
     description,
-    size = "default",
     variant = "default",
-
     trigger,
     actions,
     content,
@@ -28,7 +30,8 @@
     size?: ButtonProps["size"];
     variant?: ButtonProps["variant"];
 
-    trigger: Snippet;
+    icon?: string;
+    trigger?: Snippet;
     content: Snippet<[{ close: typeof close }]>;
     actions?: Snippet<[{ close: typeof close }]>;
   } = $props();
@@ -36,6 +39,10 @@
   const close = () => {
     open = false;
   };
+
+  if (icon && !trigger && !size) {
+    size = "icon";
+  }
 </script>
 
 <Dialog.Root {...rest_props} {open}>
@@ -45,7 +52,11 @@
     type="button"
     class={buttonVariants({ variant, size })}
   >
-    {@render trigger?.()}
+    {#if trigger}
+      {@render trigger()}
+    {:else if icon}
+      <Icon {icon} />
+    {/if}
   </Dialog.Trigger>
 
   <Dialog.Content class="sm:max-w-[425px]">

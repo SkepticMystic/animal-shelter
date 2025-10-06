@@ -1,6 +1,6 @@
 <script lang="ts" generics="T extends Record<string, unknown>">
   import * as Table from "$lib/components/ui/table/index.js";
-  import type { Item } from "$lib/utils/items.util";
+  import type { Resource } from "$lib/utils/items.util";
   import type { Snippet } from "svelte";
   import type { ClassValue } from "svelte/elements";
 
@@ -12,9 +12,9 @@
     caption,
     class: klass,
   }: {
-    data: Item<T>[];
+    data: Resource<T>[];
     class?: ClassValue;
-    row: Snippet<[Item<T>, number]>;
+    row: Snippet<[Resource<T>, number]>;
     caption?: Snippet;
     header: Snippet<[]>;
     footer?: Snippet;

@@ -14,8 +14,10 @@
     form,
     name,
     description,
+    class: klass,
 
     // control
+    id,
     label,
     horizontal,
 
@@ -25,9 +27,9 @@
     ComponentProps<typeof FormControl> = $props();
 </script>
 
-<FormField {form} {name} {description}>
+<FormField {form} {name} {description} class={klass}>
   {#snippet children(props)}
-    <FormControl {...props} {label} {horizontal}>
+    <FormControl {...props} {id} {label} {horizontal}>
       {#snippet children({ props })}
         {@render input?.({ props })}
       {/snippet}

@@ -1,10 +1,10 @@
-<script lang="ts" generics="TData extends Item">
+<script lang="ts" generics="TData extends Resource">
   import type { ResolvedPathname } from "$app/types";
   import { Button } from "$lib/components/ui/button/index.js";
   import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
   import Icon from "$lib/components/ui/icon/Icon.svelte";
   import type { MaybePromise } from "$lib/interfaces";
-  import type { Item } from "$lib/utils/items.util";
+  import type { Resource } from "$lib/utils/items.util";
   import { cn } from "$lib/utils/shadcn.util";
   import type { Row } from "@tanstack/table-core";
   import type { DropdownMenuItemPropsWithoutHTML } from "bits-ui";

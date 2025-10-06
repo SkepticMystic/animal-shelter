@@ -8,7 +8,7 @@
   import UserAvatar from "$lib/components/ui/avatar/UserAvatar.svelte";
   import Button from "$lib/components/ui/button/button.svelte";
   import Dialog from "$lib/components/ui/dialog/dialog.svelte";
-  import Icon from "$lib/components/ui/icon/Icon.svelte";
+  import Item from "$lib/components/ui/item/Item.svelte";
   import Separator from "$lib/components/ui/separator/separator.svelte";
   import { ROUTES } from "$lib/const/routes.const";
   import { TOAST } from "$lib/const/toast.const";
@@ -33,17 +33,12 @@
   </header>
 
   <section class="flex items-center gap-3">
-    <UserAvatar class="size-14" user={data.user} />
-
-    <div class="flex flex-col">
-      {#if data.user.name}
-        <strong>{data.user.name}</strong>
-      {/if}
-      {data.user.email}
-    </div>
+    <Item title={data.user.name} description={data.user.email}>
+      {#snippet media()}
+        <UserAvatar class="size-16" user={data.user} />
+      {/snippet}
+    </Item>
   </section>
-
-  <Separator />
 
   <section>
     <div class="flex items-center gap-3">
@@ -57,11 +52,8 @@
         }}
       />
     </div>
-    {#if passkeys.length}
-      <UserPasskeysList bind:passkeys />
-    {:else}
-      <p>No passkeys added yet.</p>
-    {/if}
+
+    <UserPasskeysList bind:passkeys />
   </section>
 
   <Separator />
@@ -73,25 +65,40 @@
 
   <Separator />
 
-  <section class="flex gap-2">
+  <section class="">
     {#if accounts.find((acc) => acc.providerId === "credential")}
-      <Dialog
+      <Item
+        variant="outline"
         title="Change Password"
         description="Change your account password"
       >
-        {#snippet trigger()}
-          <Icon icon="lucide/lock" />
-          Change Password
+        {#snippet actions()}
+          <Dialog
+            icon="lucide/lock"
+            title="Change Password"
+            description="Change your account password"
+          >
+            {#snippet content({ close })}
+              <ChangePasswordForm on_success={() => close()} />
+            {/snippet}
+          </Dialog>
         {/snippet}
-
-        {#snippet content({ close })}
-          <ChangePasswordForm on_success={() => close()} />
-        {/snippet}
-      </Dialog>
+      </Item>
     {/if}
 
-    <Button variant="destructive" onclick={delete_user} icon="lucide/trash">
-      Delete user
-    </Button>
+    <Item
+      variant="outline"
+      title="Delete Account"
+      description="Permanently delete your account"
+      class="border-destructive/50 bg-destructive/5"
+    >
+      {#snippet actions()}
+        <Button
+          variant="destructive"
+          onclick={delete_user}
+          icon="lucide/trash"
+        />
+      {/snippet}
+    </Item>
   </section>
 </article>

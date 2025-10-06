@@ -13,6 +13,8 @@
   import Dialog from "$lib/components/ui/dialog/dialog.svelte";
   import Icon from "$lib/components/ui/icon/Icon.svelte";
   import Iconed from "$lib/components/ui/icon/Iconed.svelte";
+  import Item from "$lib/components/ui/item/Item.svelte";
+  import ItemList from "$lib/components/ui/item/ItemList.svelte";
   import { APP } from "$lib/const/app.js";
   import { DONATION_METHOD } from "$lib/const/donation_method.const.js";
   import { ICONS } from "$lib/const/icon.const.js";
@@ -111,18 +113,14 @@
         </span>
       {/if}
 
-      <ul class="flex flex-wrap gap-3">
-        {#each data.shelter.donation_methods as donation_method (donation_method.id)}
+      <ItemList items={data.shelter.donation_methods}>
+        {#snippet item(donation_method)}
           {@const label =
             donation_method.label ||
             DONATION_METHOD.KIND.MAP[donation_method.data.kind].label}
 
-          <li class="w-full max-w-[400px] rounded-lg border p-3 shadow-sm">
-            <div class="flex items-center justify-between">
-              <h4>
-                {label}
-              </h4>
-
+          <Item title={label}>
+            {#snippet actions()}
               {#if donation_method.data.kind === "url"}
                 <ExternalLink
                   link={{ label: "", href: donation_method.data.href }}
@@ -181,10 +179,10 @@
                   {/snippet}
                 </Dialog>
               {/if}
-            </div>
-          </li>
-        {/each}
-      </ul>
+            {/snippet}
+          </Item>
+        {/snippet}
+      </ItemList>
     </section>
   {/if}
 

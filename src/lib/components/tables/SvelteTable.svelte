@@ -1,6 +1,6 @@
-<script lang="ts" generics="TData extends Item, TValue">
+<script lang="ts" generics="TData extends Resource, TValue">
   import { createSvelteTable } from "$lib/components/ui/data-table/index.js";
-  import type { Item } from "$lib/utils/items.util";
+  import type { Resource } from "$lib/utils/items.util";
   import type { SvelteTableInput } from "$lib/utils/tanstack/table.util.svelte";
   import type { Table } from "@tanstack/table-core";
   import {

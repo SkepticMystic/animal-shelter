@@ -1,20 +1,23 @@
-<script lang="ts" generics="TData extends Item,TValue">
+<script lang="ts" generics="TData extends Resource,TValue">
   import SvelteTable from "$lib/components/tables/SvelteTable.svelte";
   import Button from "$lib/components/ui/button/button.svelte";
   import { FlexRender } from "$lib/components/ui/data-table/index.js";
   import * as ShadTable from "$lib/components/ui/table/index.js";
   import { Format } from "$lib/utils/format.util";
-  import { type Item } from "$lib/utils/items.util";
+  import { type Resource } from "$lib/utils/items.util";
   import type { SvelteTableInput } from "$lib/utils/tanstack/table.util.svelte";
   import type { Table } from "@tanstack/table-core";
-  import type { Snippet } from "svelte";
+  import type { ComponentProps, Snippet } from "svelte";
+  import Empty from "../empty/Empty.svelte";
   import DataTableVisibilityDropdownMenu from "./data-table-visibility-dropdown-menu.svelte";
 
   let {
+    empty,
     filters,
     ...input
   }: SvelteTableInput<TData, TValue> & {
     filters?: Snippet<[Table<TData>]>;
+    empty?: ComponentProps<typeof Empty>;
   } = $props();
 </script>
 
@@ -66,11 +69,9 @@
               </ShadTable.Row>
             {:else}
               <ShadTable.Row>
-                <ShadTable.Cell
-                  class="h-16 text-center"
-                  colspan={table.options.columns.length}
-                >
-                  No results
+                <ShadTable.Cell colspan={table.options.columns.length}>
+                  <Empty title="No results" icon="lucide/inbox" {...empty}
+                  ></Empty>
                 </ShadTable.Cell>
               </ShadTable.Row>
             {/each}
